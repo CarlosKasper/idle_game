@@ -68,17 +68,19 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: borderColor != null
             ? Border.all(color: borderColor!, width: 2)
             : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -89,9 +91,10 @@ class InfoCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onBackground,
             ),
           ),
           const SizedBox(height: 12),
@@ -104,17 +107,17 @@ class InfoCard extends StatelessWidget {
                 children: [
                   Text(
                     e.value.label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey,
+                      color: isDark ? Colors.grey[400] : Colors.grey,
                     ),
                   ),
                   Text(
                     e.value.value,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1565C0),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ],
@@ -146,20 +149,25 @@ class MoneyDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1565C0), Color(0xFF0D47A1)],
+          colors: isDark
+              ? [primaryColor, primaryColor.withOpacity(0.7)]
+              : [const Color(0xFF1565C0), const Color(0xFF0D47A1)],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1565C0).withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: primaryColor.withOpacity(isDark ? 0.2 : 0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -168,15 +176,16 @@ class MoneyDisplay extends StatelessWidget {
           Text(
             subtitle,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               color: Colors.white70,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             '\$$amount',
             style: const TextStyle(
-              fontSize: 48,
+              fontSize: 60,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -194,6 +203,7 @@ class UpgradeCard extends StatelessWidget {
   final String? level;
   final String cost;
   final VoidCallback onBuy;
+  final VoidCallback? onMaxBuy;
   final bool canAfford;
 
   const UpgradeCard({
@@ -204,24 +214,32 @@ class UpgradeCard extends StatelessWidget {
     this.level,
     required this.cost,
     required this.onBuy,
+    this.onMaxBuy,
     required this.canAfford,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final onSurfaceColor = Theme.of(context).colorScheme.onSurface;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: canAfford ? const Color(0xFF1565C0) : Colors.grey[300]!,
+          color: canAfford
+              ? primaryColor
+              : (isDark ? Colors.grey[700]! : Colors.grey[300]!),
           width: canAfford ? 2 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -237,24 +255,25 @@ class UpgradeCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
+                    color: onSurfaceColor,
                   ),
                 ),
                 Text(
                   description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey,
+                    color: isDark ? Colors.grey[400] : Colors.grey,
                   ),
                 ),
                 if (level != null)
                   Text(
                     level!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: Color(0xFF1565C0),
+                      color: primaryColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -264,35 +283,74 @@ class UpgradeCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              GestureDetector(
-                onTap: canAfford ? onBuy : null,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: canAfford
-                        ? const Color(0xFF4CAF50)
-                        : Colors.grey[300],
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'Comprar',
-                    style: TextStyle(
-                      color: canAfford ? Colors.white : Colors.grey[600],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Botão Comprar
+                  GestureDetector(
+                    onTap: canAfford ? onBuy : null,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: canAfford
+                            ? const Color(0xFF4CAF50)
+                            : (isDark ? Colors.grey[700] : Colors.grey[300]),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'Comprar',
+                        style: TextStyle(
+                          color: canAfford
+                              ? Colors.white
+                              : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 6),
+                  // Botão MAX ALL
+                  if (onMaxBuy != null)
+                    GestureDetector(
+                      onTap: canAfford ? onMaxBuy : null,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: canAfford
+                              ? const Color(0xFF2196F3)
+                              : (isDark ? Colors.grey[700] : Colors.grey[300]),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'MAX',
+                          style: TextStyle(
+                            color: canAfford
+                                ? Colors.white
+                                : (isDark
+                                      ? Colors.grey[400]
+                                      : Colors.grey[600]),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Text(
                 '\$$cost',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
+                  color: onSurfaceColor,
                 ),
               ),
             ],

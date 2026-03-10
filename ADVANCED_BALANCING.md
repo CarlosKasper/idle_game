@@ -11,6 +11,7 @@ custo_n = base × 1.15^(n-1)
 ```
 
 Isso significa:
+
 - Nível 1: $10
 - Nível 2: $11.50
 - Nível 3: $13.22
@@ -23,6 +24,7 @@ Isso significa:
 ### Ajustes de Balanceamento
 
 Se o jogo fica muito fácil:
+
 ```
 // Atual (1.15 = +15% por nível)
 custo_n = base × 1.15^(n-1)
@@ -69,9 +71,10 @@ Para que prestige não seja "one-time only", cada prestige deve:
    - Run 3: 30 min para $10B (4x boost)
 
 2. **Fórmula de velocidade:**
+
    ```
    tempo_run_n = tempo_base / (2^(n-1))
-   
+
    // Com prestige bonus:
    velocidade_final = base_velocity × prestige_multiplier
    ```
@@ -126,6 +129,7 @@ Multiplicador | Percepção         | Ideal para
 ```
 
 **Recomendação:**
+
 - Maioria dos upgrades: +5% a +15%
 - Multiplicadores especiais: +25% a +50%
 - Nunca acumule muitos +50% (vai explodir)
@@ -147,6 +151,7 @@ Prestige desbloqueado     | +++++    | Depois de horas
 ```
 
 **Design para manter dopamina:**
+
 - Cliques devem ter feedback imediato (som/animação)
 - Upgrades devem estar sempre disponíveis
 - Não deixar >5 min sem algo novo acontecer
@@ -156,7 +161,9 @@ Prestige desbloqueado     | +++++    | Depois de horas
 ## 6. Balanceamento por Faze
 
 ### Early Game (0-10 min)
+
 Objetivo: Adição dopamine rápida
+
 ```
 - Primeiro upgrade em 10-20 segundos
 - Ganho base: 1 por clique
@@ -165,7 +172,9 @@ Objetivo: Adição dopamine rápida
 ```
 
 ### Mid Game (10-60 min)
+
 Objetivo: Sensação de aceleração
+
 ```
 - Upgrades a cada 30-60 segundos
 - Ganho explode exponencialmente
@@ -174,7 +183,9 @@ Objetivo: Sensação de aceleração
 ```
 
 ### Late Game (1h+)
+
 Objetivo: Mantém engajado mas não força
+
 ```
 - Passivo é >90% do ganho
 - Clique é negligenciável
@@ -248,6 +259,7 @@ A cada 15 min        | 5%           | Apenas oferta suave
 ```
 
 **Estratégia:**
+
 - Primeiro ad após 5 min (natural)
 - Próximo após ganho offline ou promoção
 - Máximo 1 por 10 minutos (não spam)
@@ -338,6 +350,7 @@ tedium_factor = quanto tempo espera entre ações
 ```
 
 **Para maximizar:**
+
 1. ↑ Aumentar crescimento dos números (exponencial)
 2. ↑ Aumentar frequência de upgrades (mais baratos)
 3. ↓ Diminuir tempo de espera (passivo rápido)

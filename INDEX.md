@@ -9,7 +9,9 @@ A documentação está organizada em 4 categorias:
 ### 1️⃣ **Iniciando** (Comece aqui!)
 
 #### [README.md](README.md)
+
 **Leitura: 5 minutos**
+
 - Overview do projeto
 - Como instalar e rodar
 - Estrutura básica
@@ -22,7 +24,9 @@ A documentação está organizada em 4 categorias:
 ### 2️⃣ **Jogando & Entendendo o Jogo**
 
 #### [GAMEPLAY.md](GAMEPLAY.md)
+
 **Leitura: 10 minutos**
+
 - Como o jogo funciona
 - Features atuais (v1.0)
 - Sistema de carreira, upgrades
@@ -31,7 +35,9 @@ A documentação está organizada em 4 categorias:
 **Quando ler**: Antes de jogar, para entender mecânicas
 
 #### [SUMMARY.md](SUMMARY.md)
+
 **Leitura: 8 minutos**
+
 - O que foi implementado na v1.0
 - Números e estatísticas
 - Status do projeto
@@ -44,7 +50,9 @@ A documentação está organizada em 4 categorias:
 ### 3️⃣ **Balanceando & Ajustando**
 
 #### [BALANCING.md](BALANCING.md)
+
 **Leitura: 15 minutos**
+
 - Princípios de design de idle games
 - Métricas atuais do jogo
 - Problemas comuns e soluções
@@ -53,7 +61,9 @@ A documentação está organizada em 4 categorias:
 **Quando ler**: Quando o jogo sente "estranho" (rápido/lento demais)
 
 #### [ADVANCED_BALANCING.md](ADVANCED_BALANCING.md)
+
 **Leitura: 20 minutos**
+
 - Fórmulas matemáticas avançadas
 - Exponential curve (1.15^n)
 - Prestige math
@@ -63,7 +73,9 @@ A documentação está organizada em 4 categorias:
 **Quando ler**: Para entender a matemática profunda
 
 #### [BALANCE_ANALYSIS.md](BALANCE_ANALYSIS.md)
+
 **Leitura: 15 minutos**
+
 - Comparativa com games reais (Cookie Clicker, etc)
 - Análise da progressão atual
 - 3 opções de rebalanceamento (Casual, Balanced, Hardcore)
@@ -76,7 +88,9 @@ A documentação está organizada em 4 categorias:
 ### 4️⃣ **Desenvolvendo & Contribuindo**
 
 #### [CONTRIBUTING.md](CONTRIBUTING.md)
+
 **Leitura: 15 minutos**
+
 - Como contribuir ao projeto
 - Estrutura de pastas
 - Convenções de código
@@ -87,7 +101,9 @@ A documentação está organizada em 4 categorias:
 **Quando ler**: Antes de fazer código/PR
 
 #### [ROADMAP.md](ROADMAP.md)
+
 **Leitura: 20 minutos**
+
 - Roadmap completo (v2, v3, v4+)
 - O que vem em cada versão
 - Cronograma estimado
@@ -101,7 +117,9 @@ A documentação está organizada em 4 categorias:
 ### 5️⃣ **Publicando & Marketing**
 
 #### [PUBLISHING.md](PUBLISHING.md)
+
 **Leitura: 20 minutos**
+
 - Guia passo-a-passo para publicar
 - Android (Google Play)
 - iOS (App Store)
@@ -111,7 +129,9 @@ A documentação está organizada em 4 categorias:
 **Quando ler**: Quando pronto para lançar
 
 #### [MARKETING.md](MARKETING.md)
+
 **Leitura: 15 minutos**
+
 - Estratégia de marketing
 - Fase 1: Soft Launch
 - Fase 2: Hard Launch
@@ -126,6 +146,7 @@ A documentação está organizada em 4 categorias:
 ## 🗺️ Mapa de Leitura por Persona
 
 ### 👤 "Eu só quero jogar"
+
 1. Instale seguindo README
 2. Leia GAMEPLAY para entender
 3. Jogue! 🎮
@@ -135,6 +156,7 @@ A documentação está organizada em 4 categorias:
 ---
 
 ### 👨‍💻 "Vou balancear o jogo"
+
 1. Leia BALANCING para entender princípios
 2. Consulte BALANCE_ANALYSIS para opções
 3. Altere números em `lib/constants/game_constants.dart`
@@ -146,6 +168,7 @@ A documentação está organizada em 4 categorias:
 ---
 
 ### 🛠️ "Vou adicionar features"
+
 1. Leia CONTRIBUTING para estrutura
 2. Escolha feature no ROADMAP
 3. Implemente seguindo padrão
@@ -157,6 +180,7 @@ A documentação está organizada em 4 categorias:
 ---
 
 ### 🚀 "Vou publicar o jogo"
+
 1. Leia PUBLISHING para setup
 2. Siga checklist pré-lançamento
 3. Build Android e iOS
@@ -168,6 +192,7 @@ A documentação está organizada em 4 categorias:
 ---
 
 ### 📊 "Vou analisar balanceamento avançado"
+
 1. Leia ADVANCED_BALANCING para fórmulas
 2. Estude BALANCE_ANALYSIS para aplicação
 3. Use ferramentas de debug em GameService
@@ -182,27 +207,35 @@ A documentação está organizada em 4 categorias:
 ### Como...?
 
 #### ...jogar o jogo?
+
 → [GAMEPLAY.md](GAMEPLAY.md) seção "Features Atuais"
 
 #### ...balancear números?
+
 → [BALANCING.md](BALANCING.md) seção "Checklist de Balanceamento"
 
 #### ...adicionar um novo upgrade?
+
 → [CONTRIBUTING.md](CONTRIBUTING.md) seção "Adicionando um Novo Upgrade"
 
 #### ...fazer um teste?
+
 → [CONTRIBUTING.md](CONTRIBUTING.md) seção "Testes"
 
 #### ...publicar na Play Store?
+
 → [PUBLISHING.md](PUBLISHING.md) seção "Google Play Console"
 
 #### ...fazer marketing do jogo?
+
 → [MARKETING.md](MARKETING.md) seção "Canais de Divulgação"
 
 #### ...entender a matemática?
+
 → [ADVANCED_BALANCING.md](ADVANCED_BALANCING.md) seção "The Exponential Curve"
 
 #### ...saber o roadmap?
+
 → [ROADMAP.md](ROADMAP.md)
 
 ---
@@ -210,19 +243,23 @@ A documentação está organizada em 4 categorias:
 ## 📊 Documentação por Assunto
 
 ### Game Design
+
 - [GAMEPLAY.md](GAMEPLAY.md) - Mecânicas básicas
 - [BALANCING.md](BALANCING.md) - Balanceamento
 - [ADVANCED_BALANCING.md](ADVANCED_BALANCING.md) - Fórmulas
 
 ### Desenvolvimento
+
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Como contribuir
 - [ROADMAP.md](ROADMAP.md) - Plano futuro
 
 ### Publicação
+
 - [PUBLISHING.md](PUBLISHING.md) - Como publicar
 - [MARKETING.md](MARKETING.md) - Marketing
 
 ### Análise
+
 - [BALANCE_ANALYSIS.md](BALANCE_ANALYSIS.md) - Análise atual
 - [SUMMARY.md](SUMMARY.md) - Status do projeto
 
@@ -243,6 +280,7 @@ Documentação incluída nos arquivos:
 ## 📝 Convenções de Documentação
 
 ### Markdown
+
 - `# Título` - Seção grande
 - `## Subtítulo` - Seção média
 - `### Tópico` - Seção pequena
@@ -251,11 +289,13 @@ Documentação incluída nos arquivos:
 - `[Link](path)` para links internos
 
 ### Exemplos de Código
+
 - Blocos com ` ``` `
 - Indicar linguagem: `dart`, `bash`, `gradle`
 - Comentários explicativos
 
 ### Tabelas
+
 - Para dados estruturados
 - Sempre incluir header
 
@@ -264,23 +304,27 @@ Documentação incluída nos arquivos:
 ## 🎓 Leitura Recomendada
 
 ### Para Iniciantes (Total: 30 minutos)
+
 1. [README.md](README.md) - 5 min
 2. [GAMEPLAY.md](GAMEPLAY.md) - 10 min
 3. [SUMMARY.md](SUMMARY.md) - 8 min
 4. [CONTRIBUTING.md](CONTRIBUTING.md) - 7 min
 
 ### Para Desenvolvedores (Total: 1 hora)
+
 1. [CONTRIBUTING.md](CONTRIBUTING.md) - 15 min
 2. [BALANCING.md](BALANCING.md) - 15 min
 3. [ROADMAP.md](ROADMAP.md) - 15 min
 4. Explore `lib/` - 15 min
 
 ### Para Publicação (Total: 45 minutos)
+
 1. [PUBLISHING.md](PUBLISHING.md) - 20 min
 2. [MARKETING.md](MARKETING.md) - 15 min
 3. [BALANCE_ANALYSIS.md](BALANCE_ANALYSIS.md) - 10 min
 
 ### Para Estudo Aprofundado (Total: 2-3 horas)
+
 1. [ADVANCED_BALANCING.md](ADVANCED_BALANCING.md) - 30 min
 2. [BALANCE_ANALYSIS.md](BALANCE_ANALYSIS.md) - 20 min
 3. Code review em `lib/models/` - 30 min
@@ -303,14 +347,14 @@ Depois de cada grande mudança:
 
 Documentos que devem ser atualizados quando:
 
-| Evento | Docs |
-|--------|------|
-| Novo upgrade | GAMEPLAY, ROADMAP |
+| Evento             | Docs                        |
+| ------------------ | --------------------------- |
+| Novo upgrade       | GAMEPLAY, ROADMAP           |
 | Mudança no balance | BALANCING, BALANCE_ANALYSIS |
-| Nova feature | ROADMAP, CONTRIBUTING |
-| Novo arquivo | CONTRIBUTING (estrutura) |
-| Bug fix | SUMMARY |
-| Publicação | SUMMARY, PUBLISHING |
+| Nova feature       | ROADMAP, CONTRIBUTING       |
+| Novo arquivo       | CONTRIBUTING (estrutura)    |
+| Bug fix            | SUMMARY                     |
+| Publicação         | SUMMARY, PUBLISHING         |
 
 ---
 
@@ -338,18 +382,18 @@ Documentos que devem ser atualizados quando:
 
 ## 📊 Estatísticas da Documentação
 
-| Arquivo | Linhas | Tempo Leitura |
-|---------|--------|--------------|
-| README.md | ~100 | 5 min |
-| GAMEPLAY.md | ~200 | 10 min |
-| BALANCING.md | ~250 | 15 min |
-| ADVANCED_BALANCING.md | ~400 | 20 min |
-| BALANCE_ANALYSIS.md | ~350 | 15 min |
-| CONTRIBUTING.md | ~400 | 15 min |
-| ROADMAP.md | ~300 | 20 min |
-| PUBLISHING.md | ~400 | 20 min |
-| MARKETING.md | ~350 | 15 min |
-| **TOTAL** | **~2,750** | **~2 horas** |
+| Arquivo               | Linhas     | Tempo Leitura |
+| --------------------- | ---------- | ------------- |
+| README.md             | ~100       | 5 min         |
+| GAMEPLAY.md           | ~200       | 10 min        |
+| BALANCING.md          | ~250       | 15 min        |
+| ADVANCED_BALANCING.md | ~400       | 20 min        |
+| BALANCE_ANALYSIS.md   | ~350       | 15 min        |
+| CONTRIBUTING.md       | ~400       | 15 min        |
+| ROADMAP.md            | ~300       | 20 min        |
+| PUBLISHING.md         | ~400       | 20 min        |
+| MARKETING.md          | ~350       | 15 min        |
+| **TOTAL**             | **~2,750** | **~2 horas**  |
 
 ---
 

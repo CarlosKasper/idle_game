@@ -5,12 +5,14 @@ Estratégia para crescer Office Idle organicamente após o lançamento.
 ## 🎯 Fase 1: Soft Launch (Semana 1-2)
 
 ### Objetivos
+
 - Validar com beta testers
 - Identificar bugs
 - Coletar feedback
 - Refinar balanceamento
 
 ### Ações
+
 ```bash
 # 1. Beta Interno
 [ ] Enviar para 5-10 amigos
@@ -34,6 +36,7 @@ Estratégia para crescer Office Idle organicamente após o lançamento.
 ## 📈 Fase 2: Launch (Semana 3)
 
 ### Dia do Lançamento
+
 ```
 6:00 AM - Publicar em todas as redes simultaneamente
 7:00 AM - Responder primeiros comentários
@@ -45,6 +48,7 @@ Estratégia para crescer Office Idle organicamente após o lançamento.
 ### Canais de Divulgação
 
 **Reddit** (High Impact)
+
 ```
 Subreddits:
 - r/incremental_games (2M+ membros)
@@ -54,7 +58,7 @@ Subreddits:
 - r/Flutter (120K+ membros)
 
 Post template:
-"Just launched Office Idle - A relaxing clicker game 
+"Just launched Office Idle - A relaxing clicker game
 where you climb the corporate ladder 🏢💰
 
 ✓ Click or go AFK
@@ -67,6 +71,7 @@ Feedback welcome!"
 ```
 
 **Twitter/X**
+
 ```
 Tweets:
 1. Launch announcement (with GIF)
@@ -80,8 +85,9 @@ Hashtags:
 ```
 
 **Medium/Dev.to** (Blog Post)
+
 ```
-Artigo: "Making a Clicker Game in Flutter - 
+Artigo: "Making a Clicker Game in Flutter -
 Office Idle Post-Mortem"
 
 Conteúdo:
@@ -94,6 +100,7 @@ Conteúdo:
 ```
 
 **Discord/Communities**
+
 ```
 Join:
 - r/gamedev Discord
@@ -101,11 +108,12 @@ Join:
 - Game Dev communities
 - Indie Game communities
 
-Etiqueta: "Not a shill, but made a clicker game, 
+Etiqueta: "Not a shill, but made a clicker game,
 thoughts appreciated"
 ```
 
 **Product Hunt** (Opcional)
+
 ```
 Se quer, pode fazer post no Product Hunt
 Timing: Quarta-feira para mais upvotes
@@ -115,6 +123,7 @@ Mínimo 50 upvotes para trending
 ## 📱 Estratégia de Retenção
 
 ### Dia 1-7: Hook
+
 ```
 [ ] Onboarding clear (< 1 minuto para primeira compra)
 [ ] First ah-ha moment rápido (promoção em 5 min)
@@ -123,6 +132,7 @@ Mínimo 50 upvotes para trending
 ```
 
 ### Semana 1-2: Engagement
+
 ```
 [ ] Email (opcional): "Come back for new features"
 [ ] Push notification (soft): "You earned $1M offline"
@@ -131,6 +141,7 @@ Mínimo 50 upvotes para trending
 ```
 
 ### Semana 2+: Long-term
+
 ```
 [ ] Update regular (2-4 semanas)
 [ ] Listen to feedback
@@ -141,6 +152,7 @@ Mínimo 50 upvotes para trending
 ## 💰 Monetização (Não Forçar!)
 
 ### v1.0: Grátis, Sem Monetização
+
 ```
 - Sem ads
 - Sem compras
@@ -149,6 +161,7 @@ Mínimo 50 upvotes para trending
 ```
 
 ### v2.0: Reward Ads (Opcional)
+
 ```
 - AdMob integration
 - 2x dinheiro por 5 min (botão flutuante)
@@ -158,6 +171,7 @@ Mínimo 50 upvotes para trending
 ```
 
 ### v3.0: (Futuro)
+
 ```
 - Cosmetics opcionais (skins de carreira)
 - Suporte via "Buy me a coffee"
@@ -168,6 +182,7 @@ Mínimo 50 upvotes para trending
 ## 📊 Métricas de Sucesso
 
 ### Curto Prazo (Primeira Semana)
+
 ```
 DAU (Usuários Ativos Diários)
 ├─ Target: 100+ on day 1, 50+ on day 7
@@ -181,9 +196,10 @@ Rating
 ```
 
 ### Médio Prazo (Primeiro Mês)
+
 ```
 MAU (Usuários Ativos Mensais)
-├─ Target: 500+ 
+├─ Target: 500+
 ├─ Retention: 1-day = 40%, 7-day = 20%
 └─ Session duration: 15-30 min average
 
@@ -195,6 +211,7 @@ Analytics
 ```
 
 ### Longo Prazo (3+ Meses)
+
 ```
 Milestone targets:
 - 1000 MAU = sucesso modesto
@@ -214,6 +231,7 @@ Revenue (v2+)
 ## 🎬 Content Strategy
 
 ### Criar Conteúdo
+
 ```
 Videos:
 - YouTube: "I made a clicker game" (5-10 min)
@@ -235,18 +253,20 @@ Community:
 ```
 
 ### Engagement Loop
+
 ```
 Day 1-3: Respond to everything (build goodwill)
 Week 1-4: Respond to new comments (stay visible)
 Month 2+: Curate best comments (focus quality)
 
-Aim: 100% response rate first month, 
+Aim: 100% response rate first month,
 then 80%+ in months after
 ```
 
 ## 🚨 Mitigating Bad Launches
 
 ### Se houver crashes:
+
 ```
 1. Patch imediatamente (< 2 horas)
 2. Comunicar no Play Store/App Store
@@ -256,6 +276,7 @@ then 80%+ in months after
 ```
 
 ### Se tiver balanceamento ruim:
+
 ```
 1. Coletar feedback (primeiro 24h)
 2. Implementar hotfix (24-48h)
@@ -265,6 +286,7 @@ then 80%+ in months after
 ```
 
 ### Se não ganha tração:
+
 ```
 NÃO DESISTIR! Idle games são niche mas loyal
 
@@ -279,6 +301,7 @@ NÃO DESISTIR! Idle games são niche mas loyal
 ## 🎁 Estratégia de Atualização
 
 ### Primeira Semana
+
 ```
 v1.0.1: Bug fixes
 - Crash fixes
@@ -288,6 +311,7 @@ v1.0.1: Bug fixes
 ```
 
 ### Primeira Mês
+
 ```
 v1.1: Features baseadas em feedback
 - Novo upgrade (pedido pelos players)
@@ -297,6 +321,7 @@ v1.1: Features baseadas em feedback
 ```
 
 ### Mês 2-3
+
 ```
 v2.0: Major feature (Offline + Ads)
 - Sistema offline completo
@@ -307,6 +332,7 @@ v2.0: Major feature (Offline + Ads)
 ```
 
 ### Mês 4+
+
 ```
 v3.0: Prestige system
 - Renúncia com bônus
@@ -318,6 +344,7 @@ v3.0: Prestige system
 ## 💬 Community Management
 
 ### Criar Presença Online
+
 ```
 [ ] Subreddit: r/OfficeIdleGame (ou similar)
 [ ] Discord: Small private server
@@ -329,6 +356,7 @@ Goal: 100-500 community members (healthy)
 ```
 
 ### Responder Feedback
+
 ```
 Categorias:
 1. Bugs: Fix ASAP, respond with ETA
@@ -339,13 +367,14 @@ Categorias:
 
 Template Response:
 "Thanks for playing! We hear you on [feedback].
-This is in our roadmap for v2.0. Join our 
+This is in our roadmap for v2.0. Join our
 Discord for early access discussions!"
 ```
 
 ## 📢 Press & Influencers (Stretch Goal)
 
 ### Contato com Blogs
+
 ```
 Emails para:
 - IndieGames.com
@@ -362,10 +391,11 @@ Keep short, include:
 ```
 
 ### Twitch Streamers (Gaming)
+
 ```
 DM small streamers (100-1K viewers):
 "Would you like to try my new clicker game?
-It's designed for chill/AFK gameplay. 
+It's designed for chill/AFK gameplay.
 Takes 5 min to understand, then relaxing."
 
 Aim: 2-3 streamers playing = 10-50 new players
@@ -374,6 +404,7 @@ Aim: 2-3 streamers playing = 10-50 new players
 ## 🎯 Realistic Growth Projections
 
 ### Scenario 1: "Sleeper Hit"
+
 ```
 Week 1: 50 DAU
 Week 4: 100 MAU
@@ -385,6 +416,7 @@ Tempo investido: 2-3h marketing/semana
 ```
 
 ### Scenario 2: "Steady Growth"
+
 ```
 Week 1: 500 DAU
 Week 4: 1000 MAU
@@ -396,6 +428,7 @@ Tempo investido: 5-10h marketing/semana
 ```
 
 ### Scenario 3: "Viral"
+
 ```
 Week 1: 10000+ DAU
 Week 4: 20000+ MAU

@@ -5,11 +5,13 @@ Guia de desenvolvimento e contribuição para o projeto Office Idle.
 ## 🚀 Setup Inicial
 
 ### Pré-requisitos
+
 - Flutter 3.11+ instalado
 - Dart SDK compatível
 - Editor: VS Code, Android Studio ou IntelliJ
 
 ### Instalação
+
 ```bash
 # Clonar projeto
 git clone <repo>
@@ -53,6 +55,7 @@ test/
 ### Adicionando um Novo Upgrade
 
 1. **Definir em `lib/models/upgrade.dart`:**
+
 ```dart
 Upgrade(
   id: 'novo_upgrade',
@@ -83,6 +86,7 @@ static const upgradeCoffeeCost = 15.0; // Era 10
 ```
 
 Depois testar mudanças com:
+
 ```bash
 flutter test
 ```
@@ -96,29 +100,33 @@ flutter test
 ## 🧪 Testes
 
 ### Rodar todos os testes
+
 ```bash
 flutter test
 ```
 
 ### Rodar teste específico
+
 ```bash
 flutter test test/game_state_test.dart
 ```
 
 ### Adicionar novo teste
+
 1. Abrir `test/game_state_test.dart`
 2. Adicionar novo `test()` dentro de um `group()`
 3. Seguir padrão: Arrange → Act → Assert
 
 Exemplo:
+
 ```dart
 test('novo_upgrade_funciona', () {
   // Arrange
   state.money = Money(1000);
-  
+
   // Act
   state.buyUpgrade('novo_upgrade');
-  
+
   // Assert
   expect(state.money.amount, 800);
 });
@@ -185,10 +193,10 @@ void debugPrintState() {
 void buyUpgrade(String upgradeId) {
   final purchased = purchasedUpgrades[upgradeId];
   final cost = purchased.getCurrentCost();
-  
+
   print('[DEBUG] Buying upgrade $upgradeId');
   print('[DEBUG] Cost: ${cost.amount}, Have: ${money.amount}');
-  
+
   // ... resto do código
 }
 ```
@@ -208,6 +216,7 @@ debugPrintState(); // (se implementado acima)
 ## 📱 Build para Release
 
 ### Android
+
 ```bash
 # Gerar APK
 flutter build apk --release
@@ -217,6 +226,7 @@ flutter build appbundle --release
 ```
 
 ### iOS
+
 ```bash
 # Gerar app iOS
 flutter build ios --release
@@ -225,12 +235,14 @@ flutter build ios --release
 ## 📝 Convenções de Código
 
 ### Nomes
+
 - Classes: `PascalCase` (Money, GameService)
 - Variáveis: `camelCase` (totalMoney, isInitialized)
 - Constantes: `SCREAMING_SNAKE_CASE` (MAX_OFFLINE_HOURS)
-- Métodos privados: `_prefixoComSubscreve` (_calculateCost)
+- Métodos privados: `_prefixoComSubscreve` (\_calculateCost)
 
 ### Formatação
+
 ```dart
 // Classes pequenas em um arquivo
 // Usar imports explícitos (não package:idle_game/...)
@@ -249,6 +261,7 @@ void method2() { }
 ```
 
 ### Análise
+
 ```bash
 # Rodar linter
 flutter analyze
@@ -263,21 +276,26 @@ dart fix --apply
 ## 🤝 Pull Request
 
 ### Template
+
 ```markdown
 ## Descrição
+
 Breve descrição da mudança
 
 ## Tipo
+
 - [ ] Feature
 - [ ] Bug fix
 - [ ] Refactor
 
 ## Testes
+
 - [ ] Unitários passam
 - [ ] Testei manualmente
 - [ ] Sem warnings
 
 ## Checklist
+
 - [ ] Código segue convenções
 - [ ] Documentação atualizada
 - [ ] BALANCING.md revisado (se mudou números)
@@ -286,6 +304,7 @@ Breve descrição da mudança
 ## 📚 Documentação
 
 Arquivos importantes:
+
 - `GAMEPLAY.md` - Descrição do jogo
 - `BALANCING.md` - Guia de balanceamento
 - `ADVANCED_BALANCING.md` - Fórmulas matemáticas

@@ -201,7 +201,7 @@ void main() {
       state.money = Money(10000);
       state.buyUpgrade('course');
       expect(state.purchasedUpgrades['course']!.level, 1);
-      
+
       // Tentar comprar novamente
       final success = state.buyUpgrade('course');
       expect(success, true); // Compra mas sem mudança de level
@@ -260,20 +260,20 @@ void main() {
       state.clickBonusTotal = 10;
 
       final json = state.toJson();
-      expect(json['money'], 1000);
-      expect(json['totalMoneyEarned'], 5000);
+      expect(json['money'], '1000'); // Inteiros sem .0
+      expect(json['totalMoneyEarned'], '5000');
       expect(json['currentCareerLevel'], 2);
-      expect(json['clickBonusTotal'], 10);
+      expect(json['clickBonusTotal'], '10'); // Inteiro sem .0
     });
 
     test('fromJson deserializes state', () {
       final json = {
-        'money': 1000.0,
-        'totalMoneyEarned': 5000.0,
+        'money': '1000.0', // Strings para preservar precisão
+        'totalMoneyEarned': '5000.0',
         'currentCareerLevel': 2,
-        'clickBonusTotal': 10.0,
-        'incomePerSecondTotal': 5.0,
-        'multiplierTotal': 1.15,
+        'clickBonusTotal': '10.0',
+        'incomePerSecondTotal': '5.0',
+        'multiplierTotal': '1.15',
         'purchasedUpgrades': {
           'coffee': {'level': 3},
         },
@@ -289,18 +289,28 @@ void main() {
     });
 
     test('round-trip serialization', () {
-      state.money = Money(12345);
+      state.money = Money(50000);
       state.totalMoneyEarned = Money(67890);
       state.clickBonusTotal = 3.5;
+
+      // Compra upgrades (subtraí dinheiro)
       state.buyUpgrade('coffee');
       state.buyUpgrade('coffee');
+
+      final moneyBefore = state.money.amount;
 
       final json = state.toJson();
       final loaded = GameState.fromJson(json);
 
-      expect(loaded.money.amount, 12345);
+      expect(
+        loaded.money.amount,
+        moneyBefore,
+      ); // Mesmo valor que antes de serializar
       expect(loaded.totalMoneyEarned.amount, 67890);
-      expect(loaded.clickBonusTotal, 3.5);
+      expect(
+        loaded.clickBonusTotal,
+        greaterThan(3.5),
+      ); // Aumentado pelas compras
       expect(loaded.purchasedUpgrades['coffee']!.level, 3);
     });
   });

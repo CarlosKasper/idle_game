@@ -32,50 +32,57 @@ lib/
 ## 🏗️ Arquitetura
 
 ### Money (Classe de Valor)
+
 Encapsula double para operações monetárias com:
-- Operadores matemáticos overloadados (+, -, *, /)
+
+- Operadores matemáticos overloadados (+, -, \*, /)
 - Formatação automática (1000 → 1K)
 - Comparações facilitadas
 
 ### GameState
+
 Estado imutável-like que contém:
+
 - Dinheiro atual e total ganho
 - Nível de carreira
 - Bônus adquiridos (clique, renda/s, multiplicadores)
 - Upgrades comprados e seus níveis
 
 ### GameService (ChangeNotifier)
+
 Gerencia a lógica do jogo:
+
 - `click()` - Processa ganho por clique
 - `updatePassiveIncome()` - Atualiza renda passiva
 - `buyUpgrade()` - Compra e aplica upgrade
 - Integração com SaveService
 
 ### SaveService
+
 Persiste o estado do jogo com JSON serialization.
 
 ## 📊 Economia do Jogo
 
 ### Cargos (Career Levels)
 
-| Cargo | Renda Base | Requer |
-|-------|-----------|--------|
-| Estagiário | $1/clique | $0 |
-| Funcionário | $3/clique | $100 |
-| Analista | $10/clique | $5,000 |
-| Gerente | $50/clique | $100,000 |
-| Diretor | $200/clique | $2,000,000 |
-| CEO | $1,000/clique | $50,000,000 |
+| Cargo       | Renda Base    | Requer      |
+| ----------- | ------------- | ----------- |
+| Estagiário  | $1/clique     | $0          |
+| Funcionário | $3/clique     | $100        |
+| Analista    | $10/clique    | $5,000      |
+| Gerente     | $50/clique    | $100,000    |
+| Diretor     | $200/clique   | $2,000,000  |
+| CEO         | $1,000/clique | $50,000,000 |
 
 ### Upgrades Versão 1
 
-| Nome | Tipo | Efeito | Custo | Infinito |
-|------|------|--------|-------|----------|
-| Café ☕ | Clique | +1 | $10 | ✅ |
-| Notebook 💻 | Clique | +2 | $100 | ✅ |
-| Cadeira 🪑 | Passivo | +0.5/s | $50 | ✅ |
-| Curso 📚 | Multiplicador | +10% | $500 | ❌ |
-| Monitor 🖥️ | Multiplicador | +5% | $200 | ❌ |
+| Nome        | Tipo          | Efeito | Custo | Infinito |
+| ----------- | ------------- | ------ | ----- | -------- |
+| Café ☕     | Clique        | +1     | $10   | ✅       |
+| Notebook 💻 | Clique        | +2     | $100  | ✅       |
+| Cadeira 🪑  | Passivo       | +0.5/s | $50   | ✅       |
+| Curso 📚    | Multiplicador | +10%   | $500  | ❌       |
+| Monitor 🖥️  | Multiplicador | +5%    | $200  | ❌       |
 
 ### Fórmulas Principais
 
@@ -88,12 +95,14 @@ custo_upgrade = base × 1.15^(nível-1)  // Apenas upgrades infinitos
 ## 🎯 Progressão Recomendada (Versão 2-3)
 
 ### Versão 2 (Próxima)
+
 - [ ] Reward Ads: 2x dinheiro por 5 minutos
 - [ ] Sistema offline: Ganho baseado em tempo ausente
 - [ ] Metas/Conquistas
 - [ ] Efeitos visuais melhorados
 
 ### Versão 3 (Prestige)
+
 - [ ] Sistema de Prestige (renúncia com bônus permanente)
 - [ ] Novos upgrades infinitos (Treinamento, Eficiência)
 - [ ] Bônus permanentes desbloqueáveis
@@ -124,10 +133,12 @@ flutter build ios   # iOS
 ## 💾 Persistência
 
 O jogo salva automaticamente após:
+
 - Cada clique
 - Cada compra de upgrade
 
 Dados salvos em SharedPreferences (em JSON):
+
 - Dinheiro e total ganho
 - Nível de carreira
 - Bônus adquiridos

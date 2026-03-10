@@ -3,18 +3,21 @@
 ## ✅ O Que Foi Implementado
 
 ### 1. **Core Game Loop** ✓
+
 - ✅ Sistema de cliques geradores de dinheiro
 - ✅ Cálculo automático de renda por segundo (passiva)
 - ✅ Formatação inteligente de números (1K, 1M, 1B, 1T)
 - ✅ Update loop a 60fps para renda passiva suave
 
 ### 2. **Sistema de Carreira** ✓
+
 - ✅ 6 níveis: Estagiário → CEO
 - ✅ Promoção automática ao atingir renda alvo
 - ✅ Aumento de renda base por nível
 - ✅ Progressão visual clara
 
 ### 3. **Sistema de Upgrades** ✓
+
 - ✅ 5 upgrades funcionais (Café, Notebook, Cadeira, Curso, Monitor)
 - ✅ 3 tipos: Clique (+dinheiro/clique), Passivo (+dinheiro/s), Multiplicador
 - ✅ Upgrades infinitos com custo crescente (1.15x por nível)
@@ -22,12 +25,14 @@
 - ✅ Cálculo dinâmico de custo
 
 ### 4. **Persistência** ✓
+
 - ✅ Salvamento automático com SharedPreferences
 - ✅ Serialização JSON do estado
 - ✅ Carregamento ao iniciar
 - ✅ Suporte a múltiplas saves (pronto para prestige)
 
 ### 5. **UI/UX** ✓
+
 - ✅ Tela principal limpa e responsiva
 - ✅ Gradientes atraentes (Material Design 3)
 - ✅ Animações ao clicar (feedback visual)
@@ -36,6 +41,7 @@
 - ✅ Navegação entre telas
 
 ### 6. **Sistema de Analytics** ✓
+
 - ✅ Rastreamento de cliques
 - ✅ Rastreamento de compras
 - ✅ Rastreamento de promoções
@@ -43,6 +49,7 @@
 - ✅ Estatísticas em tempo real
 
 ### 7. **Arquitetura & Qualidade** ✓
+
 - ✅ Padrão Provider para state management
 - ✅ Separação clara de responsabilidades
 - ✅ Classes imutáveis (models)
@@ -53,24 +60,26 @@
 
 ## 📊 Números do Projeto
 
-| Métrica | Valor |
-|---------|-------|
-| Arquivos Criados | 11 |
-| Linhas de Código | ~2,500 |
-| Testes Unitários | 23 |
-| Upgrades Funcionais | 5 |
-| Níveis de Carreira | 6 |
-| Documentação | 4 arquivos |
-| Telas da UI | 2 (Home + Stats) |
+| Métrica             | Valor            |
+| ------------------- | ---------------- |
+| Arquivos Criados    | 11               |
+| Linhas de Código    | ~2,500           |
+| Testes Unitários    | 23               |
+| Upgrades Funcionais | 5                |
+| Níveis de Carreira  | 6                |
+| Documentação        | 4 arquivos       |
+| Telas da UI         | 2 (Home + Stats) |
 
 ## 🎮 Como Jogar
 
 ### Start
+
 1. Abrir app
 2. Clicar em "TRABALHAR" para ganhar dinheiro
 3. Comprar upgrades para aumentar renda
 
 ### Progressão
+
 - **Renda por clique**: Aumenta com carreira e upgrades de clique
 - **Renda passiva**: Começa quando compra cadeira
 - **Multiplicadores**: Cursos e monitor aumentam tudo em %
@@ -78,11 +87,13 @@
 - **Dinheiro**: Cresce exponencialmente com o tempo
 
 ### Meta
+
 Atingir CEO e acumular $50B+ para estar pronto para Prestige (v3.0)
 
 ## 🚀 Próximas Features (Roadmap)
 
 ### Versão 2.0 (Monetização)
+
 - [ ] Integração AdMob (Reward Ads)
 - [ ] Sistema Offline (ganho enquanto ausente)
 - [ ] Sistema de Metas/Achievements
@@ -90,6 +101,7 @@ Atingir CEO e acumular $50B+ para estar pronto para Prestige (v3.0)
 - [ ] Novo upgrade: "Teclado Gamer"
 
 ### Versão 3.0 (Endgame)
+
 - [ ] Sistema de Prestige (renúncia com bônus)
 - [ ] Novos upgrades infinitos (Treinamento, Eficiência)
 - [ ] Desafios temporários
@@ -97,6 +109,7 @@ Atingir CEO e acumular $50B+ para estar pronto para Prestige (v3.0)
 - [ ] Gráficos de progresso
 
 ### Versão 4.0+ (Futuro)
+
 - [ ] Leaderboard online
 - [ ] Modo competitivo
 - [ ] Trade entre jogadores
@@ -139,24 +152,28 @@ Docs/
 ## 🎯 Destaques Técnicos
 
 ### Money Class
+
 - Operações matemáticas overloadadas
 - Formatting automático (1K, 1M, 1B, T)
 - Comparações facilitadas
 - Zero overflow risk com double
 
 ### GameState
+
 - Cálculo dinâmico de renda (multiplicadores)
 - Promoção automática
 - Serialização completa
 - Suporte a infinitos upgrades
 
 ### GameService
+
 - ChangeNotifier para reatividade
 - Update loop eficiente (500ms)
 - Integração com Save e Analytics
 - Métodos simples e claros
 
 ### UI Components
+
 - Reutilizáveis (GradientButton, InfoCard, etc)
 - Material Design 3
 - Responsivos
@@ -180,6 +197,7 @@ flutter test
 ```
 
 Cobertura de testes:
+
 - ✅ Money (formatting, operações)
 - ✅ Career (promoções automáticas)
 - ✅ Income (cálculos de renda)
@@ -189,17 +207,20 @@ Cobertura de testes:
 ## 🎨 Design & UX
 
 ### Cores
+
 - **Primária**: #1565C0 (Azul corporativo)
 - **Sucesso**: #4CAF50 (Verde)
 - **Destaque**: #FFB300 (Ouro)
 - **Neutro**: Cinzas
 
 ### Tipografia
+
 - Títulos: 24px, bold
 - Corpo: 14px, regular
 - Labels: 12px, gray
 
 ### Layout
+
 - Padding consistente: 16px
 - Radius: 12px (containers), 8px (cards)
 - Sombras: 8px blur, 2px offset
@@ -208,6 +229,7 @@ Cobertura de testes:
 ## 💾 Salvamento
 
 Formato JSON:
+
 ```json
 {
   "money": 15000.0,
@@ -234,6 +256,7 @@ Formato JSON:
 ## 📝 Documentação
 
 Todos os detalhes em:
+
 - `GAMEPLAY.md` - Como funciona
 - `BALANCING.md` - Ajustar números
 - `ADVANCED_BALANCING.md` - Matemática avançada
@@ -245,6 +268,7 @@ Todos os detalhes em:
 ## Status: ✅ VERSÃO 1.0 COMPLETA E FUNCIONAL
 
 Pronto para:
+
 - ✅ Testes internos
 - ✅ Expandir para v2.0
 - ✅ Balanceamento fino

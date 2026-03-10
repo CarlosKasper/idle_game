@@ -5,6 +5,7 @@ Instruções passo-a-passo para publicar o jogo na Google Play e App Store.
 ## 📋 Pré-Requisitos
 
 ### Geral
+
 - [ ] Google Play Developer Account ($25 USD one-time)
 - [ ] Apple Developer Program ($99 USD/year)
 - [ ] Flutter 3.11+ instalado
@@ -13,6 +14,7 @@ Instruções passo-a-passo para publicar o jogo na Google Play e App Store.
 - [ ] Git para versionamento
 
 ### Preparação do Jogo
+
 - [ ] v1.0 testado completamente
 - [ ] Sem crashes ou bugs críticos
 - [ ] Analytics implementado
@@ -36,6 +38,7 @@ Criar em 1024x1024px (PNG):
 ```
 
 Colocar em:
+
 ```
 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 ios/Runner/Assets.xcassets/AppIcon.appiconset/
@@ -44,6 +47,7 @@ ios/Runner/Assets.xcassets/AppIcon.appiconset/
 ### Screenshots
 
 Criar 4-5 screenshots em 1280x720 (portrait):
+
 1. Tela inicial com UI bonita
 2. Carreira progredindo
 3. Upgrades sendo comprados
@@ -63,6 +67,7 @@ keytool -genkey -v -keystore ~/idle_game.jks \
 ```
 
 Será solicitado:
+
 - First and last name: (Seu Nome)
 - Organizational Unit: (Engineering)
 - Organization: (Sua Empresa)
@@ -87,7 +92,7 @@ Modificar `android/app/build.gradle`:
 ```gradle
 android {
     compileSdkVersion 34
-    
+
     signingConfigs {
         release {
             keyAlias System.getenv("KEY_ALIAS") ?: keyProperties['keyAlias']
@@ -96,7 +101,7 @@ android {
             storePassword System.getenv("STORE_PASSWORD") ?: keyProperties['storePassword']
         }
     }
-    
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
@@ -110,7 +115,7 @@ android {
 Em `pubspec.yaml`:
 
 ```yaml
-version: 1.0.0+1  # 1.0.0 = version, +1 = build number
+version: 1.0.0+1 # 1.0.0 = version, +1 = build number
 ```
 
 Em `android/app/build.gradle`:
@@ -195,30 +200,34 @@ Depois publicar via Xcode ou Transporter.
 ### 2. Adicionar Informações
 
 **Store Listing:**
+
 - Título: "Office Idle - Clicker Game"
 - Descrição curta: "Climb the corporate ladder one click at a time!"
 - Descrição completa:
+
   ```
-  Office Idle is a relaxing clicker game where you work your way 
-  up from intern to CEO. Click to earn money, buy upgrades, and 
+  Office Idle is a relaxing clicker game where you work your way
+  up from intern to CEO. Click to earn money, buy upgrades, and
   watch your income grow exponentially!
-  
+
   Features:
   - Click to earn or let passive income do the work
   - 6 career levels from Intern to CEO
   - 5 unique upgrades with synergy
   - Automatic saving
   - Offline rewards (coming in v2!)
-  
+
   Perfect for short gaming sessions or AFK gameplay.
   ```
 
 **Conteúdo do App:**
+
 - Rating: 3+ (ESRB) / 3+ (PEGI)
 - Content rating: Não há conteúdo impróprio
 - Privacidade: Marcar "This app does NOT collect personal data"
 
 **Preço e Distribuição:**
+
 - Tipo: Grátis
 - Países: Selecionar todos (ou específicos)
 - Conteúdo comercial: Marcar "Contains ads" (para v2+ com AdMob)
@@ -243,15 +252,17 @@ Depois publicar via Xcode ou Transporter.
 ### 2. Adicionar Informações
 
 **App Store Metadata:**
+
 - Descrição: (similar ao Google Play)
-- Suporte: 
+- Suporte:
   - URL: (seu site ou GitHub)
   - Email: (seu email)
-- Privacidade: 
+- Privacidade:
   - URL da Privacy Policy
   - Data de Contato
 
 **Classificação:**
+
 - Sem conteúdo de risco
 - Marcar "Does Not Require Kids Category"
 
@@ -268,6 +279,7 @@ Depois publicar via Xcode ou Transporter.
 Criar em [terms.iubenda.com](https://www.iubenda.com):
 
 Pontos importantes:
+
 - Dados coletados: Apenas analytics (playtime, events)
 - Ads: Informar sobre Google AdMob (v2+)
 - Redes sociais: Nenhuma integração
@@ -275,12 +287,14 @@ Pontos importantes:
 - Retenção: Local storage apenas, sem servidor
 
 Salvar em:
+
 - Seu site: `/privacy-policy`
 - E referenciar na Play Store e App Store
 
 ## ✅ Checklist Pré-Lançamento
 
 ### Código
+
 - [ ] Todos os testes passam (`flutter test`)
 - [ ] Sem warnings de análise (`flutter analyze`)
 - [ ] Sem console errors
@@ -288,6 +302,7 @@ Salvar em:
 - [ ] Memory não vaza (teste 1+ hora)
 
 ### UX/Design
+
 - [ ] Todas as screens responsivas
 - [ ] Sem text overflow
 - [ ] Icons visíveis e claros
@@ -295,18 +310,21 @@ Salvar em:
 - [ ] Sem hardcoded strings (i18n ready)
 
 ### Assets
+
 - [ ] Ícone do app em alta res
 - [ ] Screenshots bonitas (4-5)
 - [ ] Feature graphic (1024x500) para Play Store
 - [ ] App Preview video (opcional)
 
 ### Legal
+
 - [ ] Privacy Policy pronto
 - [ ] Terms of Service pronto (se necessário)
 - [ ] Licenças de dependências listadas
 - [ ] Não há conteúdo copyrighted
 
 ### Build
+
 - [ ] Versão incrementada (`version: 1.0.0+1`)
 - [ ] Ícone gerado para Android e iOS
 - [ ] Assinatura do keystore configurada
@@ -316,16 +334,19 @@ Salvar em:
 ## 🚀 Após Publicação
 
 ### Dia 1
+
 - [ ] Monitorar crash reports
 - [ ] Responder reviews negativos
 - [ ] Incrementar downloads manual
 
 ### Semana 1
+
 - [ ] Ajustar balanceamento baseado em analytics
 - [ ] Implementar fixes de bugs reportados
 - [ ] Preparar v1.1 (hotfix)
 
 ### Semana 2-4
+
 - [ ] Começar implementação v2.0
 - [ ] Integrar AdMob
 - [ ] Adicionar mais upgrades
@@ -362,7 +383,8 @@ Reviews: Responder todas
 
 ---
 
-**Estimado**: 
+**Estimado**:
+
 - Preparação: 2-3 dias
 - Build + Test: 1 dia
 - Submissão: 30 minutos

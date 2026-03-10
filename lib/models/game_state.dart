@@ -8,10 +8,7 @@ class PurchasedUpgrade {
   final Upgrade upgrade;
   int level; // quantas vezes foi comprado
 
-  PurchasedUpgrade({
-    required this.upgrade,
-    this.level = 1,
-  });
+  PurchasedUpgrade({required this.upgrade, this.level = 1});
 
   /// Calcula o custo atual baseado no nível
   /// custo = base * 1.15^(nivel-1)
@@ -68,13 +65,15 @@ class GameState {
     return 0;
   }
 
-  /// Tenta fazer upgrade de carreira
+  /// Tenta fazer upgrade de carreira (pode promover múltiplos níveis)
   void checkCareerPromotion() {
-    if (currentCareerLevel >= careerLevels.length - 1) return;
-
-    final nextLevel = careerLevels[currentCareerLevel + 1];
-    if (totalMoneyEarned >= nextLevel.requiredMoney) {
-      currentCareerLevel++;
+    // Verifica todos os níveis para encontrar o máximo alcançável
+    for (int i = 0; i < careerLevels.length; i++) {
+      if (totalMoneyEarned >= careerLevels[i].requiredMoney) {
+        currentCareerLevel = i;
+      } else {
+        break;
+      }
     }
   }
 
@@ -127,36 +126,64 @@ class GameState {
   }
 
   /// Salva o estado (para implementar com shared_preferences)
+  /// Usa Strings para evitar perda de precisão com doubles
+  /// Remove .0 de números inteiros para simplicidade
   Map<String, dynamic> toJson() {
+    final moneyStr = money.amount % 1 == 0
+        ? money.amount.toInt().toString()
+        : money.amount.toString();
+    final totalStr = totalMoneyEarned.amount % 1 == 0
+        ? totalMoneyEarned.amount.toInt().toString()
+        : totalMoneyEarned.amount.toString();
+    final clickStr = clickBonusTotal % 1 == 0
+        ? clickBonusTotal.toInt().toString()
+        : clickBonusTotal.toString();
+    final incomeStr = incomePerSecondTotal % 1 == 0
+        ? incomePerSecondTotal.toInt().toString()
+        : incomePerSecondTotal.toString();
+    final multStr = multiplierTotal % 1 == 0
+        ? multiplierTotal.toInt().toString()
+        : multiplierTotal.toString();
+
     return {
-      'money': money.amount,
-      'totalMoneyEarned': totalMoneyEarned.amount,
+      'money': moneyStr,
+      'totalMoneyEarned': totalStr,
       'currentCareerLevel': currentCareerLevel,
-      'clickBonusTotal': clickBonusTotal,
-      'incomePerSecondTotal': incomePerSecondTotal,
-      'multiplierTotal': multiplierTotal,
+      'clickBonusTotal': clickStr,
+      'incomePerSecondTotal': incomeStr,
+      'multiplierTotal': multStr,
       'purchasedUpgrades': purchasedUpgrades.map(
-        (key, value) => MapEntry(key, {
-          'level': value.level,
-        }),
+        (key, value) => MapEntry(key, {'level': value.level}),
       ),
       'lastSaveTime': lastSaveTime.toIso8601String(),
     };
   }
 
   /// Carrega o estado (para implementar com shared_preferences)
+  /// Converte Strings/doubles de volta para doubles com precisão
+  /// Suporta ambos formatos para backward compatibility
   static GameState fromJson(Map<String, dynamic> json) {
     final state = GameState();
-    state.money = Money(json['money'] as double? ?? 0);
-    state.totalMoneyEarned =
-        Money(json['totalMoneyEarned'] as double? ?? 0);
+
+    // Helper para converter double ou string para double
+    double parseDoubleValue(dynamic value) {
+      if (value == null) return 0;
+      if (value is String) return double.parse(value);
+      if (value is int) return value.toDouble();
+      if (value is double) return value;
+      return 0;
+    }
+
+    state.money = Money(parseDoubleValue(json['money']));
+    state.totalMoneyEarned = Money(parseDoubleValue(json['totalMoneyEarned']));
     state.currentCareerLevel = json['currentCareerLevel'] as int? ?? 0;
-    state.clickBonusTotal = json['clickBonusTotal'] as double? ?? 0;
-    state.incomePerSecondTotal =
-        json['incomePerSecondTotal'] as double? ?? 0;
-    state.multiplierTotal = json['multiplierTotal'] as double? ?? 1.0;
-    state.lastSaveTime =
-        DateTime.parse(json['lastSaveTime'] as String? ?? DateTime.now().toIso8601String());
+    state.clickBonusTotal = parseDoubleValue(json['clickBonusTotal']);
+    state.incomePerSecondTotal = parseDoubleValue(json['incomePerSecondTotal']);
+    final mult = parseDoubleValue(json['multiplierTotal']);
+    state.multiplierTotal = mult > 0 ? mult : 1.0;
+    state.lastSaveTime = DateTime.parse(
+      json['lastSaveTime'] as String? ?? DateTime.now().toIso8601String(),
+    );
 
     state.initializePurchasedUpgrades();
 

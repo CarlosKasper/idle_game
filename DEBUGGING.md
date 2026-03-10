@@ -6,7 +6,8 @@ Guia para diagnosticar e corrigir problemas durante desenvolvimento.
 
 ### O app não compila
 
-#### Erro: "The operator '*' can't be unconditionally invoked because the receiver can be 'null'"
+#### Erro: "The operator '\*' can't be unconditionally invoked because the receiver can be 'null'"
+
 ```dart
 // ❌ Errado
 Money result = money * 2;
@@ -16,12 +17,14 @@ Money result = money! * 2;
 ```
 
 #### Erro: "Undefined name 'careerLevels'"
+
 ```dart
 // Solução: Importar
 import '../models/career.dart';
 ```
 
 #### Erro: "Type 'GameState' expected a type argument"
+
 ```dart
 // ❌ Errado
 var state = GameState();
@@ -35,6 +38,7 @@ GameState state = GameState();
 ### O app compila mas não funciona
 
 #### Jogo trava ao clicar
+
 ```dart
 // Possível causa: GameService não está fornecido
 // Solução: Verificar main.dart
@@ -47,6 +51,7 @@ ChangeNotifierProvider(
 ```
 
 #### "Null check operator used on a null value"
+
 ```dart
 // Causa: GameService ainda não inicializou
 // Solução: Verificar isInitialized
@@ -57,6 +62,7 @@ if (!gameService.isInitialized) {
 ```
 
 #### Dinheiro não atualiza na tela
+
 ```dart
 // Causa: Consumer não está monitorando mudanças
 // Solução: Garantir que GameService chama notifyListeners()
@@ -70,6 +76,7 @@ void click() {
 ### Números parecem errados
 
 #### Primeira promoção demora muito
+
 ```dart
 // Causa: Requisito de carreira muito alto
 // Solução: Editar em game_constants.dart
@@ -78,6 +85,7 @@ static const careerFuncionario = 50.0;  // Reduzir de 100
 ```
 
 #### Upgrade muito barato/caro
+
 ```dart
 // Causa: Custo base inadequado
 // Solução: Ajustar em upgrade.dart
@@ -90,6 +98,7 @@ Upgrade(
 ```
 
 #### Multiplicadores não funcionam
+
 ```dart
 // Causa: Multiplicador não é aplicado no getClickIncome()
 // Solução: Verificar em game_state.dart
@@ -122,15 +131,15 @@ Em `lib/models/game_state.dart`:
 void buyUpgrade(String upgradeId) {
   final purchased = purchasedUpgrades[upgradeId];
   final cost = purchased.getCurrentCost();
-  
+
   print('[DEBUG] Attempting to buy $upgradeId');
   print('[DEBUG] Cost: ${cost.amount}, Have: ${money.amount}');
-  
+
   if (money < cost) {
     print('[DEBUG] Can\'t afford!');
     return false;
   }
-  
+
   print('[DEBUG] Purchase successful!');
   // ... resto do código
 }
@@ -146,6 +155,7 @@ flutter run -d <device> --devtools
 ```
 
 Em DevTools:
+
 - **Timeline**: Ver performance
 - **Memory**: Verificar memory leaks
 - **Logging**: Ver todos os prints
@@ -163,6 +173,7 @@ Future<void> debugPrintSaveFile() async {
 ```
 
 Chamar em algum lugar:
+
 ```dart
 // Em home_screen.dart onPress de button de debug
 onPressed: () async {
@@ -199,12 +210,12 @@ void click() {
   _clickStopwatch.start();
   state.earnMoneyFromClick();
   _clickStopwatch.stop();
-  
+
   if (_clickStopwatch.elapsedMilliseconds > 10) {
     print('[PERF] Click took ${_clickStopwatch.elapsedMilliseconds}ms - TOO SLOW!');
   }
   _clickStopwatch.reset();
-  
+
   notifyListeners();
 }
 ```
@@ -226,13 +237,13 @@ Future<GameState> loadGame() async {
   try {
     final jsonString = _prefs.getString(_saveKey);
     if (jsonString == null) return GameState();
-    
+
     final json = jsonDecode(jsonString) as Map<String, dynamic>;
     return GameState.fromJson(json);
   } catch (e, st) {
     print('[ERROR] Load failed: $e');
     print('[ERROR] Stack trace: $st');
-    
+
     // Recuperar com reset
     await _prefs.remove(_saveKey);
     return GameState();
@@ -246,6 +257,7 @@ Future<GameState> loadGame() async {
 
 1. **Reproduzir**: Jogar por 5 minutos
 2. **Coletar dados**:
+
    ```bash
    # Ver quanto dinheiro após 5 min
    flutter run
@@ -263,12 +275,13 @@ Future<GameState> loadGame() async {
 
 ### Problema: "O jogo trava intermitentemente"
 
-1. **Identificar quando**: 
+1. **Identificar quando**:
    - Após clique?
    - Após compra?
    - Após 10 min?
 
 2. **Coletar logs**:
+
    ```bash
    flutter run 2>&1 | tee debug.log
    # Reproduzir problema
@@ -285,6 +298,7 @@ Future<GameState> loadGame() async {
 ### Problema: "Save não funciona"
 
 1. **Testar manually**:
+
    ```dart
    // Em home_screen.dart, adicionar botão debug
    FloatingActionButton(
@@ -297,6 +311,7 @@ Future<GameState> loadGame() async {
    ```
 
 2. **Verificar arquivo**:
+
    ```bash
    # Em Android emulator
    adb shell "sqlite3 /data/data/com.seu_app/shared_prefs/GameState.xml"
@@ -377,11 +392,13 @@ flutter upgrade
 ## 📞 Recursos
 
 ### Documentação Oficial
+
 - [Flutter Docs](https://flutter.dev/docs)
 - [Dart Docs](https://dart.dev/guides)
 - [Provider Package](https://pub.dev/packages/provider)
 
 ### Community
+
 - [Flutter Discord](https://discord.gg/flutter)
 - [Reddit r/Flutter](https://reddit.com/r/Flutter)
 - [Stack Overflow tagged Flutter](https://stackoverflow.com/questions/tagged/flutter)

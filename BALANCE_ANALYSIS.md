@@ -5,24 +5,28 @@ Esse documento baseia-se em análise de games vencedores como Cookie Clicker, Cl
 ## 📊 Comparativa: Nosso Game vs. Market Leaders
 
 ### Cookie Clicker (Baseline)
+
 - Primeiro upgrade em 15 cliques
 - Custo exponencial: 1.15x por nível ✓ (usamos igual)
 - Prestige em ~1-2 horas
 - Multiplicadores fortes: +10%, +20%, até +100%
 
 ### Clicker Heroes
+
 - 10 heróis, cada um com upgrade infinito
 - Autoclicker após 1 minuto
 - Prestige a cada 30min-1h
 - Progression muito rápida (explosiva)
 
 ### AdCap (Mobile)
+
 - Foco em reward ads
 - Monetização principal via ads 2x
 - Offline ganho limitado (2h max)
 - Prestige com pequeno bônus
 
 ### Nós (Office Idle v1.0)
+
 - 5 upgrades simples
 - Clique manual (por enquanto)
 - Passivo significativo desde cedo
@@ -31,6 +35,7 @@ Esse documento baseia-se em análise de games vencedores como Cookie Clicker, Cl
 ## 🎯 Análise de Nossos Números
 
 ### Early Game (0-5 minutos)
+
 ```
 Sequência esperada:
 1. 0:00 - Iniciar com $0
@@ -50,6 +55,7 @@ Sequência esperada:
 **Solução**: Aumentar custo de Funcionário para $500 (era $100)
 
 ### Mid Game (5-30 minutos)
+
 ```
 6. 5:00 - $50k, compra Cadeira ($50) para +0.5/s
 7. 10:00 - $500k, compra Curso ($500) para +10%
@@ -61,12 +67,14 @@ Sequência esperada:
 **Verdict**: Exponencial mas viciante
 
 **Análise**: À marca de 30 minutos, deve estar no nível de Analista ou Gerente
+
 - Esperado: Analista ($10k renda)
 - Atual: Provavelmente Gerente ($50k renda)
 
 **Possível ajuste**: Aumentar Analista para $50k (era $5k)
 
 ### Late Game (30min+)
+
 ```
 Sem limite claro, números explodem
 Prestige ainda não implementado
@@ -107,6 +115,7 @@ Carreira 6    50M      N/A      N/A
 ## 🔄 Sugestões de Rebalanceamento
 
 ### Opção A: "Casual" (Mais rápido)
+
 Para jogadores que querem progressão rápida
 
 ```
@@ -125,6 +134,7 @@ upgradeNotebookBonus = 3   // era 2
 **Resultado**: Primeira promoção em 2-3 min, CEO em 30 min
 
 ### Opção B: "Balanced" (Recomendado)
+
 O meio termo - similar a Cookie Clicker
 
 ```
@@ -150,6 +160,7 @@ upgradePassiveBonus = 1.0  // era 0.5
 **Resultado**: Primeira promoção em 10 min, CEO em 1-2 horas
 
 ### Opção C: "Hardcore" (Mais desafiador)
+
 Para jogadores que querem que dure
 
 ```
@@ -211,18 +222,21 @@ Com Analytics (v2.0), rastrear:
 ## 🎯 Próximas Ações
 
 ### Imediato (Antes de v2.0)
+
 1. [ ] Decidir entre Opção A, B ou C
 2. [ ] Implementar mudanças em constants.dart
 3. [ ] Testar por 2-3 horas
 4. [ ] Rebalancear se necessário
 
 ### v2.0 (Com Offline + Ads)
+
 1. [ ] Sistema offline pode quebrar balanceamento
 2. [ ] Ads tornam progressão muito rápida
 3. [ ] Pode precisar aumentar custos 50% mais
 4. [ ] Testar com offline de 8 horas
 
 ### v3.0 (Com Prestige)
+
 1. [ ] Prestige deve viabilizar runs repetidas
 2. [ ] Cada run ~50% mais rápida que anterior
 3. [ ] Mínimo 2-3 runs deve ser satisfatório
@@ -231,6 +245,7 @@ Com Analytics (v2.0), rastrear:
 ## 📚 Referências
 
 Estudos sobre game design:
+
 - GDC Talk: "Lazy Game Design" (sobre idle games)
 - "Progress is the Best Reward" - Jane McGonigal
 - Cookie Clicker: Orteil's notes on balance
