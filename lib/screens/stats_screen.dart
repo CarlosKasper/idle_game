@@ -108,14 +108,13 @@ class StatsScreen extends StatelessWidget {
               children: [
                 Text(
                   'Tempo jogando',
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: isDark ? Colors.grey[400] : Colors.grey,
                   ),
                 ),
                 Text(
                   '${minutes}m ${seconds}s',
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: primaryColor,
                   ),
@@ -422,8 +421,7 @@ class StatsScreen extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: isDark ? Colors.grey[400] : Colors.grey[700],
               ),
             ),
@@ -431,8 +429,7 @@ class StatsScreen extends StatelessWidget {
         ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: primaryColor,
           ),

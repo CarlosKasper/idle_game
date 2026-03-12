@@ -5,6 +5,8 @@ import '../models/career.dart';
 import '../widgets/ui_components.dart';
 import 'stats_screen.dart';
 import 'settings_screen.dart';
+import 'career_upgrades_screen.dart';
+import 'notebook_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(ThemeMode)? onThemeChanged;
@@ -16,10 +18,96 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+  late PageController _pageController;
+
   @override
   void initState() {
     super.initState();
-    // Inicia update loop para renda passiva
+    _pageController = PageController(initialPage: _selectedIndex);
+    _startUpdateLoop();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startUpdateLoop() {
+    Future.delayed(const Duration(milliseconds: 16), () {
+      if (mounted) {
+        context.read<GameService>().updatePassiveIncome();
+        _startUpdateLoop();
+      }
+    });
+  }
+
+  void _onNavItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              children: [
+                // Página 0: Home
+                _HomeContent(onThemeChanged: widget.onThemeChanged),
+                // Página 1: Notebook
+                const NotebookScreen(),
+                // Página 2: Career
+                const CareerUpgradesScreen(),
+                // Página 3: Stats
+                const StatsScreen(),
+                // Página 4: Settings
+                SettingsScreen(
+                  currentTheme: ThemeMode.system,
+                  onThemeChanged: widget.onThemeChanged ?? (_) {},
+                ),
+              ],
+            ),
+          ),
+          BottomNavigationMenu(
+            selectedIndex: _selectedIndex,
+            onItemTapped: _onNavItemTapped,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeContent extends StatefulWidget {
+  final Function(ThemeMode)? onThemeChanged;
+
+  const _HomeContent({this.onThemeChanged});
+
+  @override
+  State<_HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<_HomeContent> {
+  @override
+  void initState() {
+    super.initState();
     _startUpdateLoop();
   }
 
@@ -53,33 +141,34 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.bar_chart),
-            tooltip: 'Estatísticas',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const StatsScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Configurações',
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SettingsScreen(
-                    currentTheme: ThemeMode.system,
-                    onThemeChanged: widget.onThemeChanged ?? (_) {},
+          Selector<GameService, int>(
+            selector: (context, gameService) => gameService.isInitialized
+                ? gameService.state.currentCareerLevel
+                : 0,
+            builder: (context, careerLevel, child) {
+              final career = careerLevels[careerLevel];
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        career.title,
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        'Nv ${careerLevel + 1}',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelSmall?.copyWith(color: Colors.grey),
+                      ),
+                    ],
                   ),
                 ),
               );
-              // Se voltou com 'reset', reseta o jogo
-              if (result == 'reset' && mounted) {
-                await context.read<GameService>().resetGame();
-              }
             },
           ),
         ],
@@ -117,13 +206,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).colorScheme.primary;
 
-    // Map emojis based on career title
     final careerEmojis = {
-      'Estagiário': '📚',
+      'Estagiário': '��',
       'Funcionário': '👔',
       'Analista': '📊',
       'Gerente': '👨‍💼',
-      'Diretor': '🎯',
+      'Diretor': '��',
       'CEO': '👑',
     };
 
@@ -185,26 +273,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: isDark ? Colors.grey[400] : Colors.grey[600],
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '💰 Ganho: ${gameService.state.getClickIncome().format()} por clique',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: primaryColor,
-                  ),
                 ),
               ),
             ],
@@ -228,6 +296,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildWorkButton(BuildContext context, GameService gameService) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SizedBox(
@@ -240,19 +310,43 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+                  color: primaryColor.withOpacity(0.35),
+                  blurRadius: 24,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
-            child: GradientButton(
-              label: '💼 TRABALHAR',
-              onPressed: () {
-                gameService.click();
-              },
-              fontSize: 28,
-              padding: const EdgeInsets.symmetric(vertical: 56, horizontal: 80),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [primaryColor, primaryColor.withOpacity(0.85)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 36,
+                  horizontal: 32,
+                ),
+                child: Column(
+                  children: [
+                    const Text('💼', style: TextStyle(fontSize: 40)),
+                    const SizedBox(height: 8),
+                    Text(
+                      'TRABALHAR',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -302,8 +396,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(width: 12),
                   Text(
                     'Ganhos e Multiplicadores',
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: primaryColor,
                     ),
@@ -349,8 +442,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 12),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: isDark ? Colors.grey[400] : Colors.grey[700],
               ),
             ),
@@ -358,8 +450,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
           ),
@@ -414,60 +505,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: gameService.state.purchasedUpgrades.length,
-              itemBuilder: (context, index) {
-                final upgradeId = gameService.state.purchasedUpgrades.keys
-                    .toList()[index];
-                final purchased =
-                    gameService.state.purchasedUpgrades[upgradeId]!;
-                final cost = purchased.getCurrentCost();
-                final canAfford = gameService.state.money >= cost;
-
-                return _buildUpgradeCard(
-                  context,
-                  gameService,
-                  purchased,
-                  cost,
-                  canAfford,
-                );
-              },
-            ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildUpgradeCard(
-    BuildContext context,
-    GameService gameService,
-    dynamic purchased,
-    dynamic cost,
-    bool canAfford,
-  ) {
-    final upgrade = purchased.upgrade;
-    final level = purchased.level;
-
-    return UpgradeCard(
-      emoji: upgrade.emoji,
-      title: upgrade.name,
-      description: upgrade.description,
-      level: upgrade.isInfinite ? 'Nível $level' : null,
-      cost: cost.format(),
-      onBuy: canAfford
-          ? () {
-              gameService.buyUpgrade(upgrade.id);
-            }
-          : () {},
-      onMaxBuy: canAfford
-          ? () {
-              gameService.buyMaxUpgrades();
-            }
-          : null,
-      canAfford: canAfford,
     );
   }
 }

@@ -24,6 +24,7 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
+    fontFamily: 'Roboto',
     colorScheme: ColorScheme.fromSeed(
       seedColor: _lightPrimary,
       brightness: Brightness.light,
@@ -35,6 +36,83 @@ class AppTheme {
       surface: _lightSurface,
       onBackground: _lightOnBackground,
       onSurface: _lightOnBackground,
+    ),
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.5,
+      ),
+      displayMedium: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.4,
+      ),
+      displaySmall: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.3,
+      ),
+      headlineLarge: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.3,
+      ),
+      headlineMedium: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      ),
+      headlineSmall: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      ),
+      titleLarge: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.1,
+      ),
+      titleMedium: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.1,
+      ),
+      titleSmall: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.1,
+      ),
+      bodyLarge: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0.5,
+      ),
+      bodyMedium: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0.25,
+      ),
+      bodySmall: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0.4,
+      ),
+      labelLarge: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 1.25,
+      ),
+      labelMedium: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 1.5,
+      ),
+      labelSmall: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 1.5,
+      ),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: _lightPrimary,
@@ -72,6 +150,7 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
+    fontFamily: 'Roboto',
     colorScheme: ColorScheme.fromSeed(
       seedColor: _darkPrimary,
       brightness: Brightness.dark,
@@ -83,6 +162,83 @@ class AppTheme {
       surface: _darkSurface,
       onBackground: _darkOnBackground,
       onSurface: _darkOnBackground,
+    ),
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.5,
+      ),
+      displayMedium: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.4,
+      ),
+      displaySmall: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.3,
+      ),
+      headlineLarge: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.3,
+      ),
+      headlineMedium: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      ),
+      headlineSmall: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      ),
+      titleLarge: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.1,
+      ),
+      titleMedium: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.1,
+      ),
+      titleSmall: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.1,
+      ),
+      bodyLarge: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0.5,
+      ),
+      bodyMedium: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0.25,
+      ),
+      bodySmall: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0.4,
+      ),
+      labelLarge: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 1.25,
+      ),
+      labelMedium: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 1.5,
+      ),
+      labelSmall: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 1.5,
+      ),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: _darkSurface,

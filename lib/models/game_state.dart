@@ -2,13 +2,19 @@ import 'dart:math' as Math;
 import 'money.dart';
 import 'upgrade.dart';
 import 'career.dart';
+import 'career_upgrade.dart';
 
 /// Estado de um upgrade comprado
 class PurchasedUpgrade {
   final Upgrade upgrade;
   int level; // quantas vezes foi comprado
+  bool purchased; // flag para upgrades non-infinite
 
-  PurchasedUpgrade({required this.upgrade, this.level = 1});
+  PurchasedUpgrade({
+    required this.upgrade,
+    this.level = 1,
+    this.purchased = false,
+  });
 
   /// Calcula o custo atual baseado no nível
   /// custo = base * 1.15^(nivel-1)
@@ -24,6 +30,9 @@ class GameState {
   Money totalMoneyEarned = Money(0); // para progressão de carreira
   int currentCareerLevel = 0;
 
+  // Notebook evolution
+  int notebookLevel = 0; // 0 a 9 (índice na lista de 10 evoluções)
+
   // Bônus adquiridos
   double clickBonusTotal = 0; // bônus extra por clique
   double incomePerSecondTotal = 0; // bônus extra por segundo
@@ -31,6 +40,7 @@ class GameState {
 
   // Upgrades comprados
   Map<String, PurchasedUpgrade> purchasedUpgrades = {};
+  Map<String, PurchasedUpgrade> purchasedCareerUpgrades = {};
 
   DateTime lastSaveTime = DateTime.now();
 
@@ -39,6 +49,26 @@ class GameState {
     for (var upgrade in availableUpgrades) {
       if (!purchasedUpgrades.containsKey(upgrade.id)) {
         purchasedUpgrades[upgrade.id] = PurchasedUpgrade(upgrade: upgrade);
+      }
+    }
+  }
+
+  /// Inicializa os upgrades de carreira (do save ou zero)
+  void initializeCareerUpgrades() {
+    for (var upgrade in careerUpgrades) {
+      if (!purchasedCareerUpgrades.containsKey(upgrade.id)) {
+        purchasedCareerUpgrades[upgrade.id] = PurchasedUpgrade(
+          upgrade: Upgrade(
+            id: upgrade.id,
+            name: upgrade.name,
+            description: upgrade.description,
+            emoji: upgrade.emoji,
+            type: upgrade.type,
+            baseCost: upgrade.baseCost,
+            value: upgrade.value,
+            isInfinite: true,
+          ),
+        );
       }
     }
   }
@@ -82,6 +112,11 @@ class GameState {
     final purchased = purchasedUpgrades[upgradeId];
     if (purchased == null) return false;
 
+    // Se não é infinito e já foi comprado, não pode comprar novamente
+    if (!purchased.upgrade.isInfinite && purchased.purchased) {
+      return false;
+    }
+
     final cost = purchased.getCurrentCost();
     if (money < cost) return false;
 
@@ -103,6 +138,11 @@ class GameState {
     // Aumenta o level do upgrade
     if (purchased.upgrade.isInfinite) {
       purchased.level++;
+    }
+
+    // Se não é infinito, marca como comprado
+    if (!purchased.upgrade.isInfinite) {
+      purchased.purchased = true;
     }
 
     return true;

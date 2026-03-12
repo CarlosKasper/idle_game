@@ -43,8 +43,7 @@ class GradientButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: fontSize,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: enabled ? Colors.white : Colors.grey[600],
           ),
@@ -91,9 +90,7 @@ class InfoCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: Theme.of(context).colorScheme.onBackground,
             ),
           ),
@@ -107,15 +104,13 @@ class InfoCard extends StatelessWidget {
                 children: [
                   Text(
                     e.value.label,
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: isDark ? Colors.grey[400] : Colors.grey,
                     ),
                   ),
                   Text(
                     e.value.value,
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -153,7 +148,7 @@ class MoneyDisplay extends StatelessWidget {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Container(
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -162,7 +157,7 @@ class MoneyDisplay extends StatelessWidget {
               ? [primaryColor, primaryColor.withOpacity(0.7)]
               : [const Color(0xFF1565C0), const Color(0xFF0D47A1)],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: primaryColor.withOpacity(isDark ? 0.2 : 0.3),
@@ -176,16 +171,16 @@ class MoneyDisplay extends StatelessWidget {
           Text(
             subtitle,
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 13,
               color: Colors.white70,
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             '\$$amount',
             style: const TextStyle(
-              fontSize: 60,
+              fontSize: 42,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -255,24 +250,21 @@ class UpgradeCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: onSurfaceColor,
                   ),
                 ),
                 Text(
                   description,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: isDark ? Colors.grey[400] : Colors.grey,
                   ),
                 ),
                 if (level != null)
                   Text(
                     level!,
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: primaryColor,
                       fontWeight: FontWeight.bold,
                     ),
@@ -302,12 +294,11 @@ class UpgradeCard extends StatelessWidget {
                       ),
                       child: Text(
                         'Comprar',
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: canAfford
                               ? Colors.white
                               : (isDark ? Colors.grey[400] : Colors.grey[600]),
                           fontWeight: FontWeight.bold,
-                          fontSize: 11,
                         ),
                       ),
                     ),
@@ -330,15 +321,15 @@ class UpgradeCard extends StatelessWidget {
                         ),
                         child: Text(
                           'MAX',
-                          style: TextStyle(
-                            color: canAfford
-                                ? Colors.white
-                                : (isDark
-                                      ? Colors.grey[400]
-                                      : Colors.grey[600]),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
-                          ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: canAfford
+                                    ? Colors.white
+                                    : (isDark
+                                          ? Colors.grey[400]
+                                          : Colors.grey[600]),
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                       ),
                     ),
@@ -347,8 +338,7 @@ class UpgradeCard extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 '\$$cost',
-                style: TextStyle(
-                  fontSize: 12,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: onSurfaceColor,
                 ),
@@ -356,6 +346,124 @@ class UpgradeCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Widget de navegação inferior reutilizável
+class BottomNavigationMenu extends StatelessWidget {
+  final int selectedIndex;
+  final Function(int) onItemTapped;
+
+  const BottomNavigationMenu({
+    super.key,
+    required this.selectedIndex,
+    required this.onItemTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Colors.grey.withOpacity(0.15), width: 1),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildNavItem(
+            context: context,
+            icon: Icons.home,
+            label: 'Início',
+            isSelected: selectedIndex == 0,
+            onTap: () => onItemTapped(0),
+          ),
+          _buildNavItem(
+            context: context,
+            icon: Icons.laptop,
+            label: 'Notebook',
+            isSelected: selectedIndex == 1,
+            onTap: () => onItemTapped(1),
+          ),
+          _buildNavItem(
+            context: context,
+            icon: Icons.emoji_events,
+            label: 'Carreira',
+            isSelected: selectedIndex == 2,
+            onTap: () => onItemTapped(2),
+          ),
+          _buildNavItem(
+            context: context,
+            icon: Icons.bar_chart,
+            label: 'Estatísticas',
+            isSelected: selectedIndex == 3,
+            onTap: () => onItemTapped(3),
+          ),
+          _buildNavItem(
+            context: context,
+            icon: Icons.settings,
+            label: 'Configurações',
+            isSelected: selectedIndex == 4,
+            onTap: () => onItemTapped(4),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedOpacity(
+          opacity: isSelected ? 1.0 : 0.6,
+          duration: const Duration(milliseconds: 200),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? primaryColor.withOpacity(0.1)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  color: isSelected
+                      ? primaryColor
+                      : (isDark ? Colors.grey[500] : Colors.grey[600]),
+                  size: 24,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    color: isSelected
+                        ? primaryColor
+                        : (isDark ? Colors.grey[500] : Colors.grey[600]),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

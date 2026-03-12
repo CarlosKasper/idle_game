@@ -87,10 +87,10 @@ void main() {
     });
 
     test('cannot promote beyond CEO', () {
-      state.currentCareerLevel = 5;
-      state.totalMoneyEarned = Money(1000000000);
+      state.currentCareerLevel = 10;
+      state.totalMoneyEarned = Money(100000000000);
       state.checkCareerPromotion();
-      expect(state.currentCareerLevel, 5); // Still CEO
+      expect(state.currentCareerLevel, 10); // Still CEO (highest level)
     });
   });
 
@@ -175,10 +175,16 @@ void main() {
       expect(income.amount, 0.5);
     });
 
-    test('multiplier upgrade increases multiplier', () {
+    test('multiplier upgrade can be bought once', () {
       state.money = Money(1000);
-      state.buyUpgrade('course'); // +10%
-      expect(state.multiplierTotal, 1.1);
+      final success = state.buyUpgrade('course'); // +10%
+      expect(success, true);
+      expect(state.multiplierTotal, 1.1); // Aumentou 10%
+
+      // Tentar comprar novamente deve falhar
+      final successAgain = state.buyUpgrade('course');
+      expect(successAgain, false); // Não pode comprar novamente
+      expect(state.multiplierTotal, 1.1); // Continua 1.1
     });
 
     test('infinite upgrades increase in level', () {
@@ -204,7 +210,7 @@ void main() {
 
       // Tentar comprar novamente
       final success = state.buyUpgrade('course');
-      expect(success, true); // Compra mas sem mudança de level
+      expect(success, false); // Falha na segunda compra
       expect(state.purchasedUpgrades['course']!.level, 1); // Level não muda
     });
   });
