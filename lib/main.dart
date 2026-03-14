@@ -18,6 +18,15 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   ThemeMode _themeMode =
       ThemeMode.system; // Sistema define tema automaticamente
+  late GameService _gameService;
+  late Future<void> _initializationFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _gameService = GameService();
+    _initializationFuture = _gameService.initialize();
+  }
 
   void _setThemeMode(ThemeMode mode) {
     setState(() {
@@ -27,15 +36,46 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => GameService()..initialize(),
-      child: MaterialApp(
-        title: 'Office Idle',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: _themeMode,
-        home: HomeScreen(onThemeChanged: _setThemeMode),
-      ),
+    return FutureBuilder<void>(
+      future: _initializationFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return MaterialApp(
+            title: 'Office Idle',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: _themeMode,
+            home: Scaffold(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              body: const Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return MaterialApp(
+            title: 'Office Idle',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: _themeMode,
+            home: Scaffold(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              body: Center(child: Text('Erro ao carregar: ${snapshot.error}')),
+            ),
+          );
+        }
+
+        return ChangeNotifierProvider.value(
+          value: _gameService,
+          child: MaterialApp(
+            title: 'Office Idle',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: _themeMode,
+            home: HomeScreen(onThemeChanged: _setThemeMode),
+          ),
+        );
+      },
     );
   }
 }

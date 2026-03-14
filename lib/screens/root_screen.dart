@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:idle_game/models/career.dart';
 import 'package:provider/provider.dart';
 import '../services/game_service.dart';
 import '../widgets/ui_components.dart';
-import 'home_screen.dart';
 import 'notebook_screen.dart';
 import 'career_upgrades_screen.dart';
 import 'stats_screen.dart';
@@ -182,8 +182,6 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 const SizedBox(height: 28),
                 _buildIncomeInfo(context, gameService),
                 const SizedBox(height: 28),
-                _buildUpgradesSection(context, gameService),
-                const SizedBox(height: 24),
               ],
             ),
           );
@@ -447,74 +445,6 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildUpgradesSection(BuildContext context, GameService gameService) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: SizedBox(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    primaryColor.withOpacity(0.15),
-                    primaryColor.withOpacity(0.05),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: primaryColor.withOpacity(0.2)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text('⭐', style: TextStyle(fontSize: 18)),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Upgrades & Melhorias',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...gameService.getAvailableUpgrades().take(3).map((upgrade) {
-              final canAfford = gameService.canBuyUpgrade(upgrade.id);
-              final cost = gameService.state.getNextUpgradeCost(upgrade.id);
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: UpgradeCard(
-                  upgrade: upgrade,
-                  cost: cost,
-                  canBuy: canAfford,
-                  onBuy: () => gameService.buyUpgrade(upgrade.id),
-                  level: gameService.state.purchasedUpgrades[upgrade.id]?.level
-                      .toString(),
-                ),
-              );
-            }),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
     );
   }
 }

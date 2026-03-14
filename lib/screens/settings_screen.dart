@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/game_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   final ThemeMode currentTheme;
@@ -236,10 +238,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(dialogContext);
-              // Reset será implementado no HomeScreen
-              Navigator.pop(context, 'reset');
+              // Chamar resetGame do GameService
+              await context.read<GameService>().resetGame();
+              // Voltar para a home
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Resetar'),

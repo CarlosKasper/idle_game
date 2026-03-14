@@ -191,8 +191,6 @@ class _HomeContentState extends State<_HomeContent> {
                 const SizedBox(height: 28),
                 _buildIncomeInfo(context, gameService),
                 const SizedBox(height: 28),
-                _buildUpgradesSection(context, gameService),
-                const SizedBox(height: 24),
               ],
             ),
           );
@@ -207,11 +205,11 @@ class _HomeContentState extends State<_HomeContent> {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     final careerEmojis = {
-      'Estagiário': '��',
+      'Estagiário': '👨‍🎓',
       'Funcionário': '👔',
       'Analista': '📊',
       'Gerente': '👨‍💼',
-      'Diretor': '��',
+      'Diretor': '🎩',
       'CEO': '👑',
     };
 
@@ -456,58 +454,6 @@ class _HomeContentState extends State<_HomeContent> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildUpgradesSection(BuildContext context, GameService gameService) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: SizedBox(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    primaryColor.withOpacity(0.15),
-                    primaryColor.withOpacity(0.05),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: primaryColor.withOpacity(0.2)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text('⭐', style: TextStyle(fontSize: 18)),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Upgrades & Melhorias',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
     );
   }
 }
