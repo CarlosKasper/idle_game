@@ -11,6 +11,8 @@ class CareerUpgrade {
   final Money baseCost;
   final double value; // valor do bônus
   final int unlocksAtCareerLevel; // Em qual nível de carreira desbloqueia
+  final bool
+  isInfinite; // se pode ser comprado múltiplas vezes (padrão: false para multiplicadores)
 
   const CareerUpgrade({
     required this.id,
@@ -21,6 +23,7 @@ class CareerUpgrade {
     required this.baseCost,
     required this.value,
     required this.unlocksAtCareerLevel,
+    this.isInfinite = false,
   });
 }
 
@@ -30,22 +33,24 @@ final careerUpgrades = [
   CareerUpgrade(
     id: 'course',
     name: 'Curso Online 📚',
-    description: '+5 dinheiro por clique',
+    description: '+1 dinheiro por clique',
     emoji: '📚',
     type: UpgradeType.clickBonus,
     baseCost: Money(50),
-    value: 5,
+    value: 1,
     unlocksAtCareerLevel: 0,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'monitor',
     name: 'Monitor Extra 🖥️',
-    description: '+2 dinheiro por segundo',
+    description: '+1 dinheiro por segundo',
     emoji: '🖥️',
     type: UpgradeType.incomeBonus,
     baseCost: Money(100),
-    value: 2,
+    value: 1,
     unlocksAtCareerLevel: 0,
+    isInfinite: true,
   ),
 
   // Junior (Level 1)
@@ -58,6 +63,7 @@ final careerUpgrades = [
     baseCost: Money(300),
     value: 2,
     unlocksAtCareerLevel: 1,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'desk_lamp',
@@ -68,6 +74,7 @@ final careerUpgrades = [
     baseCost: Money(400),
     value: 1,
     unlocksAtCareerLevel: 1,
+    isInfinite: true,
   ),
 
   // Pleno (Level 2)
@@ -80,6 +87,7 @@ final careerUpgrades = [
     baseCost: Money(500),
     value: 2,
     unlocksAtCareerLevel: 2,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'productivity_app',
@@ -87,9 +95,10 @@ final careerUpgrades = [
     description: '+10% renda',
     emoji: '📱',
     type: UpgradeType.multiplier,
-    baseCost: Money(1000),
+    baseCost: Money(50000),
     value: 0.10,
     unlocksAtCareerLevel: 2,
+    isInfinite: false,
   ),
 
   // Pleno Plus (Level 3)
@@ -102,6 +111,7 @@ final careerUpgrades = [
     baseCost: Money(5000),
     value: 5,
     unlocksAtCareerLevel: 3,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'mentorship',
@@ -109,9 +119,10 @@ final careerUpgrades = [
     description: '+20% renda',
     emoji: '🎓',
     type: UpgradeType.multiplier,
-    baseCost: Money(8000),
+    baseCost: Money(2000000),
     value: 0.20,
     unlocksAtCareerLevel: 3,
+    isInfinite: false,
   ),
 
   // Senior (Level 4)
@@ -124,6 +135,7 @@ final careerUpgrades = [
     baseCost: Money(50000),
     value: 10,
     unlocksAtCareerLevel: 4,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'stock_options',
@@ -131,9 +143,10 @@ final careerUpgrades = [
     description: '+35% renda',
     emoji: '📈',
     type: UpgradeType.multiplier,
-    baseCost: Money(75000),
+    baseCost: Money(75000000),
     value: 0.35,
     unlocksAtCareerLevel: 4,
+    isInfinite: false,
   ),
 
   // Líder de Engenharia (Level 5)
@@ -146,6 +159,7 @@ final careerUpgrades = [
     baseCost: Money(300000),
     value: 20,
     unlocksAtCareerLevel: 5,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'innovation_lab',
@@ -153,9 +167,10 @@ final careerUpgrades = [
     description: '+50% renda',
     emoji: '🔬',
     type: UpgradeType.multiplier,
-    baseCost: Money(400000),
+    baseCost: Money(500000000),
     value: 0.50,
     unlocksAtCareerLevel: 5,
+    isInfinite: false,
   ),
 
   // Arquiteto de Software (Level 6)
@@ -168,6 +183,7 @@ final careerUpgrades = [
     baseCost: Money(2000000),
     value: 50,
     unlocksAtCareerLevel: 6,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'patent_portfolio',
@@ -175,9 +191,10 @@ final careerUpgrades = [
     description: '+75% renda',
     emoji: '🎯',
     type: UpgradeType.multiplier,
-    baseCost: Money(2500000),
+    baseCost: Money(2500000000),
     value: 0.75,
     unlocksAtCareerLevel: 6,
+    isInfinite: false,
   ),
 
   // Gestor de Projetos (Level 7)
@@ -190,6 +207,7 @@ final careerUpgrades = [
     baseCost: Money(10000000),
     value: 100,
     unlocksAtCareerLevel: 7,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'executive_network',
@@ -197,9 +215,10 @@ final careerUpgrades = [
     description: '+100% renda',
     emoji: '🌐',
     type: UpgradeType.multiplier,
-    baseCost: Money(12000000),
+    baseCost: Money(3000000000),
     value: 1.0,
     unlocksAtCareerLevel: 7,
+    isInfinite: false,
   ),
 
   // Gerente de Departamento (Level 8)
@@ -212,6 +231,7 @@ final careerUpgrades = [
     baseCost: Money(50000000),
     value: 200,
     unlocksAtCareerLevel: 8,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'market_dominance',
@@ -219,9 +239,10 @@ final careerUpgrades = [
     description: '+150% renda',
     emoji: '👑',
     type: UpgradeType.multiplier,
-    baseCost: Money(60000000),
+    baseCost: Money(8000000000),
     value: 1.5,
     unlocksAtCareerLevel: 8,
+    isInfinite: false,
   ),
 
   // Diretor Executivo (Level 9)
@@ -234,6 +255,7 @@ final careerUpgrades = [
     baseCost: Money(500000000),
     value: 500,
     unlocksAtCareerLevel: 9,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'financial_empire',
@@ -241,9 +263,10 @@ final careerUpgrades = [
     description: '+250% renda',
     emoji: '💰',
     type: UpgradeType.multiplier,
-    baseCost: Money(600000000),
+    baseCost: Money(15000000000),
     value: 2.5,
     unlocksAtCareerLevel: 9,
+    isInfinite: false,
   ),
 
   // CEO (Level 10)
@@ -256,6 +279,7 @@ final careerUpgrades = [
     baseCost: Money(5000000000),
     value: 1000,
     unlocksAtCareerLevel: 10,
+    isInfinite: true,
   ),
   CareerUpgrade(
     id: 'world_domination',
@@ -263,8 +287,9 @@ final careerUpgrades = [
     description: '+500% renda',
     emoji: '🚀',
     type: UpgradeType.multiplier,
-    baseCost: Money(10000000000),
+    baseCost: Money(25000000000),
     value: 5.0,
     unlocksAtCareerLevel: 10,
+    isInfinite: false,
   ),
 ];

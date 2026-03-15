@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/game_service.dart';
-import '../models/career.dart';
+import '../models/career.dart' as career_model;
 import '../models/career_upgrade.dart';
 
 class CareerUpgradesScreen extends StatefulWidget {
@@ -18,7 +19,8 @@ class _CareerUpgradesScreenState extends State<CareerUpgradesScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: careerLevels.length, vsync: this);
+    // Inicializar com 1 aba padrão, será atualizado no build
+    _tabController = TabController(length: 1, vsync: this);
   }
 
   @override
@@ -30,277 +32,476 @@ class _CareerUpgradesScreenState extends State<CareerUpgradesScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text('Upgrades de Carreira'),
-        elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          labelColor: Theme.of(context).colorScheme.primary,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: Theme.of(context).colorScheme.primary,
-          tabs: careerLevels.map((career) => Tab(text: career.title)).toList(),
-        ),
-      ),
+      backgroundColor: const Color(0xFF0A0A0F),
       body: Consumer<GameService>(
         builder: (context, gameService, child) {
           final currentCareerLevel = gameService.state.currentCareerLevel;
 
-          return TabBarView(
-            controller: _tabController,
-            children: careerLevels.map((selectedCareer) {
-              final isUnlocked = currentCareerLevel >= selectedCareer.id;
-              final upgradesForCareer = careerUpgrades
-                  .where((u) => u.unlocksAtCareerLevel == selectedCareer.id)
-                  .toList();
+          // Filtrar apenas os cargos desbloqueados
+          final unlockedCareers = career_model.careerLevels
+              .where((career) => currentCareerLevel >= career.id)
+              .toList();
 
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 16),
-                    // Seção de carreira
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: isUnlocked
-                              ? Theme.of(
-                                  context,
-                                ).colorScheme.primary.withOpacity(0.1)
-                              : Colors.grey.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isUnlocked
-                                ? Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withOpacity(0.3)
-                                : Colors.grey.withOpacity(0.3),
+          // Atualizar o TabController se o número de abas mudou
+          if (_tabController.length != unlockedCareers.length) {
+            _tabController.dispose();
+            _tabController = TabController(
+              length: unlockedCareers.length,
+              vsync: this,
+            );
+          }
+
+          if (unlockedCareers.isEmpty) {
+            return Column(
+              children: [
+                _ScreenHeader(),
+                const Expanded(
+                  child: Center(child: Text('Nenhum cargo desbloqueado')),
+                ),
+              ],
+            );
+          }
+
+          return Column(
+            children: [
+              // Header
+              _ScreenHeader(),
+              // Tabs
+              Container(
+                color: const Color(0xFF141418),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(unlockedCareers.length, (index) {
+                      final career = unlockedCareers[index];
+                      final isActive = _tabController.index == index;
+                      return GestureDetector(
+                        onTap: () {
+                          _tabController.animateTo(index);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? const Color(0xFF4ADE80)
+                                : Colors.transparent,
+                            border: isActive
+                                ? null
+                                : const Border(
+                                    bottom: BorderSide(
+                                      color: Color(0xFF2A2A30),
+                                      width: 1,
+                                    ),
+                                  ),
+                          ),
+                          child: Text(
+                            career.title.toUpperCase(),
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 9,
+                              color: isActive
+                                  ? const Color(0xFF0A0A0F)
+                                  : Colors.white38,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1,
+                            ),
                           ),
                         ),
-                        child: Column(
-                          children: [
-                            if (!isUnlocked)
-                              Column(
-                                children: [
-                                  const Icon(
-                                    Icons.lock,
-                                    size: 32,
-                                    color: Colors.orange,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'Bloqueado',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.orange,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Desbloqueie ao atingir ${selectedCareer.title}',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(color: Colors.grey[400]),
-                                  ),
-                                ],
-                              )
-                            else
-                              Column(
-                                children: [
-                                  Text(
-                                    'Nível Atual',
-                                    style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                              .withOpacity(0.7),
-                                        ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    selectedCareer.title,
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    'Renda por clique: \$${selectedCareer.baseIncome.format()}',
-                                    style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    // Upgrades
-                    if (upgradesForCareer.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Text(
-                          'Nenhum upgrade para esta posição',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: Colors.grey[400]),
-                        ),
-                      )
-                    else
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: upgradesForCareer.length,
-                          itemBuilder: (context, index) {
-                            final upgrade = upgradesForCareer[index];
-                            final purchased = gameService
-                                .state
-                                .purchasedCareerUpgrades[upgrade.id];
-                            final cost = purchased?.getCurrentCost();
-                            final canAfford =
-                                isUnlocked && gameService.state.money >= cost!;
-
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.surface,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: isUnlocked
-                                        ? Theme.of(
-                                            context,
-                                          ).colorScheme.primary.withOpacity(0.3)
-                                        : Colors.grey.withOpacity(0.3),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      upgrade.emoji,
-                                      style: const TextStyle(fontSize: 28),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            upgrade.name,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            upgrade.description,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelSmall
-                                                ?.copyWith(
-                                                  color: Theme.of(
-                                                    context,
-                                                  ).textTheme.bodySmall?.color,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    if (isUnlocked)
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            '\$${cost?.format()}',
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: canAfford
-                                                  ? Colors.green
-                                                  : Colors.grey,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 12,
-                                                    vertical: 8,
-                                                  ),
-                                            ),
-                                            onPressed: canAfford
-                                                ? () {
-                                                    gameService
-                                                        .buyCareerUpgrade(
-                                                          upgrade.id,
-                                                        );
-                                                  }
-                                                : null,
-                                            child: const Text(
-                                              'Comprar',
-                                              style: TextStyle(fontSize: 12),
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    else
-                                      Opacity(
-                                        opacity: 0.5,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 8,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey,
-                                            borderRadius: BorderRadius.circular(
-                                              4,
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            'Bloqueado',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    const SizedBox(height: 32),
-                  ],
+                      );
+                    }),
+                  ),
                 ),
-              );
-            }).toList(),
+              ),
+              // Content
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: unlockedCareers.map((selectedCareer) {
+                    final upgradesForCareer = careerUpgrades
+                        .where(
+                          (u) => u.unlocksAtCareerLevel == selectedCareer.id,
+                        )
+                        .toList();
+
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 16),
+                          // Career Info Card
+                          _CareerInfoCard(
+                            career: selectedCareer,
+                            isUnlocked: true,
+                          ),
+                          const SizedBox(height: 20),
+                          // Upgrades Section
+                          if (upgradesForCareer.isEmpty)
+                            _NoUpgradesCard()
+                          else
+                            _UpgradesListCard(
+                              upgrades: upgradesForCareer,
+                              gameService: gameService,
+                              isUnlocked: true,
+                            ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
           );
         },
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// SCREEN HEADER
+// ─────────────────────────────────────────────────
+
+class _ScreenHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        color: Color(0xFF141418),
+        border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 2)),
+      ),
+      child: Row(
+        children: [
+          const Text('🏆', style: TextStyle(fontSize: 24)),
+          const SizedBox(width: 12),
+          Text(
+            'CARREIRA',
+            style: GoogleFonts.silkscreen(fontSize: 18, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// CAREER INFO CARD
+// ─────────────────────────────────────────────────
+
+class _CareerInfoCard extends StatelessWidget {
+  final career_model.CareerLevel career;
+  final bool isUnlocked;
+
+  const _CareerInfoCard({required this.career, required this.isUnlocked});
+
+  @override
+  Widget build(BuildContext context) {
+    return _PixelContainer(
+      child: Column(
+        children: [
+          if (!isUnlocked)
+            Column(
+              children: [
+                const Text('🔒', style: TextStyle(fontSize: 40)),
+                const SizedBox(height: 12),
+                Text(
+                  'BLOQUEADO',
+                  style: GoogleFonts.silkscreen(
+                    fontSize: 18,
+                    color: Colors.orange,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Desbloqueie ao atingir ${career.title}',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
+                    color: Colors.white38,
+                  ),
+                ),
+              ],
+            )
+          else
+            Column(
+              children: [
+                Text(
+                  'NÍVEL ATUAL',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
+                    color: Colors.white38,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  career.title.toUpperCase(),
+                  style: GoogleFonts.silkscreen(
+                    fontSize: 28,
+                    color: const Color(0xFF4ADE80),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Renda por clique: \$${career.baseIncome.format()}',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 10,
+                    color: const Color(0xFFEAB308),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// NO UPGRADES CARD
+// ─────────────────────────────────────────────────
+
+class _NoUpgradesCard extends StatelessWidget {
+  const _NoUpgradesCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return _PixelContainer(
+      child: Column(
+        children: [
+          const Text(
+            '—',
+            style: TextStyle(fontSize: 28, color: Colors.white30),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'SEM UPGRADES',
+            style: GoogleFonts.silkscreen(fontSize: 14, color: Colors.white38),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Nenhum upgrade para esta posição',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 8,
+              color: Colors.white38,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// UPGRADES LIST CARD
+// ─────────────────────────────────────────────────
+
+class _UpgradesListCard extends StatelessWidget {
+  final List<CareerUpgrade> upgrades;
+  final GameService gameService;
+  final bool isUnlocked;
+
+  const _UpgradesListCard({
+    required this.upgrades,
+    required this.gameService,
+    required this.isUnlocked,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF141418),
+        border: Border.all(color: const Color(0xFF2A2A30), width: 2),
+        boxShadow: const [
+          BoxShadow(color: Color(0xCC000000), offset: Offset(4, 4)),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: const Color(0xFF1E1E25),
+            child: Row(
+              children: [
+                const Text('⚙️', style: TextStyle(fontSize: 14)),
+                const SizedBox(width: 8),
+                Text(
+                  'UPGRADES',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
+                    color: Colors.white70,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: upgrades.length,
+            itemBuilder: (context, index) {
+              final upgrade = upgrades[index];
+              final purchased =
+                  gameService.state.purchasedCareerUpgrades[upgrade.id];
+              final cost = purchased?.getCurrentCost();
+              final canAfford = isUnlocked && gameService.state.money >= cost!;
+
+              return Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: index < upgrades.length - 1
+                      ? const Border(
+                          bottom: BorderSide(color: Color(0xFF2A2A30)),
+                        )
+                      : null,
+                ),
+                child: Row(
+                  children: [
+                    Text(upgrade.emoji, style: const TextStyle(fontSize: 24)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            upgrade.name,
+                            style: GoogleFonts.silkscreen(
+                              fontSize: 11,
+                              color: Colors.white70,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            upgrade.description,
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 8,
+                              color: Colors.white38,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    if (isUnlocked)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          if (!purchased!.purchased)
+                            Text(
+                              '\$${cost?.format()}',
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 10,
+                                color: canAfford
+                                    ? const Color(0xFF4ADE80)
+                                    : Colors.red,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            )
+                          else
+                            Text(
+                              'COMPRADO',
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 8,
+                                color: const Color(0xFFEAB308),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          const SizedBox(height: 4),
+                          GestureDetector(
+                            onTap: (canAfford && !purchased.purchased)
+                                ? () => gameService.buyCareerUpgrade(upgrade.id)
+                                : null,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: purchased.purchased
+                                    ? const Color(0xFF4ADE80)
+                                    : canAfford
+                                    ? const Color(0xFF4ADE80)
+                                    : const Color(0xFF555555),
+                                border: Border.all(
+                                  color: purchased.purchased
+                                      ? const Color(0xFF4ADE80)
+                                      : canAfford
+                                      ? const Color(0xFF4ADE80)
+                                      : const Color(0xFF555555),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                purchased.purchased ? 'MAX' : 'COMPRAR',
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 7,
+                                  color: const Color(0xFF0A0A0F),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          border: Border.all(color: Colors.orange, width: 1),
+                        ),
+                        child: Text(
+                          'LOCK',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 7,
+                            color: Colors.orange,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// PIXEL CONTAINER (reusable)
+// ─────────────────────────────────────────────────
+
+class _PixelContainer extends StatelessWidget {
+  final Widget child;
+
+  const _PixelContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141418),
+        border: Border.all(color: const Color(0xFF2A2A30), width: 2),
+        boxShadow: const [
+          BoxShadow(color: Color(0xCC000000), offset: Offset(4, 4)),
+        ],
+      ),
+      child: child,
     );
   }
 }

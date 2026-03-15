@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/game_service.dart';
-import '../models/career.dart';
+import '../models/career.dart' as career_model;
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key});
@@ -9,209 +10,212 @@ class StatsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text('📊', style: TextStyle(fontSize: 20)),
-            ),
-            const SizedBox(width: 12),
-            const Text('Estatísticas'),
-          ],
-        ),
-        elevation: 0,
-      ),
+      backgroundColor: const Color(0xFF0A0A0F),
       body: Consumer<GameService>(
         builder: (context, gameService, child) {
           if (!gameService.isInitialized) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xFF4ADE80)),
+            );
           }
 
           final stats = gameService.analytics.getSessionStats();
           final sessionDuration = gameService.analytics.getSessionDuration();
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-                _buildSessionInfo(context, sessionDuration),
-                const SizedBox(height: 16),
-                _buildGameStats(context, gameService, stats),
-                const SizedBox(height: 16),
-                _buildCareerInfo(context, gameService),
-                const SizedBox(height: 16),
-                _buildUpgradeStats(context, gameService),
-                const SizedBox(height: 20),
-              ],
-            ),
+          return Column(
+            children: [
+              _ScreenHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      _SessionInfoCard(duration: sessionDuration),
+                      const SizedBox(height: 20),
+                      _GameStatsCard(gameService: gameService, stats: stats),
+                      const SizedBox(height: 20),
+                      _CareerInfoCard(gameService: gameService),
+                      const SizedBox(height: 20),
+                      _UpgradeStatsCard(gameService: gameService),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),
     );
   }
+}
 
-  Widget _buildSessionInfo(BuildContext context, Duration duration) {
-    final minutes = duration.inMinutes;
-    final seconds = duration.inSeconds % 60;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).colorScheme.primary;
+// ─────────────────────────────────────────────────
+// SCREEN HEADER
+// ─────────────────────────────────────────────────
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: primaryColor.withOpacity(0.2)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text('⏱️', style: TextStyle(fontSize: 18)),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Sessão Atual',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: primaryColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Tempo jogando',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: isDark ? Colors.grey[400] : Colors.grey,
-                  ),
-                ),
-                Text(
-                  '${minutes}m ${seconds}s',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: primaryColor,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+class _ScreenHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        color: Color(0xFF141418),
+        border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 2)),
+      ),
+      child: Row(
+        children: [
+          const Text('📊', style: TextStyle(fontSize: 24)),
+          const SizedBox(width: 12),
+          Text(
+            'ESTATÍSTICAS',
+            style: GoogleFonts.silkscreen(fontSize: 18, color: Colors.white),
+          ),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildGameStats(
-    BuildContext context,
-    GameService gameService,
-    Map<String, dynamic> stats,
-  ) {
+// ─────────────────────────────────────────────────
+// SESSION INFO CARD
+// ─────────────────────────────────────────────────
+
+class _SessionInfoCard extends StatelessWidget {
+  final Duration duration;
+
+  const _SessionInfoCard({required this.duration});
+
+  @override
+  Widget build(BuildContext context) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+
+    return _PixelContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('⏱️', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Text(
+                'SESSÃO ATUAL',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  color: Colors.white70,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Tempo jogando',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 9,
+                  color: Colors.white54,
+                ),
+              ),
+              Text(
+                '${minutes}m ${seconds}s',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  color: const Color(0xFF4ADE80),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// GAME STATS CARD
+// ─────────────────────────────────────────────────
+
+class _GameStatsCard extends StatelessWidget {
+  final GameService gameService;
+  final Map<String, dynamic> stats;
+
+  const _GameStatsCard({required this.gameService, required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
     final totalClicks = stats['total_clicks'] ?? 0;
     final totalUpgrades = stats['total_upgrades_bought'] ?? 0;
     final totalPromos = stats['total_promotions'] ?? 0;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).colorScheme.primary;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: primaryColor.withOpacity(0.2)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text('💪', style: TextStyle(fontSize: 18)),
+    return _PixelContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('💪', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Text(
+                'ATIVIDADE',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  color: Colors.white70,
+                  letterSpacing: 2,
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  'Atividade',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: primaryColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildStatRow(
-              context,
-              '👆',
-              'Cliques totais',
-              totalClicks.toString(),
-            ),
-            const SizedBox(height: 8),
-            _buildStatRow(
-              context,
-              '⭐',
-              'Upgrades comprados',
-              totalUpgrades.toString(),
-            ),
-            const SizedBox(height: 8),
-            _buildStatRow(context, '📈', 'Promoções', totalPromos.toString()),
-            const SizedBox(height: 8),
-            _buildStatRow(
-              context,
-              '💰',
-              'Total ganho',
-              '\$${gameService.state.totalMoneyEarned.format()}',
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _StatRow(
+            emoji: '👆',
+            label: 'Cliques totais',
+            value: totalClicks.toString(),
+          ),
+          const SizedBox(height: 12),
+          _StatRow(
+            emoji: '⭐',
+            label: 'Upgrades comprados',
+            value: totalUpgrades.toString(),
+          ),
+          const SizedBox(height: 12),
+          _StatRow(
+            emoji: '📈',
+            label: 'Promoções',
+            value: totalPromos.toString(),
+          ),
+          const SizedBox(height: 12),
+          _StatRow(
+            emoji: '💰',
+            label: 'Total ganho',
+            value: '\$${gameService.state.totalMoneyEarned.format()}',
+          ),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildCareerInfo(BuildContext context, GameService gameService) {
-    final career = careerLevels[gameService.state.currentCareerLevel];
+// ─────────────────────────────────────────────────
+// CAREER INFO CARD
+// ─────────────────────────────────────────────────
+
+class _CareerInfoCard extends StatelessWidget {
+  final GameService gameService;
+
+  const _CareerInfoCard({required this.gameService});
+
+  @override
+  Widget build(BuildContext context) {
+    final career =
+        career_model.careerLevels[gameService.state.currentCareerLevel];
     final nextCareerIndex = gameService.state.currentCareerLevel + 1;
-    final nextCareer = nextCareerIndex < careerLevels.length
-        ? careerLevels[nextCareerIndex]
+    final nextCareer = nextCareerIndex < career_model.careerLevels.length
+        ? career_model.careerLevels[nextCareerIndex]
         : null;
 
     final progress = nextCareer != null
@@ -220,119 +224,114 @@ class StatsScreen extends StatelessWidget {
               .clamp(0.0, 1.0)
         : 1.0;
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
-    // Mapa de emojis para carreiras
     final careerEmojis = {
       'Estagiário': '📚',
-      'Funcionário': '👔',
-      'Analista': '📊',
-      'Gerente': '👨‍💼',
-      'Diretor': '🎯',
+      'Junior': '👔',
+      'Pleno': '📊',
+      'Pleno Plus': '👨‍💼',
+      'Senior': '🎩',
       'CEO': '👑',
     };
 
     final emoji = careerEmojis[career.title] ?? '💼';
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: primaryColor.withOpacity(0.2)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(emoji, style: const TextStyle(fontSize: 18)),
+    return _PixelContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Text(
+                'CARREIRA',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  color: Colors.white70,
+                  letterSpacing: 2,
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  'Carreira',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: primaryColor,
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            career.title.toUpperCase(),
+            style: GoogleFonts.silkscreen(
+              fontSize: 24,
+              color: const Color(0xFF4ADE80),
             ),
-            const SizedBox(height: 12),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Renda: \$${career.baseIncome.format()}/clique',
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 9,
+              color: const Color(0xFFEAB308),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          if (nextCareer != null) ...[
+            const SizedBox(height: 16),
             Text(
-              career.title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: primaryColor,
+              'PRÓXIMO: ${nextCareer.title.toUpperCase()}',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                color: Colors.white54,
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Progress bar
+            Container(
+              height: 8,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A2A30),
+                border: Border.all(color: const Color(0xFF2A2A30), width: 1),
+              ),
+              child: FractionallySizedBox(
+                widthFactor: progress,
+                alignment: Alignment.centerLeft,
+                child: Container(color: const Color(0xFF4ADE80)),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Renda: \$${career.baseIncome.format()}/clique',
-              style: TextStyle(
-                fontSize: 14,
-                color: isDark ? Colors.grey[400] : Colors.grey[700],
+              '\$${gameService.state.totalMoneyEarned.format()} / \$${nextCareer.requiredMoney.format()}',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 8,
+                color: Colors.white38,
               ),
             ),
-            if (nextCareer != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                'Próximo: ${nextCareer.title}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+          ] else
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                '🏆 VOCÊ É O CEO!',
+                style: GoogleFonts.silkscreen(
+                  fontSize: 14,
+                  color: const Color(0xFFEAB308),
+                  fontWeight: FontWeight.bold,
                 ),
-              ),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(
-                value: progress,
-                minHeight: 8,
-                backgroundColor: primaryColor.withOpacity(0.15),
-                valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '\$${gameService.state.totalMoneyEarned.format()} / \$${nextCareer.requiredMoney.format()}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isDark ? Colors.grey[400] : Colors.grey[600],
-                ),
-              ),
-            ] else
-              const SizedBox(height: 8),
-            Text(
-              '🏆 Você é o CEO!',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFFFFB300),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildUpgradeStats(BuildContext context, GameService gameService) {
+// ─────────────────────────────────────────────────
+// UPGRADE STATS CARD
+// ─────────────────────────────────────────────────
+
+class _UpgradeStatsCard extends StatelessWidget {
+  final GameService gameService;
+
+  const _UpgradeStatsCard({required this.gameService});
+
+  @override
+  Widget build(BuildContext context) {
     final upgradeStats = gameService.state.purchasedUpgrades.entries
         .where((e) => e.value.level > 1)
         .toList();
@@ -341,77 +340,59 @@ class StatsScreen extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: primaryColor.withOpacity(0.2)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text('⭐', style: TextStyle(fontSize: 18)),
+    return _PixelContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('⭐', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Text(
+                'UPGRADES',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  color: Colors.white70,
+                  letterSpacing: 2,
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  'Upgrades (Principais)',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: primaryColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            ...upgradeStats.map((e) {
-              final upgrade = e.value;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: _buildStatRow(
-                  context,
-                  upgrade.upgrade.emoji,
-                  upgrade.upgrade.name,
-                  'Nível ${upgrade.level}',
-                ),
-              );
-            }),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...upgradeStats.map((e) {
+            final upgrade = e.value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _StatRow(
+                emoji: upgrade.upgrade.emoji,
+                label: upgrade.upgrade.name,
+                value: 'Nível ${upgrade.level}',
+              ),
+            );
+          }),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildStatRow(
-    BuildContext context,
-    String emoji,
-    String label,
-    String value,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).colorScheme.primary;
+// ─────────────────────────────────────────────────
+// STAT ROW
+// ─────────────────────────────────────────────────
 
+class _StatRow extends StatelessWidget {
+  final String emoji;
+  final String label;
+  final String value;
+
+  const _StatRow({
+    required this.emoji,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -421,20 +402,48 @@ class StatsScreen extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: isDark ? Colors.grey[400] : Colors.grey[700],
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                color: Colors.white70,
               ),
             ),
           ],
         ),
         Text(
           value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: primaryColor,
+          style: GoogleFonts.jetBrainsMono(
+            fontSize: 9,
+            color: const Color(0xFF4ADE80),
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// PIXEL CONTAINER (reusable)
+// ─────────────────────────────────────────────────
+
+class _PixelContainer extends StatelessWidget {
+  final Widget child;
+
+  const _PixelContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141418),
+        border: Border.all(color: const Color(0xFF2A2A30), width: 2),
+        boxShadow: const [
+          BoxShadow(color: Color(0xCC000000), offset: Offset(4, 4)),
+        ],
+      ),
+      child: child,
     );
   }
 }

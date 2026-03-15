@@ -40,8 +40,15 @@ class GameService extends ChangeNotifier {
 
   /// Executa um clique de trabalho
   void click() {
+    final previousCareerLevel = _state.currentCareerLevel;
     _state.earnMoneyFromClick();
     _analytics.trackClick();
+    
+    // Rastreia promoção se houver mudança de nível
+    if (_state.currentCareerLevel > previousCareerLevel) {
+      _analytics.trackPromotion(_state.currentCareerLevel);
+    }
+    
     _saveGame();
     notifyListeners();
   }
@@ -50,9 +57,16 @@ class GameService extends ChangeNotifier {
   void updatePassiveIncome() {
     if (_passiveIncomeStopwatch.elapsedMilliseconds > 500) {
       // Atualiza a cada 500ms para não ser muito frequente
+      final previousCareerLevel = _state.currentCareerLevel;
       final elapsed = _passiveIncomeStopwatch.elapsed;
       _state.earnPassiveIncome(elapsed);
       _passiveIncomeStopwatch.reset();
+      
+      // Rastreia promoção se houver mudança de nível
+      if (_state.currentCareerLevel > previousCareerLevel) {
+        _analytics.trackPromotion(_state.currentCareerLevel);
+      }
+      
       notifyListeners();
     }
   }
@@ -102,29 +116,45 @@ class GameService extends ChangeNotifier {
     bool madeAPurchase = true;
     int purchaseCount = 0;
 
-    // Loop enquanto conseguir comprar o upgrade específico
-    while (madeAPurchase && purchaseCount < 1000) {
-      madeAPurchase = false;
-      purchaseCount++;
+    final purchased = _state.purchasedUpgrades[upgradeId];
+    if (purchased == null) return;
 
-      final purchased = _state.purchasedUpgrades[upgradeId];
-      if (purchased == null) return;
+    // Se é um upgrade único, só pode comprar uma vez
+    if (!purchased.upgrade.isInfinite) {
+      if (purchased.purchased) {
+        return; // Já foi comprado, não faz nada
+      }
 
       final cost = purchased.getCurrentCost();
-
       if (_state.money >= cost) {
-        // Registra quanto vai gastar
-        moneySpent = moneySpent + cost;
-
         final success = _state.buyUpgrade(upgradeId);
         if (success) {
           _analytics.trackUpgradePurchase(upgradeId);
-          madeAPurchase = true;
+          moneySpent = cost;
+        }
+      }
+    } else {
+      // Para upgrades infinitos, continua comprando enquanto conseguir
+      while (madeAPurchase && purchaseCount < 1000) {
+        madeAPurchase = false;
+        purchaseCount++;
+
+        final cost = purchased.getCurrentCost();
+
+        if (_state.money >= cost) {
+          // Registra quanto vai gastar
+          moneySpent = moneySpent + cost;
+
+          final success = _state.buyUpgrade(upgradeId);
+          if (success) {
+            _analytics.trackUpgradePurchase(upgradeId);
+            madeAPurchase = true;
+          } else {
+            madeAPurchase = false;
+          }
         } else {
           madeAPurchase = false;
         }
-      } else {
-        madeAPurchase = false;
       }
     }
 
@@ -155,6 +185,12 @@ class GameService extends ChangeNotifier {
       // Tenta comprar cada upgrade em ordem
       for (final upgradeId in _state.purchasedUpgrades.keys) {
         final purchased = _state.purchasedUpgrades[upgradeId]!;
+
+        // Pula upgrades únicos já comprados
+        if (!purchased.upgrade.isInfinite && purchased.purchased) {
+          continue;
+        }
+
         final cost = purchased.getCurrentCost();
 
         if (_state.money >= cost) {
@@ -194,6 +230,11 @@ class GameService extends ChangeNotifier {
     final purchased = _state.purchasedCareerUpgrades[upgradeId];
     if (purchased == null) return;
 
+    // Se é um upgrade único e já foi comprado, não deixa comprar
+    if (!purchased.upgrade.isInfinite && purchased.purchased) {
+      return;
+    }
+
     final cost = purchased.getCurrentCost();
     if (_state.money < cost) return;
 
@@ -213,8 +254,14 @@ class GameService extends ChangeNotifier {
         break;
     }
 
-    // Aumenta o level do upgrade
-    purchased.level++;
+    // Aumenta o level do upgrade se for infinito
+    if (purchased.upgrade.isInfinite) {
+      purchased.level++;
+    } else {
+      // Se não for infinito, marca como comprado
+      purchased.purchased = true;
+    }
+
     _analytics.trackUpgradePurchase(upgradeId);
     _saveGame();
     notifyListeners();

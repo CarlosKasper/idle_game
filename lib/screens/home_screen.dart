@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/game_service.dart';
 import '../models/career.dart';
-import '../widgets/ui_components.dart';
 import 'stats_screen.dart';
 import 'settings_screen.dart';
 import 'career_upgrades_screen.dart';
@@ -37,8 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void _startUpdateLoop() {
     Future.delayed(const Duration(milliseconds: 16), () {
       if (mounted) {
-        context.read<GameService>().updatePassiveIncome();
-        _startUpdateLoop();
+        try {
+          context.read<GameService>().updatePassiveIncome();
+          _startUpdateLoop();
+        } catch (e) {
+          // Widget foi deativado, parar a loop
+        }
       }
     });
   }
@@ -57,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: const Color(0xFF0A0A0F),
       body: Column(
         children: [
           Expanded(
@@ -85,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          BottomNavigationMenu(
+          _BottomNav(
             selectedIndex: _selectedIndex,
             onItemTapped: _onNavItemTapped,
           ),
@@ -94,6 +98,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+// ─────────────────────────────────────────────────
+// HOME CONTENT - Conteúdo principal da tela
+// ─────────────────────────────────────────────────
 
 class _HomeContent extends StatefulWidget {
   final Function(ThemeMode)? onThemeChanged;
@@ -111,98 +119,184 @@ class _HomeContentState extends State<_HomeContent> {
     _startUpdateLoop();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void _startUpdateLoop() {
     Future.delayed(const Duration(milliseconds: 16), () {
       if (mounted) {
-        context.read<GameService>().updatePassiveIncome();
-        _startUpdateLoop();
+        try {
+          context.read<GameService>().updatePassiveIncome();
+          _startUpdateLoop();
+        } catch (e) {
+          // Widget foi deativado, parar a loop
+        }
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text('💼', style: TextStyle(fontSize: 20)),
-            ),
-            const SizedBox(width: 12),
-            const Text('Office Idle'),
-          ],
-        ),
-        elevation: 0,
-        actions: [
-          Selector<GameService, int>(
-            selector: (context, gameService) => gameService.isInitialized
-                ? gameService.state.currentCareerLevel
-                : 0,
-            builder: (context, careerLevel, child) {
-              final career = careerLevels[careerLevel];
+    return Consumer<GameService>(
+      builder: (context, gameService, child) {
+        if (!gameService.isInitialized) {
+          return Scaffold(
+            backgroundColor: const Color(0xFF0A0A0F),
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        career.title,
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        'Nv ${careerLevel + 1}',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelSmall?.copyWith(color: Colors.grey),
-                      ),
-                    ],
+        return Scaffold(
+          backgroundColor: const Color(0xFF0A0A0F),
+          body: SafeArea(
+            child: Column(
+              children: [
+                // Header
+                _GameHeader(gameService: gameService),
+                // Status bar
+                _StatusBar(
+                  totalClicks:
+                      gameService.analytics.getSessionStats()['total_clicks']
+                          as int? ??
+                      0,
+                ),
+                // Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        _ProfileCard(gameService: gameService),
+                        const SizedBox(height: 16),
+                        _BalanceCard(gameService: gameService),
+                        const SizedBox(height: 16),
+                        _WorkButton(onWork: () => gameService.click()),
+                        const SizedBox(height: 16),
+                        _MultipliersPanel(gameService: gameService),
+                        const SizedBox(height: 80),
+                      ],
+                    ),
                   ),
                 ),
-              );
-            },
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// HEADER
+// ─────────────────────────────────────────────────
+
+class _GameHeader extends StatelessWidget {
+  final GameService gameService;
+
+  const _GameHeader({required this.gameService});
+
+  @override
+  Widget build(BuildContext context) {
+    final career = careerLevels[gameService.state.currentCareerLevel];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        color: Color(0xFF141418),
+        border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 2)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const Text('💼', style: TextStyle(fontSize: 24)),
+              const SizedBox(width: 12),
+              Text(
+                'Office Idle',
+                style: GoogleFonts.silkscreen(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                career.title.toUpperCase(),
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  color: Colors.white,
+                  letterSpacing: 2,
+                ),
+              ),
+              Text(
+                'NV ${gameService.state.currentCareerLevel + 1}',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 9,
+                  color: Colors.white38,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
           ),
         ],
       ),
-      body: Consumer<GameService>(
-        builder: (context, gameService, child) {
-          if (!gameService.isInitialized) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    );
+  }
+}
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-                _buildCareerHeader(context, gameService),
-                const SizedBox(height: 24),
-                _buildMoneyDisplay(context, gameService),
-                const SizedBox(height: 24),
-                _buildWorkButton(context, gameService),
-                const SizedBox(height: 28),
-                _buildIncomeInfo(context, gameService),
-                const SizedBox(height: 28),
-              ],
-            ),
-          );
-        },
+// ─────────────────────────────────────────────────
+// STATUS BAR
+// ─────────────────────────────────────────────────
+
+class _StatusBar extends StatelessWidget {
+  final int totalClicks;
+
+  const _StatusBar({required this.totalClicks});
+
+  @override
+  Widget build(BuildContext context) {
+    final style = GoogleFonts.jetBrainsMono(
+      fontSize: 9,
+      color: Colors.white30,
+      letterSpacing: 2,
+    );
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 1)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('LATENCY: 14MS', style: style),
+          Text('BUILD: V0.1.0-ALPHA', style: style),
+          Text('CLICKS: $totalClicks', style: style),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildCareerHeader(BuildContext context, GameService gameService) {
+// ─────────────────────────────────────────────────
+// PROFILE CARD
+// ─────────────────────────────────────────────────
+
+class _ProfileCard extends StatelessWidget {
+  final GameService gameService;
+
+  const _ProfileCard({required this.gameService});
+
+  @override
+  Widget build(BuildContext context) {
     final career = careerLevels[gameService.state.currentCareerLevel];
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).colorScheme.primary;
 
     final careerEmojis = {
       'Estagiário': '👨‍🎓',
@@ -215,245 +309,396 @@ class _HomeContentState extends State<_HomeContent> {
 
     final emoji = careerEmojis[career.title] ?? '💼';
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: SizedBox(
-        width: double.infinity,
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                primaryColor.withOpacity(0.1),
-                primaryColor.withOpacity(0.05),
-              ],
+    return _PixelContainer(
+      child: Column(
+        children: [
+          // Window title bar
+          Container(
+            padding: const EdgeInsets.only(bottom: 8),
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Color(0xFF2A2A30), width: 2),
+              ),
             ),
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: primaryColor.withOpacity(0.3),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: primaryColor.withOpacity(isDark ? 0.15 : 0.08),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(emoji, style: const TextStyle(fontSize: 56)),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                career.title,
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Nível ${gameService.state.currentCareerLevel + 1}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: isDark ? Colors.grey[400] : Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMoneyDisplay(BuildContext context, GameService gameService) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: SizedBox(
-        width: double.infinity,
-        child: MoneyDisplay(
-          amount: gameService.state.money.format(),
-          subtitle: 'Saldo',
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWorkButton(BuildContext context, GameService gameService) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: SizedBox(
-        width: double.infinity,
-        child: GestureDetector(
-          onTap: () {
-            gameService.click();
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: primaryColor.withOpacity(0.35),
-                  blurRadius: 24,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [primaryColor, primaryColor.withOpacity(0.85)],
+            child: Row(
+              children: [
+                for (var i = 0; i < 3; i++) ...[
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white24, width: 2),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                  const SizedBox(width: 4),
+                ],
+                const SizedBox(width: 8),
+                Text(
+                  'PERFIL.EXE',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
+                    color: Colors.white38,
+                    letterSpacing: 2,
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 36,
-                  horizontal: 32,
+              ],
+            ),
+          ),
+          // Avatar
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E25),
+              border: Border.all(color: const Color(0xFF4ADE80), width: 2),
+            ),
+            child: Center(
+              child: Text(emoji, style: const TextStyle(fontSize: 36)),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            career.title,
+            style: GoogleFonts.silkscreen(
+              fontSize: 24,
+              color: const Color(0xFF4ADE80),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '> Nível ${gameService.state.currentCareerLevel + 1} _',
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 10,
+              color: Colors.white38,
+              letterSpacing: 2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// BALANCE CARD
+// ─────────────────────────────────────────────────
+
+class _BalanceCard extends StatefulWidget {
+  final GameService gameService;
+
+  const _BalanceCard({required this.gameService});
+
+  @override
+  State<_BalanceCard> createState() => _BalanceCardState();
+}
+
+class _BalanceCardState extends State<_BalanceCard>
+    with SingleTickerProviderStateMixin {
+  bool _isAnimating = false;
+
+  @override
+  void didUpdateWidget(_BalanceCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.gameService.state.money != widget.gameService.state.money) {
+      _playAnimation();
+    }
+  }
+
+  void _playAnimation() {
+    setState(() => _isAnimating = true);
+    Future.delayed(const Duration(milliseconds: 250), () {
+      if (mounted) setState(() => _isAnimating = false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final balance = widget.gameService.state.money.format();
+
+    return _PixelContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '// SALDO_ATUAL',
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 9,
+              color: Colors.white38,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 8),
+          AnimatedScale(
+            scale: _isAnimating ? 1.15 : 1.0,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            child: Text(
+              '\$$balance',
+              style: GoogleFonts.silkscreen(
+                fontSize: 36,
+                color: const Color(0xFFEAB308),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(height: 2, color: const Color(0xFF2A2A30)),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'STATUS: ATIVO',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 9,
+                  color: Colors.white30,
+                  letterSpacing: 2,
                 ),
+              ),
+              Text(
+                '■ ONLINE',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 9,
+                  color: const Color(0xFF4ADE80),
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// WORK BUTTON
+// ─────────────────────────────────────────────────
+
+class _WorkButton extends StatelessWidget {
+  final VoidCallback onWork;
+
+  const _WorkButton({required this.onWork});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onWork,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color(0xFF3B82F6),
+          border: Border.all(color: const Color(0xFF3B82F6), width: 2),
+          boxShadow: const [
+            BoxShadow(color: Color(0xFF1D4ED8), offset: Offset(4, 4)),
+          ],
+        ),
+        child: Column(
+          children: [
+            const Text('💼', style: TextStyle(fontSize: 36)),
+            const SizedBox(height: 12),
+            Text(
+              'TRABALHAR',
+              style: GoogleFonts.silkscreen(fontSize: 20, color: Colors.white),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '[ CLICK PARA GANHAR ]',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                color: Colors.white54,
+                letterSpacing: 2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// MULTIPLIERS PANEL
+// ─────────────────────────────────────────────────
+
+class _MultipliersPanel extends StatelessWidget {
+  final GameService gameService;
+
+  const _MultipliersPanel({required this.gameService});
+
+  @override
+  Widget build(BuildContext context) {
+    final clickIncome = gameService.state.getClickIncome().format();
+    final incomePerSecond = gameService.state.getIncomePerSecond().format();
+
+    final items = [
+      {'icon': '📈', 'name': 'Ganho por Click', 'value': '\$$clickIncome'},
+      {
+        'icon': '⚡',
+        'name': 'Multiplicador',
+        'value': 'x${gameService.state.multiplierTotal.toStringAsFixed(1)}',
+      },
+      {'icon': '🔄', 'name': 'Auto-Ganho/s', 'value': '\$$incomePerSecond'},
+      {
+        'icon': '📊',
+        'name': 'Total Ganho',
+        'value': '\$${gameService.state.totalMoneyEarned.format()}',
+      },
+    ];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF141418),
+        border: Border.all(color: const Color(0xFF2A2A30), width: 2),
+        boxShadow: const [
+          BoxShadow(color: Color(0xCC000000), offset: Offset(4, 4)),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: const Color(0xFF1E1E25),
+            child: Row(
+              children: [
+                const Text('📉', style: TextStyle(fontSize: 14)),
+                const SizedBox(width: 8),
+                Text(
+                  'GANHOS E MULTIPLICADORES',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
+                    color: Colors.white70,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          for (var i = 0; i < items.length; i++)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                border: i < items.length - 1
+                    ? const Border(bottom: BorderSide(color: Color(0xFF2A2A30)))
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  Text(items[i]['icon']!, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      items[i]['name']!,
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 12,
+                        color: Colors.white38,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    items[i]['value']!,
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 12,
+                      color: const Color(0xFF4ADE80),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// PIXEL CONTAINER (reusable)
+// ─────────────────────────────────────────────────
+
+class _PixelContainer extends StatelessWidget {
+  final Widget child;
+
+  const _PixelContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141418),
+        border: Border.all(color: const Color(0xFF2A2A30), width: 2),
+        boxShadow: const [
+          BoxShadow(color: Color(0xCC000000), offset: Offset(4, 4)),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// BOTTOM NAVIGATION
+// ─────────────────────────────────────────────────
+
+class _BottomNav extends StatelessWidget {
+  final int selectedIndex;
+  final Function(int) onItemTapped;
+
+  const _BottomNav({required this.selectedIndex, required this.onItemTapped});
+
+  static const _tabs = [
+    {'icon': Icons.home, 'label': 'INÍCIO'},
+    {'icon': Icons.computer, 'label': 'NOTEBOOK'},
+    {'icon': Icons.emoji_events, 'label': 'CARREIRA'},
+    {'icon': Icons.bar_chart, 'label': 'ESTATÍS.'},
+    {'icon': Icons.settings, 'label': 'CONFIG.'},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFF141418),
+        border: Border(top: BorderSide(color: Color(0xFF2A2A30), width: 2)),
+      ),
+      child: Row(
+        children: List.generate(_tabs.length, (i) {
+          final active = i == selectedIndex;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onItemTapped(i),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                color: active ? const Color(0xFF4ADE80) : Colors.transparent,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('💼', style: TextStyle(fontSize: 40)),
-                    const SizedBox(height: 8),
+                    Icon(
+                      _tabs[i]['icon'] as IconData,
+                      size: 20,
+                      color: active ? const Color(0xFF0A0A0F) : Colors.white38,
+                    ),
+                    const SizedBox(height: 4),
                     Text(
-                      'TRABALHAR',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 1.0,
+                      _tabs[i]['label'] as String,
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 8,
+                        color: active
+                            ? const Color(0xFF0A0A0F)
+                            : Colors.white38,
+                        letterSpacing: 1.5,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        }),
       ),
-    );
-  }
-
-  Widget _buildIncomeInfo(BuildContext context, GameService gameService) {
-    final clickIncome = gameService.state.getClickIncome();
-    final incomePerSecond = gameService.state.getIncomePerSecond();
-    final multiplier = (gameService.state.multiplierTotal * 100)
-        .toStringAsFixed(0);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: SizedBox(
-        width: double.infinity,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: primaryColor.withOpacity(0.2)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text('📈', style: TextStyle(fontSize: 20)),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Ganhos e Multiplicadores',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildIncomeRow(
-                context,
-                '💰',
-                'Ganho por clique',
-                '\$${clickIncome.format()}',
-              ),
-              const SizedBox(height: 12),
-              _buildIncomeRow(
-                context,
-                '⏱️',
-                'Ganho por segundo',
-                '\$${incomePerSecond.format()}',
-              ),
-              const SizedBox(height: 12),
-              _buildIncomeRow(context, '✨', 'Multiplicador', '$multiplier%'),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIncomeRow(
-    BuildContext context,
-    String emoji,
-    String label,
-    String value,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 18)),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: isDark ? Colors.grey[400] : Colors.grey[700],
-              ),
-            ),
-          ],
-        ),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-      ],
     );
   }
 }

@@ -66,7 +66,7 @@ class GameState {
             type: upgrade.type,
             baseCost: upgrade.baseCost,
             value: upgrade.value,
-            isInfinite: true,
+            isInfinite: upgrade.isInfinite,
           ),
         );
       }

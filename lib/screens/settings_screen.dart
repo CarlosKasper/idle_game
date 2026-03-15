@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/game_service.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -35,120 +36,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text('Configurações'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      backgroundColor: const Color(0xFF0A0A0F),
+      body: Column(
         children: [
-          // Seção de Tema
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              'APARÊNCIA',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
+          _ScreenHeader(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Tema Section
+                  _SectionTitle(title: 'APARÊNCIA'),
+                  const SizedBox(height: 12),
+                  _ThemeCard(
+                    mode: ThemeMode.system,
+                    title: 'AUTOMÁTICO',
+                    subtitle: 'Segue configuração do dispositivo',
+                    icon: '⚙️',
+                    isSelected: _selectedTheme == ThemeMode.system,
+                    onTap: () => _applyTheme(ThemeMode.system),
+                  ),
+                  const SizedBox(height: 12),
+                  _ThemeCard(
+                    mode: ThemeMode.light,
+                    title: 'CLARO',
+                    subtitle: 'Fundo branco e texto escuro',
+                    icon: '☀️',
+                    isSelected: _selectedTheme == ThemeMode.light,
+                    onTap: () => _applyTheme(ThemeMode.light),
+                  ),
+                  const SizedBox(height: 12),
+                  _ThemeCard(
+                    mode: ThemeMode.dark,
+                    title: 'ESCURO',
+                    subtitle: 'Fundo preto e texto claro',
+                    icon: '🌙',
+                    isSelected: _selectedTheme == ThemeMode.dark,
+                    onTap: () => _applyTheme(ThemeMode.dark),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Game Section
+                  _SectionTitle(title: 'JOGO'),
+                  const SizedBox(height: 12),
+                  _SettingsButton(
+                    icon: '🔄',
+                    title: 'RESETAR JOGO',
+                    subtitle: 'Apagar todos os dados e começar do zero',
+                    isDestructive: true,
+                    onTap: () => _showResetConfirmation(context),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Info Section
+                  _SectionTitle(title: 'INFORMAÇÕES'),
+                  const SizedBox(height: 12),
+                  _InfoRow(label: 'Versão', value: 'v1.5.2'),
+                  const SizedBox(height: 12),
+                  _InfoRow(label: 'Desenvolvido com', value: 'Flutter + Dart'),
+                  const SizedBox(height: 24),
+                ],
               ),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // Card de Tema Sistema
-          _buildThemeCard(
-            context,
-            mode: ThemeMode.system,
-            title: 'Automático',
-            subtitle: 'Segue a configuração do dispositivo',
-            icon: Icons.brightness_auto,
-            isSelected: _selectedTheme == ThemeMode.system,
-          ),
-          const SizedBox(height: 12),
-
-          // Card de Tema Claro
-          _buildThemeCard(
-            context,
-            mode: ThemeMode.light,
-            title: 'Modo Claro',
-            subtitle: 'Tema claro com fundo branco',
-            icon: Icons.brightness_7,
-            isSelected: _selectedTheme == ThemeMode.light,
-          ),
-          const SizedBox(height: 12),
-
-          // Card de Tema Escuro
-          _buildThemeCard(
-            context,
-            mode: ThemeMode.dark,
-            title: 'Modo Escuro',
-            subtitle: 'Tema escuro com fundo preto',
-            icon: Icons.brightness_4,
-            isSelected: _selectedTheme == ThemeMode.dark,
-          ),
-
-          const SizedBox(height: 32),
-
-          // Seção de Jogo
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              'JOGO',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // Card de Reset
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.refresh),
-              title: const Text('Resetar Jogo'),
-              subtitle: const Text(
-                'Voltar ao início com todos os dados apagados',
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => _showResetConfirmation(context),
-            ),
-          ),
-
-          const SizedBox(height: 32),
-
-          // Seção de Informações
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              'INFORMAÇÕES',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          Card(
-            child: ListTile(
-              title: const Text('Versão'),
-              trailing: Text(
-                'v1.2',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          Card(
-            child: ListTile(
-              title: const Text('Desenvolvido com'),
-              trailing: const Text('Flutter + Dart'),
             ),
           ),
         ],
@@ -156,99 +105,367 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildThemeCard(
-    BuildContext context, {
-    required ThemeMode mode,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required bool isSelected,
-  }) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
-    final borderColor = isSelected ? primaryColor : Colors.grey[300];
-    final backgroundColor = isSelected
-        ? primaryColor.withOpacity(0.1)
-        : Theme.of(context).colorScheme.surface;
-
-    return InkWell(
-      onTap: () => _applyTheme(mode),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: borderColor ?? Colors.grey,
-            width: isSelected ? 2 : 1,
+  void _showResetConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: const Color(0xFF141418),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF141418),
+            border: Border.all(color: const Color(0xFF2A2A30), width: 2),
+            boxShadow: const [
+              BoxShadow(color: Color(0xCC000000), offset: Offset(4, 4)),
+            ],
           ),
-          color: backgroundColor,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('⚠️', style: TextStyle(fontSize: 40)),
+              const SizedBox(height: 16),
+              Text(
+                'RESETAR JOGO?',
+                style: GoogleFonts.silkscreen(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Todos os dados serão apagados permanentemente.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 9,
+                  color: Colors.white54,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(dialogContext),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF555555),
+                          border: Border.all(
+                            color: const Color(0xFF555555),
+                            width: 2,
+                          ),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0xCC000000),
+                              offset: Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          'CANCELAR',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 9,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        Navigator.pop(dialogContext);
+                        await context.read<GameService>().resetGame();
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.red[900],
+                          border: Border.all(color: Colors.red[900]!, width: 2),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0xCC000000),
+                              offset: Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          'RESETAR',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 9,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// SCREEN HEADER
+// ─────────────────────────────────────────────────
+
+class _ScreenHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        color: Color(0xFF141418),
+        border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 2)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const Text('⚙️', style: TextStyle(fontSize: 24)),
+              const SizedBox(width: 12),
+              Text(
+                'CONFIGURAÇÕES',
+                style: GoogleFonts.silkscreen(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: const Text('✕', style: TextStyle(fontSize: 24)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// SECTION TITLE
+// ─────────────────────────────────────────────────
+
+class _SectionTitle extends StatelessWidget {
+  final String title;
+
+  const _SectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: GoogleFonts.jetBrainsMono(
+        fontSize: 10,
+        color: Colors.white54,
+        letterSpacing: 2,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// THEME CARD
+// ─────────────────────────────────────────────────
+
+class _ThemeCard extends StatelessWidget {
+  final ThemeMode mode;
+  final String title;
+  final String subtitle;
+  final String icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _ThemeCard({
+    required this.mode,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
         padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF141418),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF4ADE80)
+                : const Color(0xFF2A2A30),
+            width: 2,
+          ),
+          boxShadow: const [
+            BoxShadow(color: Color(0xCC000000), offset: Offset(4, 4)),
+          ],
+        ),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: primaryColor, size: 28),
-            ),
+            Text(icon, style: const TextStyle(fontSize: 28)),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    style: GoogleFonts.silkscreen(
+                      fontSize: 12,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 8,
+                      color: Colors.white54,
+                    ),
                   ),
                 ],
               ),
             ),
             if (isSelected)
-              Icon(Icons.check_circle, color: primaryColor, size: 28),
+              const Text(
+                '✓',
+                style: TextStyle(fontSize: 24, color: Color(0xFF4ADE80)),
+              ),
           ],
         ),
       ),
     );
   }
+}
 
-  void _showResetConfirmation(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Resetar Jogo?'),
-        content: const Text(
-          'Tem certeza que deseja resetar o jogo? '
-          'Todos os seus dados serão apagados e não podem ser recuperados.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
+// ─────────────────────────────────────────────────
+// SETTINGS BUTTON
+// ─────────────────────────────────────────────────
+
+class _SettingsButton extends StatelessWidget {
+  final String icon;
+  final String title;
+  final String subtitle;
+  final bool isDestructive;
+  final VoidCallback onTap;
+
+  const _SettingsButton({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.isDestructive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF141418),
+          border: Border.all(
+            color: isDestructive ? Colors.red[900]! : const Color(0xFF2A2A30),
+            width: 2,
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              // Chamar resetGame do GameService
-              await context.read<GameService>().resetGame();
-              // Voltar para a home
-              if (context.mounted) {
-                Navigator.pop(context);
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Resetar'),
+          boxShadow: const [
+            BoxShadow(color: Color(0xCC000000), offset: Offset(4, 4)),
+          ],
+        ),
+        child: Row(
+          children: [
+            Text(icon, style: const TextStyle(fontSize: 28)),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.silkscreen(
+                      fontSize: 12,
+                      color: isDestructive ? Colors.red[300] : Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 8,
+                      color: Colors.white54,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Text(
+              '→',
+              style: TextStyle(fontSize: 20, color: Colors.white54),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// INFO ROW
+// ─────────────────────────────────────────────────
+
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _InfoRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141418),
+        border: Border.all(color: const Color(0xFF2A2A30), width: 2),
+        boxShadow: const [
+          BoxShadow(color: Color(0xCC000000), offset: Offset(4, 4)),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 10,
+              color: Colors.white70,
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 10,
+              color: const Color(0xFF4ADE80),
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
