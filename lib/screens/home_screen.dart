@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/game_service.dart';
 import '../models/career.dart';
 import 'stats_screen.dart';
-import 'settings_screen.dart';
+import 'shop_screen.dart';
 import 'career_upgrades_screen.dart';
 import 'notebook_screen.dart';
 
@@ -81,11 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 const CareerUpgradesScreen(),
                 // Página 3: Stats
                 const StatsScreen(),
-                // Página 4: Settings
-                SettingsScreen(
-                  currentTheme: ThemeMode.system,
-                  onThemeChanged: widget.onThemeChanged ?? (_) {},
-                ),
+                // Página 4: Shop
+                const ShopScreen(),
               ],
             ),
           ),
@@ -654,7 +651,7 @@ class _BottomNav extends StatelessWidget {
     {'icon': Icons.computer, 'label': 'NOTEBOOK'},
     {'icon': Icons.emoji_events, 'label': 'CARREIRA'},
     {'icon': Icons.bar_chart, 'label': 'ESTATÍS.'},
-    {'icon': Icons.settings, 'label': 'CONFIG.'},
+    {'icon': Icons.shopping_bag, 'label': 'LOJA'},
   ];
 
   @override

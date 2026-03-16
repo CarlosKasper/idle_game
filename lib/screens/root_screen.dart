@@ -6,7 +6,7 @@ import '../widgets/ui_components.dart';
 import 'notebook_screen.dart';
 import 'career_upgrades_screen.dart';
 import 'stats_screen.dart';
-import 'settings_screen.dart';
+import 'shop_screen.dart';
 
 /// Tela raiz que gerencia a navegação entre as telas com menu persistente
 class RootScreen extends StatefulWidget {
@@ -79,11 +79,8 @@ class _RootScreenState extends State<RootScreen> {
                 const CareerUpgradesScreen(),
                 // Página 3: Stats
                 const StatsScreen(),
-                // Página 4: Settings
-                SettingsScreen(
-                  currentTheme: ThemeMode.system,
-                  onThemeChanged: widget.onThemeChanged ?? (_) {},
-                ),
+                // Página 4: Shop
+                const ShopScreen(),
               ],
             ),
           ),
@@ -143,26 +140,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
           ],
         ),
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Configurações',
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SettingsScreen(
-                    currentTheme: ThemeMode.system,
-                    onThemeChanged: widget.onThemeChanged ?? (_) {},
-                  ),
-                ),
-              );
-              if (result == 'reset' && mounted) {
-                await context.read<GameService>().resetGame();
-              }
-            },
-          ),
-        ],
+        actions: [],
       ),
       body: Consumer<GameService>(
         builder: (context, gameService, child) {

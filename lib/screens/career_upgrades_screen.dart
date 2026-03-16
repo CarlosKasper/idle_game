@@ -144,6 +144,7 @@ class _CareerUpgradesScreenState extends State<CareerUpgradesScreen>
                               upgrades: upgradesForCareer,
                               gameService: gameService,
                               isUnlocked: true,
+                              currentCareer: selectedCareer,
                             ),
                           const SizedBox(height: 24),
                         ],
@@ -305,11 +306,13 @@ class _UpgradesListCard extends StatelessWidget {
   final List<CareerUpgrade> upgrades;
   final GameService gameService;
   final bool isUnlocked;
+  final career_model.CareerLevel currentCareer; // Novo parâmetro
 
   const _UpgradesListCard({
     required this.upgrades,
     required this.gameService,
     required this.isUnlocked,
+    required this.currentCareer,
   });
 
   @override
@@ -474,7 +477,52 @@ class _UpgradesListCard extends StatelessWidget {
               );
             },
           ),
+          // MAX ALL Button - Aparece apenas um cargo acima
+          _buildMaxAllButton(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMaxAllButton() {
+    final currentCareerLevel = gameService.state.currentCareerLevel;
+    final upgradeCareerlevel = currentCareer.id;
+
+    // MAX ALL aparece para todos os cargos anteriores ao atual
+    final shouldShowMaxAll = currentCareerLevel > upgradeCareerlevel;
+
+    if (!shouldShowMaxAll) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: Color(0xFF2A2A30))),
+      ),
+      child: Center(
+        child: GestureDetector(
+          onTap: () {
+            // Compra todos os upgrades dessa carreira gastando todo o dinheiro
+            gameService.buyMaxCareerUpgrades(currentCareer.id);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF4ADE80),
+              border: Border.all(color: const Color(0xFF4ADE80), width: 2),
+            ),
+            child: Text(
+              'MAX ALL',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                color: const Color(0xFF0A0A0F),
+                fontWeight: FontWeight.w600,
+                letterSpacing: 2,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

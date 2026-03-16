@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/game_state.dart';
 import '../models/money.dart';
 import '../models/upgrade.dart';
+import '../models/career_upgrade.dart';
 import '../models/notebook_evolution.dart';
 import 'save_service.dart';
 import 'analytics_service.dart';
@@ -43,12 +44,12 @@ class GameService extends ChangeNotifier {
     final previousCareerLevel = _state.currentCareerLevel;
     _state.earnMoneyFromClick();
     _analytics.trackClick();
-    
+
     // Rastreia promoção se houver mudança de nível
     if (_state.currentCareerLevel > previousCareerLevel) {
       _analytics.trackPromotion(_state.currentCareerLevel);
     }
-    
+
     _saveGame();
     notifyListeners();
   }
@@ -61,12 +62,12 @@ class GameService extends ChangeNotifier {
       final elapsed = _passiveIncomeStopwatch.elapsed;
       _state.earnPassiveIncome(elapsed);
       _passiveIncomeStopwatch.reset();
-      
+
       // Rastreia promoção se houver mudança de nível
       if (_state.currentCareerLevel > previousCareerLevel) {
         _analytics.trackPromotion(_state.currentCareerLevel);
       }
-      
+
       notifyListeners();
     }
   }
@@ -263,6 +264,99 @@ class GameService extends ChangeNotifier {
     }
 
     _analytics.trackUpgradePurchase(upgradeId);
+    _saveGame();
+    notifyListeners();
+  }
+
+  /// Compra todos os upgrades de carreira até gastar todo o dinheiro
+  /// Continua comprando em loop até não ter dinheiro para nenhum upgrade
+  /// Sempre compra o upgrade mais barato primeiro
+  /// Aplica bonus de 20% no dinheiro gasto
+  void buyMaxCareerUpgrades(int careerLevel) {
+    Money moneySpent = Money(0); // Rastreia quanto foi gasto
+    bool madeAPurchase = true;
+    int purchaseCount = 0;
+
+    // Loop enquanto conseguir comprar algo
+    while (madeAPurchase && purchaseCount < 1000) {
+      madeAPurchase = false;
+      purchaseCount++;
+
+      // Filtra upgrades que desbloqueiam neste nível
+      final availableUpgrades = <MapEntry<CareerUpgrade, Money>>[];
+      for (final careerUpgrade in careerUpgrades) {
+        if (careerUpgrade.unlocksAtCareerLevel != careerLevel) {
+          continue;
+        }
+
+        final purchased = _state.purchasedCareerUpgrades[careerUpgrade.id];
+        if (purchased == null) continue;
+
+        // Pula upgrades únicos já comprados
+        if (!purchased.upgrade.isInfinite && purchased.purchased) {
+          continue;
+        }
+
+        final cost = purchased.getCurrentCost();
+        availableUpgrades.add(MapEntry(careerUpgrade, cost));
+      }
+
+      // Ordena por custo (mais barato primeiro)
+      availableUpgrades.sort(
+        (a, b) => a.value.amount.compareTo(b.value.amount),
+      );
+
+      // Tenta comprar o upgrade mais barato
+      for (final entry in availableUpgrades) {
+        final careerUpgrade = entry.key;
+        final cost = entry.value;
+
+        if (_state.money >= cost) {
+          // Registra quanto vai gastar
+          moneySpent = moneySpent + cost;
+
+          // Descontar custo
+          _state.money = _state.money - cost;
+
+          final purchased = _state.purchasedCareerUpgrades[careerUpgrade.id]!;
+
+          // Aplicar bônus
+          switch (purchased.upgrade.type) {
+            case UpgradeType.clickBonus:
+              _state.clickBonusTotal += purchased.upgrade.value;
+              break;
+            case UpgradeType.incomeBonus:
+              _state.incomePerSecondTotal += purchased.upgrade.value;
+              break;
+            case UpgradeType.multiplier:
+              _state.multiplierTotal += purchased.upgrade.value;
+              break;
+          }
+
+          // Aumenta o level do upgrade se for infinito
+          if (purchased.upgrade.isInfinite) {
+            purchased.level++;
+          } else {
+            // Se não for infinito, marca como comprado
+            purchased.purchased = true;
+          }
+
+          _analytics.trackUpgradePurchase(careerUpgrade.id);
+          madeAPurchase = true;
+          break; // Começa novamente a verificar todos (com reorder)
+        }
+      }
+    }
+
+    // Aplica bonus de 20% no dinheiro gasto
+    if (moneySpent.amount > 0) {
+      final bonusAmount = (moneySpent.amount * 0.2);
+      final bonus = Money(bonusAmount);
+      _state.money = _state.money + bonus;
+      _state.totalMoneyEarned = _state.totalMoneyEarned + bonus;
+      _analytics.trackClick(); // Registra como atividade
+    }
+
     _saveGame();
     notifyListeners();
   }

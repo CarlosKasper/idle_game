@@ -404,8 +404,8 @@ class BottomNavigationMenu extends StatelessWidget {
           ),
           _buildNavItem(
             context: context,
-            icon: Icons.settings,
-            label: 'Configurações',
+            icon: Icons.shopping_bag,
+            label: 'Loja',
             isSelected: selectedIndex == 4,
             onTap: () => onItemTapped(4),
           ),
