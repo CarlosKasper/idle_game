@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/game_service.dart';
+import '../services/purchase_state_service.dart';
 import '../models/career.dart';
 import 'stats_screen.dart';
 import 'shop_screen.dart';
@@ -86,9 +87,19 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          _BottomNav(
-            selectedIndex: _selectedIndex,
-            onItemTapped: _onNavItemTapped,
+          Consumer<PurchaseStateService>(
+            builder: (context, purchaseState, _) {
+              return IgnorePointer(
+                ignoring: purchaseState.isPurchasing,
+                child: Opacity(
+                  opacity: purchaseState.isPurchasing ? 0.5 : 1.0,
+                  child: _BottomNav(
+                    selectedIndex: _selectedIndex,
+                    onItemTapped: _onNavItemTapped,
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

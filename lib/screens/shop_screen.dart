@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../services/game_service.dart';
-import '../services/admob_service.dart';
 import '../services/in_app_purchase_service.dart';
+import '../services/purchase_state_service.dart';
 import '../models/money.dart';
-import '../config/admob_config.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -16,27 +14,214 @@ class ShopScreen extends StatefulWidget {
 }
 
 class _ShopScreenState extends State<ShopScreen> {
-  late AdMobService _adMobService;
   late InAppPurchaseService _iapService;
+  late PurchaseStateService _purchaseStateService;
+  bool _showingSuccessModal = false; // Guard para evitar modals duplicadas
+  bool _showProcessingOverlay =
+      false; // Controla visibilidade do overlay de processamento
 
   @override
   void initState() {
     super.initState();
-    _adMobService = AdMobService();
     _iapService = InAppPurchaseService();
-    // Pré-carregar anúncios recompensados usando IDs da config
-    // _adMobService.loadRewardedAd(AdMobConfig.rewardedAdUnitId1);
-    // _adMobService.loadRewardedAd(AdMobConfig.rewardedAdUnitId2);
-    // _adMobService.loadRewardedAd(AdMobConfig.rewardedAdUnitId3);
+    _purchaseStateService = context.read<PurchaseStateService>();
 
     // Inicializar IAP
     _iapService.initialize();
+
+    // Configurar callback para quando uma compra IAP é completada
+    _iapService.setOnPurchaseCompleted((productId) {
+      _handleIAPPurchaseComplete(productId);
+    });
+  }
+
+  /// Chamado quando uma compra IAP é completada com sucesso
+  void _handleIAPPurchaseComplete(String productId) {
+    debugPrint('[ShopScreen] Compra IAP concluída: $productId');
+
+    if (!mounted || _showingSuccessModal)
+      return; // Guard contra modals duplicadas
+
+    final gameService = context.read<GameService>();
+
+    // Encontrar o produto que foi comprado
+    ShopProduct? purchasedProduct;
+    for (final product in products) {
+      if (product.iapProductId == productId) {
+        purchasedProduct = product;
+        break;
+      }
+    }
+
+    if (purchasedProduct != null) {
+      debugPrint('[ShopScreen] Aplicando benefício: ${purchasedProduct.name}');
+      _applyProductBenefit(purchasedProduct, gameService);
+
+      // Mostrar modal de sucesso bloqueando a interação
+      _showSuccessModal(purchasedProduct);
+    }
+  }
+
+  /// Mostra modal de sucesso da compra (bloqueia interação até fechar)
+  void _showSuccessModal(ShopProduct product) {
+    _showingSuccessModal = true;
+
+    String statusText = '✅ ${product.name} ativado! ${product.emoji}';
+
+    // Adicionar informação de duração se for bônus temporal
+    if (product.id.startsWith('buff_')) {
+      statusText += '\n${product.duration}';
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Não pode fechar clicando fora
+      barrierColor: Colors.black.withOpacity(
+        0.8,
+      ), // Barrier mais escuro e opaco
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async => false, // Bloqueia botão de voltar
+          child: AlertDialog(
+            backgroundColor: const Color(0xFF141418),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: const BorderSide(color: Color(0xFF4ADE80), width: 2),
+            ),
+            title: Text(
+              '🎉 Compra Realizada',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 14,
+                color: const Color(0xFF4ADE80),
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            content: Text(
+              statusText,
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 12,
+                color: Colors.white70,
+                height: 1.6,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () {
+                    _showingSuccessModal = false;
+                    Navigator.of(context).pop();
+                    _purchaseStateService.setPurchasing(false);
+                    setState(() {
+                      _showProcessingOverlay = false;
+                    });
+                    _hideSnackBar(); // Remove SnackBar de processamento
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFF4ADE80),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  child: Text(
+                    'OK',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 12,
+                      color: const Color(0xFF0A0A0F),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Aplica o benefício do produto comprado
+  void _applyProductBenefit(ShopProduct product, GameService gameService) {
+    if (product.id == 'buff_income_x2') {
+      gameService.activateIncomeBonus(
+        product.id,
+        product.name,
+        1.0, // 100% bonus
+        const Duration(hours: 1),
+        product.emoji,
+      );
+    } else if (product.id == 'buff_income_x3') {
+      gameService.activateIncomeBonus(
+        product.id,
+        product.name,
+        2.0, // 200% bonus
+        const Duration(hours: 2),
+        product.emoji,
+      );
+    } else if (product.id == 'buff_income_x5') {
+      gameService.activateIncomeBonus(
+        product.id,
+        product.name,
+        4.0, // 400% bonus
+        const Duration(hours: 6),
+        product.emoji,
+      );
+    } else if (product.id == 'buff_clicks_x2') {
+      gameService.activateClickBonus(
+        product.id,
+        product.name,
+        1.0, // 100% bonus
+        const Duration(minutes: 30),
+        product.emoji,
+      );
+    } else if (product.id == 'buff_all_in_one') {
+      // Ativar ambos os bônus
+      gameService.activateIncomeBonus(
+        '${product.id}_income',
+        '${product.name} (Renda)',
+        2.0, // 200% bonus
+        const Duration(hours: 1),
+        product.emoji,
+      );
+      gameService.activateClickBonus(
+        '${product.id}_clicks',
+        '${product.name} (Cliques)',
+        2.0, // 200% bonus
+        const Duration(hours: 1),
+        product.emoji,
+      );
+    } else if (product.id == 'money_bonus_1000') {
+      gameService.state.money = gameService.state.money + Money(1000);
+    } else if (product.id == 'ad_money_bonus') {
+      gameService.state.money = gameService.state.money + Money(500);
+    } else if (product.id == 'become_ceo') {
+      gameService.becomeCEO();
+    }
+  }
+
+  /// Define o estado de processamento de compra
+  void setPurchasing(bool value) {
+    _purchaseStateService.setPurchasing(value);
+  }
+
+  /// Mostra/esconde o overlay de processamento
+  void setShowProcessingOverlay(bool value) {
+    setState(() {
+      _showProcessingOverlay = value;
+    });
+  }
+
+  /// Remove o SnackBar
+  void _hideSnackBar() {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
   }
 
   @override
   void dispose() {
-    _adMobService.dispose();
-    _iapService.dispose();
+    // Não dispose do InAppPurchaseService pois é um singleton
+    // que persiste para toda a aplicação
     super.dispose();
   }
 
@@ -46,39 +231,6 @@ class _ShopScreenState extends State<ShopScreen> {
     // ═══════════════════════════════════════════════════════════════════
     // PRODUTOS COM ANÚNCIOS (FREE)
     // ═══════════════════════════════════════════════════════════════════
-    ShopProduct(
-      id: 'ad_buff_income_x2',
-      name: 'Multiplicador 2x (Anúncio)',
-      description: 'Assista um anúncio para ganhar +100% renda por 30 min',
-      emoji: '📺',
-      price: 'GRÁTIS',
-      duration: '30 min',
-      bonus: 1.0,
-      isAdVideo: true,
-      adUnitId: AdMobConfig.rewardedAdUnitId1,
-    ),
-    ShopProduct(
-      id: 'ad_buff_clicks_x2',
-      name: 'Cliques 2x (Anúncio)',
-      description: 'Assista um anúncio para ganhar +100% cliques por 20 min',
-      emoji: '📺',
-      price: 'GRÁTIS',
-      duration: '20 min',
-      bonus: 1.0,
-      isAdVideo: true,
-      adUnitId: AdMobConfig.rewardedAdUnitId2,
-    ),
-    ShopProduct(
-      id: 'ad_money_bonus',
-      name: 'Bônus de Dinheiro (Anúncio)',
-      description: 'Assista um anúncio e receba \$500',
-      emoji: '📺',
-      price: 'GRÁTIS',
-      duration: 'Permanente',
-      bonus: 0.0,
-      isAdVideo: true,
-      adUnitId: AdMobConfig.rewardedAdUnitId3,
-    ),
     ShopProduct(
       id: 'buff_income_x2',
       name: 'Multiplicador 2x',
@@ -157,74 +309,103 @@ class _ShopScreenState extends State<ShopScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
-      body: Column(
+      body: Stack(
         children: [
-          _ScreenHeader(),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Buffs & Recompensas',
-                    style: GoogleFonts.silkscreen(
-                      fontSize: 14,
-                      color: Colors.white54,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ...products.map(
-                    (product) => Column(
-                      children: [
-                        _ShopProductCard(
-                          product: product,
-                          adMobService: _adMobService,
-                          iapService: _iapService,
+          Column(
+            children: [
+              _ScreenHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Buffs & Recompensas',
+                        style: GoogleFonts.silkscreen(
+                          fontSize: 14,
+                          color: Colors.white54,
+                          letterSpacing: 1,
                         ),
-                        const SizedBox(height: 12),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1A1A20),
-                      border: Border.all(
-                        color: Colors.orange.withOpacity(0.3),
-                        width: 2,
                       ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'ℹ️ Informação',
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 12,
-                            color: Colors.orange,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      const SizedBox(height: 16),
+                      ...products.map(
+                        (product) => Column(
+                          children: [
+                            _ShopProductCard(
+                              product: product,
+                              iapService: _iapService,
+                            ),
+                            const SizedBox(height: 12),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Compre buffs com dinheiro real para potencializar seu progresso!',
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 10,
-                            color: Colors.white54,
-                            height: 1.5,
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A1A20),
+                          border: Border.all(
+                            color: Colors.orange.withOpacity(0.3),
+                            width: 2,
                           ),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ],
-                    ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'ℹ️ Informação',
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 12,
+                                color: Colors.orange,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Compre buffs com dinheiro real para potencializar seu progresso!',
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 10,
+                                color: Colors.white54,
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ),
+            ],
+          ),
+          // Overlay de bloqueio quando compra está sendo processada
+          if (_showProcessingOverlay)
+            Container(
+              color: Colors.black.withOpacity(0.6),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF4ADE80),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Processando compra...',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 14,
+                        color: const Color(0xFF4ADE80),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -256,14 +437,9 @@ class _ScreenHeader extends StatelessWidget {
 
 class _ShopProductCard extends StatelessWidget {
   final ShopProduct product;
-  final AdMobService adMobService;
   final InAppPurchaseService iapService;
 
-  const _ShopProductCard({
-    required this.product,
-    required this.adMobService,
-    required this.iapService,
-  });
+  const _ShopProductCard({required this.product, required this.iapService});
 
   @override
   Widget build(BuildContext context) {
@@ -513,24 +689,8 @@ class _ShopProductCard extends StatelessWidget {
   ) {
     Navigator.pop(context);
 
-    if (product.isAdVideo && product.adUnitId != null) {
-      // Mostrar anúncio com recompensa real via AdMob
-      adMobService.showRewardedAd(product.adUnitId!, (RewardItem reward) {
-        // Quando o usuário completa o anúncio
-        _applyProductBenefit(product, gameService);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '✅ Obrigado! ${product.name} ativado! ${product.emoji}',
-              ),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      });
-    } else if (product.isAdVideo) {
-      // Fallback: simular exibição de anúncio se não tiver AdMob configurado
+    if (product.isAdVideo) {
+      // Anúncios removidos - apenas simular
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('🎬 Exibindo anúncio... ${product.emoji}'),
@@ -553,16 +713,25 @@ class _ShopProductCard extends StatelessWidget {
         }
       });
     } else if (product.iapProductId != null) {
-      // Compra via Apple Store
-      iapService.buyProduct(product.iapProductId!);
+      // Compra via Apple Store - marca início do processamento
+      final shopScreenState = context
+          .findAncestorStateOfType<_ShopScreenState>();
+      shopScreenState?.setPurchasing(true);
+      shopScreenState?.setShowProcessingOverlay(true);
+
+      // Mostrar SnackBar que persiste até a modal ser fechada
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('🛒 Processando pagamento... ${product.emoji}'),
-          duration: const Duration(seconds: 2),
+          duration: const Duration(minutes: 5), // Persiste até fechar modal
+          backgroundColor: const Color(0xFF1A1A20),
         ),
       );
+
+      iapService.buyProduct(product.iapProductId!);
     } else {
       // Compra com dinheiro real (fallback)
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${product.name} ativado! ${product.emoji}'),

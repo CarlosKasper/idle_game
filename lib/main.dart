@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'services/game_service.dart';
+import 'services/purchase_state_service.dart';
 import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -77,12 +78,15 @@ class _MainAppState extends State<MainApp> {
 
         return ChangeNotifierProvider.value(
           value: _gameService,
-          child: MaterialApp(
-            title: 'Office Idle',
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: _themeMode,
-            home: HomeScreen(onThemeChanged: _setThemeMode),
+          child: ChangeNotifierProvider.value(
+            value: PurchaseStateService(),
+            child: MaterialApp(
+              title: 'Office Idle',
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: _themeMode,
+              home: HomeScreen(onThemeChanged: _setThemeMode),
+            ),
           ),
         );
       },

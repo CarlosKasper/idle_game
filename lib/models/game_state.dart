@@ -254,7 +254,11 @@ class GameState {
   }
 
   /// Adiciona um bônus ativo
+  /// Se um bônus com o mesmo ID já existe, remove o antigo antes de adicionar o novo
   void addActiveBonus(ActiveBonus bonus) {
+    // Remover bônus antigo com o mesmo ID se existir
+    activeBonuses.removeWhere((b) => b.id == bonus.id);
+    // Adicionar o novo bônus
     activeBonuses.add(bonus);
   }
 

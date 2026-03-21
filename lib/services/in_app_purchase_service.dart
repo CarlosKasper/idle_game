@@ -43,6 +43,8 @@ class InAppPurchaseService extends ChangeNotifier {
   bool _isPurchasing = false;
   Map<String, ProductDetails> _products = {};
   Set<String> _purchasedProducts = {};
+  Set<String> _processedPurchases =
+      {}; // Track processadas para evitar duplicação
   String? _errorMessage;
   bool _initialized = false;
 
@@ -111,6 +113,7 @@ class InAppPurchaseService extends ChangeNotifier {
     try {
       _isPurchasing = true;
       _errorMessage = null;
+      _processedPurchases.clear(); // Limpar processadas para nova compra
       notifyListeners();
 
       final purchaseParam = PurchaseParam(productDetails: product);
@@ -242,14 +245,27 @@ class InAppPurchaseService extends ChangeNotifier {
           debugPrint(
             '[IAP] ✅ SUCESSO! Produto comprado: ${purchase.productID}',
           );
+
+          // Verificar se já foi processado esta compra
+          if (_processedPurchases.contains(purchase.productID)) {
+            debugPrint(
+              '[IAP] ⚠️ Compra já processada: ${purchase.productID}, ignorando',
+            );
+            if (purchase.pendingCompletePurchase) {
+              InAppPurchase.instance.completePurchase(purchase);
+            }
+            break;
+          }
+
           _isPurchasing = false;
           _errorMessage = null;
 
           // Salvar produto comprado
           _purchasedProducts.add(purchase.productID);
+          _processedPurchases.add(purchase.productID); // Marcar como processada
           _savePurchasedProducts();
 
-          // Chamar callback
+          // Chamar callback UMA VEZ
           _onPurchaseCompleted?.call(purchase.productID);
 
           if (purchase.pendingCompletePurchase) {
