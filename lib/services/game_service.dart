@@ -5,6 +5,7 @@ import '../models/upgrade.dart';
 import '../models/career_upgrade.dart';
 import '../models/notebook_evolution.dart';
 import '../models/active_bonus.dart';
+import '../models/career.dart';
 import 'save_service.dart';
 import 'analytics_service.dart';
 
@@ -409,6 +410,16 @@ class GameService extends ChangeNotifier {
   /// Define o jogador como CEO (compra premium)
   void becomeCEO() {
     _state.isCEO = true;
+
+    // Promover para CEO (nível 10)
+    _state.currentCareerLevel = 10;
+
+    // Dar dinheiro equivalente ao CEO
+    final ceoLevel = careerLevels[10];
+    _state.money =
+        ceoLevel.requiredMoney +
+        Money(1000000); // Um pouco mais que o necessário
+
     _saveGame();
     notifyListeners();
   }

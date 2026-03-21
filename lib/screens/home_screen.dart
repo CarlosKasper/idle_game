@@ -210,59 +210,68 @@ class _GameHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final career = careerLevels[gameService.state.currentCareerLevel];
-    final isCEO = gameService.state.isCEO;
+    return Consumer<GameService>(
+      builder: (context, gameService, _) {
+        final career = careerLevels[gameService.state.currentCareerLevel];
+        final isCEO = gameService.state.isCEO;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: isCEO ? const Color(0xFF2A1F14) : const Color(0xFF141418),
-        border: Border(
-          bottom: BorderSide(
-            color: isCEO ? const Color(0xFFD4A574) : const Color(0xFF2A2A30),
-            width: 2,
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isCEO ? const Color(0xFF2A1F14) : const Color(0xFF141418),
+            border: Border(
+              bottom: BorderSide(
+                color: isCEO
+                    ? const Color(0xFFD4A574)
+                    : const Color(0xFF2A2A30),
+                width: 2,
+              ),
+            ),
           ),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(isCEO ? '👑' : '💼', style: const TextStyle(fontSize: 24)),
-              const SizedBox(width: 12),
-              Text(
-                isCEO ? 'Office Idle • CEO' : 'Office Idle',
-                style: GoogleFonts.silkscreen(
-                  fontSize: 18,
-                  color: isCEO ? const Color(0xFFD4A574) : Colors.white,
-                ),
+              Row(
+                children: [
+                  Text(
+                    isCEO ? '👑' : '💼',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    isCEO ? 'Office Idle • CEO' : 'Office Idle',
+                    style: GoogleFonts.silkscreen(
+                      fontSize: 18,
+                      color: isCEO ? const Color(0xFFD4A574) : Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    career.title.toUpperCase(),
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 10,
+                      color: Colors.white,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  Text(
+                    'NV ${gameService.state.currentCareerLevel + 1}',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 9,
+                      color: Colors.white38,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                career.title.toUpperCase(),
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 10,
-                  color: Colors.white,
-                  letterSpacing: 2,
-                ),
-              ),
-              Text(
-                'NV ${gameService.state.currentCareerLevel + 1}',
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 9,
-                  color: Colors.white38,
-                  letterSpacing: 2,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
