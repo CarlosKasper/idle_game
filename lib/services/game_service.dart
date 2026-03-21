@@ -416,9 +416,12 @@ class GameService extends ChangeNotifier {
 
     // Dar dinheiro equivalente ao CEO
     final ceoLevel = careerLevels[10];
-    _state.money =
+    final moneyAmount =
         ceoLevel.requiredMoney +
         Money(1000000); // Um pouco mais que o necessário
+
+    _state.money = moneyAmount;
+    _state.totalMoneyEarned = _state.totalMoneyEarned + moneyAmount;
 
     _saveGame();
     notifyListeners();

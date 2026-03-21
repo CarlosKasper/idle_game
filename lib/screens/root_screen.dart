@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:idle_game/models/career.dart';
+import 'package:flutter/gestures.dart';
+import '../models/career.dart';
 import 'package:provider/provider.dart';
 import '../services/game_service.dart';
 import '../widgets/ui_components.dart';
@@ -20,19 +21,15 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> {
   int _selectedIndex = 0;
-  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: _selectedIndex);
-    // Inicia update loop para renda passiva
     _startUpdateLoop();
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -49,11 +46,6 @@ class _RootScreenState extends State<RootScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
   }
 
   @override
@@ -63,25 +55,24 @@ class _RootScreenState extends State<RootScreen> {
       body: Column(
         children: [
           Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                // bloqueia qualquer scroll horizontal de trocar de tela
+                return notification.metrics.axis == Axis.horizontal;
               },
-              children: [
-                // Página 0: Home
-                _HomeScreenContent(onThemeChanged: widget.onThemeChanged),
-                // Página 1: Notebook
-                const NotebookScreen(),
-                // Página 2: Career
-                const CareerUpgradesScreen(),
-                // Página 3: Stats
-                const StatsScreen(),
-                // Página 4: Shop
-                const ShopScreen(),
-              ],
+              child: GestureDetector(
+                onHorizontalDragUpdate: (_) {},
+                child: IndexedStack(
+                  index: _selectedIndex,
+                  children: [
+                    _HomeScreenContent(onThemeChanged: widget.onThemeChanged),
+                    const NotebookScreen(),
+                    const CareerUpgradesScreen(),
+                    const StatsScreen(),
+                    const ShopScreen(),
+                  ],
+                ),
+              ),
             ),
           ),
           BottomNavigationMenu(

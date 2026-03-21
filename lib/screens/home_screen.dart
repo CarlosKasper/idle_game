@@ -66,23 +66,13 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
+            child: IndexedStack(
+              index: _selectedIndex,
               children: [
-                // Página 0: Home
                 _HomeContent(onThemeChanged: widget.onThemeChanged),
-                // Página 1: Notebook
                 const NotebookScreen(),
-                // Página 2: Career
                 const CareerUpgradesScreen(),
-                // Página 3: Stats
                 const StatsScreen(),
-                // Página 4: Shop
                 const ShopScreen(),
               ],
             ),

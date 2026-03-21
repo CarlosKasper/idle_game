@@ -364,52 +364,55 @@ class BottomNavigationMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Colors.grey.withOpacity(0.15), width: 1),
+    return GestureDetector(
+      onHorizontalDragUpdate: (_) {}, // bloqueia swipe no menu
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(color: Colors.grey.withOpacity(0.15), width: 1),
+          ),
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildNavItem(
-            context: context,
-            icon: Icons.home,
-            label: 'Início',
-            isSelected: selectedIndex == 0,
-            onTap: () => onItemTapped(0),
-          ),
-          _buildNavItem(
-            context: context,
-            icon: Icons.laptop,
-            label: 'Notebook',
-            isSelected: selectedIndex == 1,
-            onTap: () => onItemTapped(1),
-          ),
-          _buildNavItem(
-            context: context,
-            icon: Icons.emoji_events,
-            label: 'Carreira',
-            isSelected: selectedIndex == 2,
-            onTap: () => onItemTapped(2),
-          ),
-          _buildNavItem(
-            context: context,
-            icon: Icons.bar_chart,
-            label: 'Estatísticas',
-            isSelected: selectedIndex == 3,
-            onTap: () => onItemTapped(3),
-          ),
-          _buildNavItem(
-            context: context,
-            icon: Icons.shopping_bag,
-            label: 'Loja',
-            isSelected: selectedIndex == 4,
-            onTap: () => onItemTapped(4),
-          ),
-        ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildNavItem(
+              context: context,
+              icon: Icons.home,
+              label: 'Início',
+              isSelected: selectedIndex == 0,
+              onTap: () => onItemTapped(0),
+            ),
+            _buildNavItem(
+              context: context,
+              icon: Icons.laptop,
+              label: 'Notebook',
+              isSelected: selectedIndex == 1,
+              onTap: () => onItemTapped(1),
+            ),
+            _buildNavItem(
+              context: context,
+              icon: Icons.emoji_events,
+              label: 'Carreira',
+              isSelected: selectedIndex == 2,
+              onTap: () => onItemTapped(2),
+            ),
+            _buildNavItem(
+              context: context,
+              icon: Icons.bar_chart,
+              label: 'Estatísticas',
+              isSelected: selectedIndex == 3,
+              onTap: () => onItemTapped(3),
+            ),
+            _buildNavItem(
+              context: context,
+              icon: Icons.shopping_bag,
+              label: 'Loja',
+              isSelected: selectedIndex == 4,
+              onTap: () => onItemTapped(4),
+            ),
+          ],
+        ),
       ),
     );
   }
