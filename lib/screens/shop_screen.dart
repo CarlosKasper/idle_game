@@ -1,10 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/app_localizations.dart';
 import '../services/game_service.dart';
 import '../services/in_app_purchase_service.dart';
 import '../services/purchase_state_service.dart';
 import '../models/money.dart';
+
+// ─────────────────────────────────────────────────
+// HELPER FUNCTION FOR LOCALIZED PRODUCT NAMES
+// ─────────────────────────────────────────────────
+
+String getLocalizedProductName(BuildContext context, String productId) {
+  final l10n = AppLocalizations.of(context);
+
+  switch (productId) {
+    case 'buff_income_x2':
+      return l10n.multiplier2x;
+    case 'buff_income_x3':
+      return l10n.multiplier3x;
+    case 'buff_income_x5':
+      return l10n.multiplier5x;
+    case 'buff_clicks_x2':
+      return l10n.clicks2x;
+    case 'buff_all_in_one':
+      return l10n.buffAllInOne;
+    case 'money_bonus_1000':
+      return l10n.moneyBonus;
+    case 'become_ceo':
+      return l10n.becomeCEO;
+    default:
+      return productId;
+  }
+}
+
+String getLocalizedProductDescription(BuildContext context, String productId) {
+  final l10n = AppLocalizations.of(context);
+
+  switch (productId) {
+    case 'buff_income_x2':
+      return l10n.multiplier2xDesc;
+    case 'buff_income_x3':
+      return l10n.multiplier3xDesc;
+    case 'buff_income_x5':
+      return l10n.multiplier5xDesc;
+    case 'buff_clicks_x2':
+      return l10n.clicks2xDesc;
+    case 'buff_all_in_one':
+      return l10n.buffAllInOneDesc;
+    case 'money_bonus_1000':
+      return l10n.moneyBonusDesc;
+    case 'become_ceo':
+      return l10n.becomeCEODesc;
+    default:
+      return productId;
+  }
+}
+
+String getLocalizedDuration(BuildContext context, String duration) {
+  final l10n = AppLocalizations.of(context);
+
+  switch (duration.toLowerCase()) {
+    case '1 hora':
+    case '1 hour':
+      return l10n.oneHour;
+    case '2 horas':
+    case '2 hours':
+      return l10n.twoHours;
+    case '6 horas':
+    case '6 hours':
+      return l10n.sixHours;
+    case '30 min':
+      return l10n.thirtyMin;
+    case 'permanente':
+    case 'permanent':
+      return l10n.permanent;
+    default:
+      return duration;
+  }
+}
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -54,7 +128,9 @@ class _ShopScreenState extends State<ShopScreen> {
     }
 
     if (purchasedProduct != null) {
-      debugPrint('[ShopScreen] Aplicando benefício: ${purchasedProduct.name}');
+      debugPrint(
+        '[ShopScreen] Aplicando benefício: ${getLocalizedProductName(context, purchasedProduct.id)}',
+      );
       _applyProductBenefit(purchasedProduct, gameService);
 
       // Mostrar modal de sucesso bloqueando a interação
@@ -66,11 +142,12 @@ class _ShopScreenState extends State<ShopScreen> {
   void _showSuccessModal(ShopProduct product) {
     _showingSuccessModal = true;
 
-    String statusText = '✅ ${product.name} ativado! ${product.emoji}';
+    String statusText =
+        '✅ ${getLocalizedProductName(context, product.id)} ativado! ${product.emoji}';
 
     // Adicionar informação de duração se for bônus temporal
     if (product.id.startsWith('buff_')) {
-      statusText += '\n${product.duration}';
+      statusText += '\n${getLocalizedDuration(context, product.duration)}';
     }
 
     showDialog(
@@ -89,7 +166,7 @@ class _ShopScreenState extends State<ShopScreen> {
               side: const BorderSide(color: Color(0xFF4ADE80), width: 2),
             ),
             title: Text(
-              '🎉 Compra Realizada',
+              AppLocalizations.of(context).purchaseSuccessful,
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 14,
                 color: const Color(0xFF4ADE80),
@@ -147,7 +224,7 @@ class _ShopScreenState extends State<ShopScreen> {
     if (product.id == 'buff_income_x2') {
       gameService.activateIncomeBonus(
         product.id,
-        product.name,
+        getLocalizedProductName(context, product.id),
         1.0, // 100% bonus
         const Duration(hours: 1),
         product.emoji,
@@ -155,7 +232,7 @@ class _ShopScreenState extends State<ShopScreen> {
     } else if (product.id == 'buff_income_x3') {
       gameService.activateIncomeBonus(
         product.id,
-        product.name,
+        getLocalizedProductName(context, product.id),
         2.0, // 200% bonus
         const Duration(hours: 2),
         product.emoji,
@@ -163,7 +240,7 @@ class _ShopScreenState extends State<ShopScreen> {
     } else if (product.id == 'buff_income_x5') {
       gameService.activateIncomeBonus(
         product.id,
-        product.name,
+        getLocalizedProductName(context, product.id),
         4.0, // 400% bonus
         const Duration(hours: 6),
         product.emoji,
@@ -171,7 +248,7 @@ class _ShopScreenState extends State<ShopScreen> {
     } else if (product.id == 'buff_clicks_x2') {
       gameService.activateClickBonus(
         product.id,
-        product.name,
+        getLocalizedProductName(context, product.id),
         1.0, // 100% bonus
         const Duration(minutes: 30),
         product.emoji,
@@ -180,14 +257,14 @@ class _ShopScreenState extends State<ShopScreen> {
       // Ativar ambos os bônus
       gameService.activateIncomeBonus(
         '${product.id}_income',
-        '${product.name} (Renda)',
+        '${getLocalizedProductName(context, product.id)} (Renda)',
         2.0, // 200% bonus
         const Duration(hours: 1),
         product.emoji,
       );
       gameService.activateClickBonus(
         '${product.id}_clicks',
-        '${product.name} (Cliques)',
+        '${getLocalizedProductName(context, product.id)} (Cliques)',
         2.0, // 200% bonus
         const Duration(hours: 1),
         product.emoji,
@@ -245,7 +322,7 @@ class _ShopScreenState extends State<ShopScreen> {
       id: 'buff_income_x3',
       name: 'Multiplicador 3x',
       description: '+200% renda por 2 horas',
-      emoji: '⚡⚡',
+      emoji: '⚡',
       price: '\$1.99',
       duration: '2 horas',
       bonus: 2.0, // 200% bonus
@@ -255,7 +332,7 @@ class _ShopScreenState extends State<ShopScreen> {
       id: 'buff_income_x5',
       name: 'Multiplicador 5x',
       description: '+400% renda por 6 horas',
-      emoji: '⚡⚡⚡',
+      emoji: '⚡',
       price: '\$4.99',
       duration: '6 horas',
       bonus: 4.0, // 400% bonus
@@ -431,7 +508,7 @@ class _ScreenHeader extends StatelessWidget {
               const Text('🛍️', style: TextStyle(fontSize: 24)),
               const SizedBox(width: 12),
               Text(
-                'LOJA',
+                AppLocalizations.of(context).shopTitle,
                 style: GoogleFonts.silkscreen(
                   fontSize: 18,
                   color: Colors.white,
@@ -485,7 +562,7 @@ class _ShopProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  product.name,
+                  getLocalizedProductName(context, product.id),
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 11,
                     color: Colors.white,
@@ -494,7 +571,7 @@ class _ShopProductCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  product.description,
+                  getLocalizedProductDescription(context, product.id),
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
                     color: Colors.white54,
@@ -515,7 +592,7 @@ class _ShopProductCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        product.duration,
+                        getLocalizedDuration(context, product.duration),
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 8,
                           color: Colors.white38,
@@ -602,7 +679,7 @@ class _ShopProductCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          'COMPRAR',
+                          AppLocalizations.of(context).buyButton,
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 7,
                             color: const Color(0xFF0A0A0F),
@@ -633,7 +710,9 @@ class _ShopProductCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      product.isAdVideo ? 'ASSISTIR' : 'COMPRAR',
+                      product.isAdVideo
+                          ? AppLocalizations.of(context).watchButton
+                          : AppLocalizations.of(context).buyButton,
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 8,
                         color: const Color(0xFF0A0A0F),
@@ -660,7 +739,7 @@ class _ShopProductCard extends StatelessWidget {
         return AlertDialog(
           backgroundColor: const Color(0xFF141418),
           title: Text(
-            product.name,
+            getLocalizedProductName(context, product.id),
             style: GoogleFonts.jetBrainsMono(
               color: Colors.white,
               fontWeight: FontWeight.w600,
@@ -668,21 +747,23 @@ class _ShopProductCard extends StatelessWidget {
           ),
           content: Text(
             product.isAdVideo
-                ? 'Assistir um anúncio para ganhar recompensa?'
-                : 'Comprar por ${product.price}?',
+                ? AppLocalizations.of(context).watchAd
+                : '${AppLocalizations.of(context).buyFor} ${product.price}?',
             style: GoogleFonts.jetBrainsMono(color: Colors.white70),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             TextButton(
               onPressed: () {
                 _processPurchase(context, product, gameService);
               },
               child: Text(
-                product.isAdVideo ? 'Assistir' : 'Confirmar',
+                product.isAdVideo
+                    ? AppLocalizations.of(context).watch
+                    : AppLocalizations.of(context).confirm,
                 style: TextStyle(color: const Color(0xFF4ADE80)),
               ),
             ),
@@ -715,7 +796,7 @@ class _ShopProductCard extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                '✅ Obrigado! ${product.name} ativado! ${product.emoji}',
+                '✅ Obrigado! ${getLocalizedProductName(context, product.id)} ativado! ${product.emoji}',
               ),
               duration: const Duration(seconds: 2),
             ),
@@ -744,7 +825,9 @@ class _ShopProductCard extends StatelessWidget {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${product.name} ativado! ${product.emoji}'),
+          content: Text(
+            '${getLocalizedProductName(context, product.id)} ativado! ${product.emoji}',
+          ),
           duration: const Duration(seconds: 2),
         ),
       );

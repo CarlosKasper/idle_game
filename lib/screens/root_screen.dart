@@ -4,10 +4,46 @@ import '../models/career.dart';
 import 'package:provider/provider.dart';
 import '../services/game_service.dart';
 import '../widgets/ui_components.dart';
+import '../l10n/app_localizations.dart';
 import 'notebook_screen.dart';
 import 'career_upgrades_screen.dart';
 import 'stats_screen.dart';
 import 'shop_screen.dart';
+
+// ─────────────────────────────────────────────────
+// HELPER FUNCTION FOR LOCALIZED CAREER LEVEL NAMES
+// ─────────────────────────────────────────────────
+
+String getLocalizedCareerLevelName(BuildContext context, CareerLevel career) {
+  final l10n = AppLocalizations.of(context);
+
+  switch (career.titleKey) {
+    case 'careerLevelIntern':
+      return l10n.careerLevelIntern;
+    case 'careerLevelJunior':
+      return l10n.careerLevelJunior;
+    case 'careerLevelPleno':
+      return l10n.careerLevelPleno;
+    case 'careerLevelPlenoPlus':
+      return l10n.careerLevelPlenoPlus;
+    case 'careerLevelSenior':
+      return l10n.careerLevelSenior;
+    case 'careerLevelEngineeringLead':
+      return l10n.careerLevelEngineeringLead;
+    case 'careerLevelArchitect':
+      return l10n.careerLevelArchitect;
+    case 'careerLevelProjectManager':
+      return l10n.careerLevelProjectManager;
+    case 'careerLevelDirector':
+      return l10n.careerLevelDirector;
+    case 'careerLevelExecutive':
+      return l10n.careerLevelExecutive;
+    case 'careerLevelCEO':
+      return l10n.careerLevelCEO;
+    default:
+      return career.titleKey;
+  }
+}
 
 /// Tela raiz que gerencia a navegação entre as telas com menu persistente
 class RootScreen extends StatefulWidget {
@@ -165,12 +201,12 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     final careerEmojis = {
-      'Estagiário': '📚',
-      'Funcionário': '👔',
-      'Analista': '📊',
-      'Gerente': '👨‍💼',
-      'Diretor': '🎯',
-      'CEO': '👑',
+      'careerLevelIntern': '📚',
+      'careerLevelJunior': '👔',
+      'careerLevelPleno': '📊',
+      'careerLevelSenior': '👨‍💼',
+      'careerLevelDirector': '🎯',
+      'careerLevelCEO': '👑',
     };
 
     final emoji = careerEmojis[career.title] ?? '💼';
@@ -217,7 +253,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               ),
               const SizedBox(height: 16),
               Text(
-                career.title,
+                getLocalizedCareerLevelName(context, career),
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,

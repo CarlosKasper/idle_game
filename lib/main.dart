@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'l10n/app_localizations.dart';
 import 'services/game_service.dart';
 import 'services/purchase_state_service.dart';
 import 'screens/home_screen.dart';
@@ -81,6 +83,13 @@ class _MainAppState extends State<MainApp> {
           child: ChangeNotifierProvider.value(
             value: PurchaseStateService(),
             child: MaterialApp(
+              localizationsDelegates: [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
               title: 'Office Idle',
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,

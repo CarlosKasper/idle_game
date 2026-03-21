@@ -1,8 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/app_localizations.dart';
 import '../services/game_service.dart';
 import '../models/career.dart' as career_model;
+
+// ─────────────────────────────────────────────────
+// HELPER FUNCTION FOR LOCALIZED CAREER LEVEL NAMES
+// ─────────────────────────────────────────────────
+
+String getLocalizedCareerLevelName(
+  BuildContext context,
+  career_model.CareerLevel career,
+) {
+  final l10n = AppLocalizations.of(context);
+
+  switch (career.titleKey) {
+    case 'careerLevelIntern':
+      return l10n.careerLevelIntern;
+    case 'careerLevelJunior':
+      return l10n.careerLevelJunior;
+    case 'careerLevelPleno':
+      return l10n.careerLevelPleno;
+    case 'careerLevelPlenoPlus':
+      return l10n.careerLevelPlenoPlus;
+    case 'careerLevelSenior':
+      return l10n.careerLevelSenior;
+    case 'careerLevelEngineeringLead':
+      return l10n.careerLevelEngineeringLead;
+    case 'careerLevelArchitect':
+      return l10n.careerLevelArchitect;
+    case 'careerLevelProjectManager':
+      return l10n.careerLevelProjectManager;
+    case 'careerLevelDirector':
+      return l10n.careerLevelDirector;
+    case 'careerLevelExecutive':
+      return l10n.careerLevelExecutive;
+    case 'careerLevelCEO':
+      return l10n.careerLevelCEO;
+    default:
+      return career.titleKey;
+  }
+}
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key});
@@ -73,7 +112,7 @@ class _ScreenHeader extends StatelessWidget {
               const Text('📊', style: TextStyle(fontSize: 24)),
               const SizedBox(width: 12),
               Text(
-                'ESTATÍSTICAS',
+                AppLocalizations.of(context).statsTitle,
                 style: GoogleFonts.silkscreen(
                   fontSize: 18,
                   color: Colors.white,
@@ -110,7 +149,7 @@ class _SessionInfoCard extends StatelessWidget {
               const Text('⏱️', style: TextStyle(fontSize: 20)),
               const SizedBox(width: 8),
               Text(
-                'SESSÃO ATUAL',
+                AppLocalizations.of(context).sessionInfo,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 10,
                   color: Colors.white70,
@@ -124,7 +163,7 @@ class _SessionInfoCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Tempo jogando',
+                AppLocalizations.of(context).sessionDuration,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 9,
                   color: Colors.white54,
@@ -171,7 +210,7 @@ class _GameStatsCard extends StatelessWidget {
               const Text('💪', style: TextStyle(fontSize: 20)),
               const SizedBox(width: 8),
               Text(
-                'ATIVIDADE',
+                AppLocalizations.of(context).activity,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 10,
                   color: Colors.white70,
@@ -183,25 +222,25 @@ class _GameStatsCard extends StatelessWidget {
           const SizedBox(height: 16),
           _StatRow(
             emoji: '👆',
-            label: 'Cliques totais',
+            label: AppLocalizations.of(context).totalClicks,
             value: totalClicks.toString(),
           ),
           const SizedBox(height: 12),
           _StatRow(
             emoji: '⭐',
-            label: 'Upgrades comprados',
+            label: AppLocalizations.of(context).purchasedUpgrades,
             value: totalUpgrades.toString(),
           ),
           const SizedBox(height: 12),
           _StatRow(
             emoji: '📈',
-            label: 'Promoções',
+            label: AppLocalizations.of(context).bonuses,
             value: totalPromos.toString(),
           ),
           const SizedBox(height: 12),
           _StatRow(
             emoji: '💰',
-            label: 'Total ganho',
+            label: AppLocalizations.of(context).totalEarnings,
             value: '\$${gameService.state.totalMoneyEarned.format()}',
           ),
         ],
@@ -235,12 +274,12 @@ class _CareerInfoCard extends StatelessWidget {
         : 1.0;
 
     final careerEmojis = {
-      'Estagiário': '📚',
-      'Junior': '👔',
-      'Pleno': '📊',
-      'Pleno Plus': '👨‍💼',
-      'Senior': '🎩',
-      'CEO': '👑',
+      'careerLevelIntern': '📚',
+      'careerLevelJunior': '👔',
+      'careerLevelPleno': '📊',
+      'careerLevelPlenoPlus': '👨‍💼',
+      'careerLevelSenior': '🎩',
+      'careerLevelCEO': '👑',
     };
 
     final emoji = careerEmojis[career.title] ?? '💼';
@@ -254,7 +293,7 @@ class _CareerInfoCard extends StatelessWidget {
               Text(emoji, style: const TextStyle(fontSize: 20)),
               const SizedBox(width: 8),
               Text(
-                'CARREIRA',
+                AppLocalizations.of(context).careerInfo,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 10,
                   color: Colors.white70,
@@ -265,7 +304,7 @@ class _CareerInfoCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            career.title.toUpperCase(),
+            getLocalizedCareerLevelName(context, career).toUpperCase(),
             style: GoogleFonts.silkscreen(
               fontSize: 24,
               color: const Color(0xFF4ADE80),
@@ -273,7 +312,7 @@ class _CareerInfoCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Renda: \$${career.baseIncome.format()}/clique',
+            '${AppLocalizations.of(context).incomePerClick}: \$${career.baseIncome.format()}',
             style: GoogleFonts.jetBrainsMono(
               fontSize: 9,
               color: const Color(0xFFEAB308),
@@ -283,7 +322,7 @@ class _CareerInfoCard extends StatelessWidget {
           if (nextCareer != null) ...[
             const SizedBox(height: 16),
             Text(
-              'PRÓXIMO: ${nextCareer.title.toUpperCase()}',
+              '${AppLocalizations.of(context).next} ${getLocalizedCareerLevelName(context, nextCareer).toUpperCase()}',
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 9,
                 color: Colors.white54,
@@ -359,7 +398,7 @@ class _UpgradeStatsCard extends StatelessWidget {
               const Text('⭐', style: TextStyle(fontSize: 20)),
               const SizedBox(width: 8),
               Text(
-                'UPGRADES',
+                AppLocalizations.of(context).upgradeStats,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 10,
                   color: Colors.white70,

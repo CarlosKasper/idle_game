@@ -1,8 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/app_localizations.dart';
 import '../services/game_service.dart';
 import '../models/notebook_evolution.dart';
+
+// Helper para obter o nome localizado da evolução
+String getLocalizedNotebookName(
+  BuildContext context,
+  NotebookEvolution evolution,
+) {
+  final l10n = AppLocalizations.of(context);
+  switch (evolution.nameKey) {
+    case 'notebookBasicName':
+      return l10n.notebookBasicName;
+    case 'notebookUpdatedName':
+      return l10n.notebookUpdatedName;
+    case 'notebookProfessionalName':
+      return l10n.notebookProfessionalName;
+    case 'workstationName':
+      return l10n.workstationName;
+    case 'superWorkstationName':
+      return l10n.superWorkstationName;
+    case 'gamingRigName':
+      return l10n.gamingRigName;
+    case 'serverRoomName':
+      return l10n.serverRoomName;
+    case 'dataCenterName':
+      return l10n.dataCenterName;
+    case 'quantumComputerName':
+      return l10n.quantumComputerName;
+    case 'superintelligenceName':
+      return l10n.superintelligenceName;
+    default:
+      return evolution.nameKey;
+  }
+}
+
+// Helper para obter a descrição localizada da evolução
+String getLocalizedNotebookDesc(
+  BuildContext context,
+  NotebookEvolution evolution,
+) {
+  final l10n = AppLocalizations.of(context);
+  switch (evolution.descriptionKey) {
+    case 'notebookBasicDesc':
+      return l10n.notebookBasicDesc;
+    case 'notebookUpdatedDesc':
+      return l10n.notebookUpdatedDesc;
+    case 'notebookProfessionalDesc':
+      return l10n.notebookProfessionalDesc;
+    case 'workstationDesc':
+      return l10n.workstationDesc;
+    case 'superWorkstationDesc':
+      return l10n.superWorkstationDesc;
+    case 'gamingRigDesc':
+      return l10n.gamingRigDesc;
+    case 'serverRoomDesc':
+      return l10n.serverRoomDesc;
+    case 'dataCenterDesc':
+      return l10n.dataCenterDesc;
+    case 'quantumComputerDesc':
+      return l10n.quantumComputerDesc;
+    case 'superintelligenceDesc':
+      return l10n.superintelligenceDesc;
+    default:
+      return evolution.descriptionKey;
+  }
+}
 
 class NotebookScreen extends StatelessWidget {
   const NotebookScreen({super.key});
@@ -27,7 +92,9 @@ class NotebookScreen extends StatelessWidget {
             child: Column(
               children: [
                 // Header
-                _ScreenHeader(title: 'NOTEBOOK'),
+                _ScreenHeader(
+                  title: AppLocalizations.of(context).notebookTitle,
+                ),
                 // Content
                 Expanded(
                   child: SingleChildScrollView(
@@ -147,7 +214,7 @@ class _CurrentNotebookCard extends StatelessWidget {
                 ],
                 const SizedBox(width: 8),
                 Text(
-                  'NOTEBOOK.EXE',
+                  AppLocalizations.of(context).notebookExe,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
                     color: Colors.white38,
@@ -174,7 +241,7 @@ class _CurrentNotebookCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            evolution.name.toUpperCase(),
+            getLocalizedNotebookName(context, evolution).toUpperCase(),
             style: GoogleFonts.silkscreen(
               fontSize: 20,
               color: const Color(0xFF4ADE80),
@@ -215,7 +282,7 @@ class _CurrentStatsPanel extends StatelessWidget {
                 const Text('⚙️', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 8),
                 Text(
-                  'BÔNUS ATUAIS',
+                  AppLocalizations.of(context).currentBonuses,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
                     color: Colors.white70,
@@ -253,7 +320,7 @@ class _CurrentStatsPanel extends StatelessWidget {
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          'por click',
+                          AppLocalizations.of(context).perClick,
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 7,
                             color: Colors.white38,
@@ -288,7 +355,7 @@ class _CurrentStatsPanel extends StatelessWidget {
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          'por segundo',
+                          AppLocalizations.of(context).perSecond,
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 7,
                             color: Colors.white38,
@@ -329,7 +396,7 @@ class _NextEvolutionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'PRÓXIMA EVOLUÇÃO',
+            AppLocalizations.of(context).nextEvolutionLabel,
             style: GoogleFonts.jetBrainsMono(
               fontSize: 9,
               color: Colors.white70,
@@ -352,7 +419,10 @@ class _NextEvolutionCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        nextEvolution.name.toUpperCase(),
+                        getLocalizedNotebookName(
+                          context,
+                          nextEvolution,
+                        ).toUpperCase(),
                         style: GoogleFonts.silkscreen(
                           fontSize: 12,
                           color: const Color(0xFF4ADE80),
@@ -360,7 +430,7 @@ class _NextEvolutionCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Custo: \$${nextEvolution.cost.format()}',
+                        '${AppLocalizations.of(context).costLabel}: \$${nextEvolution.cost.format()}',
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 9,
                           color: canEvolve
@@ -401,7 +471,9 @@ class _NextEvolutionCard extends StatelessWidget {
                     : [],
               ),
               child: Text(
-                canEvolve ? 'EVOLUIR AGORA' : 'SEM DINHEIRO',
+                canEvolve
+                    ? AppLocalizations.of(context).evolveNow
+                    : AppLocalizations.of(context).insufficientMoney,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.silkscreen(
                   fontSize: 11,
@@ -435,7 +507,7 @@ class _MaxLevelCard extends StatelessWidget {
           const Text('🎉', style: TextStyle(fontSize: 40)),
           const SizedBox(height: 12),
           Text(
-            'NÍVEL MÁXIMO!',
+            AppLocalizations.of(context).maxLevelLabel,
             style: GoogleFonts.silkscreen(
               fontSize: 16,
               color: const Color(0xFF4ADE80),
@@ -443,7 +515,7 @@ class _MaxLevelCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Todas as evoluções desbloqueadas!',
+            AppLocalizations.of(context).allEvolutionsUnlocked,
             style: GoogleFonts.jetBrainsMono(
               fontSize: 9,
               color: Colors.white38,
@@ -484,7 +556,7 @@ class _EvolutionGrid extends StatelessWidget {
                 const Text('📋', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 8),
                 Text(
-                  'TODAS AS EVOLUÇÕES',
+                  AppLocalizations.of(context).allEvolutions,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
                     color: Colors.white70,
@@ -525,7 +597,7 @@ class _EvolutionGrid extends StatelessWidget {
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              evolution.name,
+                              getLocalizedNotebookName(context, evolution),
                               style: GoogleFonts.jetBrainsMono(
                                 fontSize: 8,
                                 color: Colors.white70,

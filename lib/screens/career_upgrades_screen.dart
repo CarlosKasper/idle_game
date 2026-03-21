@@ -1,9 +1,164 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/app_localizations.dart';
 import '../services/game_service.dart';
 import '../models/career.dart' as career_model;
 import '../models/career_upgrade.dart';
+
+// ─────────────────────────────────────────────────
+// HELPER FUNCTIONS FOR LOCALIZED CAREER LEVEL NAMES
+// ─────────────────────────────────────────────────
+
+String getLocalizedCareerLevelName(
+  BuildContext context,
+  career_model.CareerLevel career,
+) {
+  final l10n = AppLocalizations.of(context);
+
+  switch (career.titleKey) {
+    case 'careerLevelIntern':
+      return l10n.careerLevelIntern;
+    case 'careerLevelJunior':
+      return l10n.careerLevelJunior;
+    case 'careerLevelPleno':
+      return l10n.careerLevelPleno;
+    case 'careerLevelPlenoPlus':
+      return l10n.careerLevelPlenoPlus;
+    case 'careerLevelSenior':
+      return l10n.careerLevelSenior;
+    case 'careerLevelEngineeringLead':
+      return l10n.careerLevelEngineeringLead;
+    case 'careerLevelArchitect':
+      return l10n.careerLevelArchitect;
+    case 'careerLevelProjectManager':
+      return l10n.careerLevelProjectManager;
+    case 'careerLevelDirector':
+      return l10n.careerLevelDirector;
+    case 'careerLevelExecutive':
+      return l10n.careerLevelExecutive;
+    case 'careerLevelCEO':
+      return l10n.careerLevelCEO;
+    default:
+      return career.titleKey;
+  }
+}
+
+// ─────────────────────────────────────────────────
+// HELPER FUNCTIONS FOR LOCALIZED UPGRADE STRINGS
+// ─────────────────────────────────────────────────
+
+String getLocalizedCareerUpgradeName(
+  BuildContext context,
+  CareerUpgrade upgrade,
+) {
+  final l10n = AppLocalizations.of(context);
+
+  switch (upgrade.nameKey) {
+    case 'careerCourseName':
+      return l10n.careerCourseName;
+    case 'careerMonitorName':
+      return l10n.careerMonitorName;
+    case 'careerCoffeeName':
+      return l10n.careerCoffeeName;
+    case 'careerLampName':
+      return l10n.careerLampName;
+    case 'careerSecondMonitorName':
+      return l10n.careerSecondMonitorName;
+    case 'careerAppName':
+      return l10n.careerAppName;
+    case 'careerDeskName':
+      return l10n.careerDeskName;
+    case 'careerMentorshipName':
+      return l10n.careerMentorshipName;
+    case 'careerOfficeName':
+      return l10n.careerOfficeName;
+    case 'careerStockName':
+      return l10n.careerStockName;
+    case 'careerTeamName':
+      return l10n.careerTeamName;
+    case 'careerLabName':
+      return l10n.careerLabName;
+    case 'careerConsultingName':
+      return l10n.careerConsultingName;
+    case 'careerPatentName':
+      return l10n.careerPatentName;
+    case 'careerAutomationName':
+      return l10n.careerAutomationName;
+    case 'careerNetworkName':
+      return l10n.careerNetworkName;
+    case 'careerJetName':
+      return l10n.careerJetName;
+    case 'careerMarketName':
+      return l10n.careerMarketName;
+    case 'careerGlobalName':
+      return l10n.careerGlobalName;
+    case 'careerEmpireName':
+      return l10n.careerEmpireName;
+    case 'careerPrinterName':
+      return l10n.careerPrinterName;
+    case 'careerDominationName':
+      return l10n.careerDominationName;
+    default:
+      return upgrade.nameKey;
+  }
+}
+
+String getLocalizedCareerUpgradeDesc(
+  BuildContext context,
+  CareerUpgrade upgrade,
+) {
+  final l10n = AppLocalizations.of(context);
+
+  switch (upgrade.descriptionKey) {
+    case 'careerCourseDesc':
+      return l10n.careerCourseDesc;
+    case 'careerMonitorDesc':
+      return l10n.careerMonitorDesc;
+    case 'careerCoffeeDesc':
+      return l10n.careerCoffeeDesc;
+    case 'careerLampDesc':
+      return l10n.careerLampDesc;
+    case 'careerSecondMonitorDesc':
+      return l10n.careerSecondMonitorDesc;
+    case 'careerAppDesc':
+      return l10n.careerAppDesc;
+    case 'careerDeskDesc':
+      return l10n.careerDeskDesc;
+    case 'careerMentorshipDesc':
+      return l10n.careerMentorshipDesc;
+    case 'careerOfficeDesc':
+      return l10n.careerOfficeDesc;
+    case 'careerStockDesc':
+      return l10n.careerStockDesc;
+    case 'careerTeamDesc':
+      return l10n.careerTeamDesc;
+    case 'careerLabDesc':
+      return l10n.careerLabDesc;
+    case 'careerConsultingDesc':
+      return l10n.careerConsultingDesc;
+    case 'careerPatentDesc':
+      return l10n.careerPatentDesc;
+    case 'careerAutomationDesc':
+      return l10n.careerAutomationDesc;
+    case 'careerNetworkDesc':
+      return l10n.careerNetworkDesc;
+    case 'careerJetDesc':
+      return l10n.careerJetDesc;
+    case 'careerMarketDesc':
+      return l10n.careerMarketDesc;
+    case 'careerGlobalDesc':
+      return l10n.careerGlobalDesc;
+    case 'careerEmpireDesc':
+      return l10n.careerEmpireDesc;
+    case 'careerPrinterDesc':
+      return l10n.careerPrinterDesc;
+    case 'careerDominationDesc':
+      return l10n.careerDominationDesc;
+    default:
+      return upgrade.descriptionKey;
+  }
+}
 
 class CareerUpgradesScreen extends StatefulWidget {
   const CareerUpgradesScreen({super.key});
@@ -56,8 +211,12 @@ class _CareerUpgradesScreenState extends State<CareerUpgradesScreen>
               child: Column(
                 children: [
                   _ScreenHeader(),
-                  const Expanded(
-                    child: Center(child: Text('Nenhum cargo desbloqueado')),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        AppLocalizations.of(context).noUnlockedCareers,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -101,7 +260,10 @@ class _CareerUpgradesScreenState extends State<CareerUpgradesScreen>
                                     ),
                             ),
                             child: Text(
-                              career.title.toUpperCase(),
+                              getLocalizedCareerLevelName(
+                                context,
+                                career,
+                              ).toUpperCase(),
                               style: GoogleFonts.jetBrainsMono(
                                 fontSize: 9,
                                 color: isActive
@@ -186,7 +348,7 @@ class _ScreenHeader extends StatelessWidget {
               const Text('🏆', style: TextStyle(fontSize: 24)),
               const SizedBox(width: 12),
               Text(
-                'CARREIRA',
+                AppLocalizations.of(context).careerTitle,
                 style: GoogleFonts.silkscreen(
                   fontSize: 18,
                   color: Colors.white,
@@ -229,7 +391,7 @@ class _CareerInfoCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Desbloqueie ao atingir ${career.title}',
+                  'Desbloqueie ao atingir ${getLocalizedCareerLevelName(context, career)}',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
@@ -242,7 +404,7 @@ class _CareerInfoCard extends StatelessWidget {
             Column(
               children: [
                 Text(
-                  'NÍVEL ATUAL',
+                  AppLocalizations.of(context).currentLevel,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
                     color: Colors.white38,
@@ -251,7 +413,7 @@ class _CareerInfoCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  career.title.toUpperCase(),
+                  getLocalizedCareerLevelName(context, career).toUpperCase(),
                   style: GoogleFonts.silkscreen(
                     fontSize: 28,
                     color: const Color(0xFF4ADE80),
@@ -259,7 +421,7 @@ class _CareerInfoCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Renda por clique: \$${career.baseIncome.format()}',
+                  '${AppLocalizations.of(context).incomePerClick}: \$${career.baseIncome.format()}',
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 10,
                     color: const Color(0xFFEAB308),
@@ -292,12 +454,12 @@ class _NoUpgradesCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'SEM UPGRADES',
+            AppLocalizations.of(context).noUpgrades,
             style: GoogleFonts.silkscreen(fontSize: 14, color: Colors.white38),
           ),
           const SizedBox(height: 4),
           Text(
-            'Nenhum upgrade para esta posição',
+            AppLocalizations.of(context).noUpgradesDescription,
             textAlign: TextAlign.center,
             style: GoogleFonts.jetBrainsMono(
               fontSize: 8,
@@ -347,7 +509,7 @@ class _UpgradesListCard extends StatelessWidget {
                 const Text('⚙️', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 8),
                 Text(
-                  'UPGRADES',
+                  AppLocalizations.of(context).upgrades,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
                     color: Colors.white70,
@@ -386,7 +548,7 @@ class _UpgradesListCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            upgrade.name,
+                            getLocalizedCareerUpgradeName(context, upgrade),
                             style: GoogleFonts.silkscreen(
                               fontSize: 11,
                               color: Colors.white70,
@@ -394,7 +556,7 @@ class _UpgradesListCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            upgrade.description,
+                            getLocalizedCareerUpgradeDesc(context, upgrade),
                             style: GoogleFonts.jetBrainsMono(
                               fontSize: 8,
                               color: Colors.white38,
@@ -421,7 +583,7 @@ class _UpgradesListCard extends StatelessWidget {
                             )
                           else
                             Text(
-                              'COMPRADO',
+                              AppLocalizations.of(context).purchased,
                               style: GoogleFonts.jetBrainsMono(
                                 fontSize: 8,
                                 color: const Color(0xFFEAB308),

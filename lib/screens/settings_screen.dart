@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/app_localizations.dart';
 import '../services/game_service.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -48,12 +49,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Tema Section
-                    _SectionTitle(title: 'APARÊNCIA'),
+                    _SectionTitle(
+                      title: AppLocalizations.of(context).appearance,
+                    ),
                     const SizedBox(height: 12),
                     _ThemeCard(
                       mode: ThemeMode.system,
-                      title: 'AUTOMÁTICO',
-                      subtitle: 'Segue configuração do dispositivo',
+                      title: AppLocalizations.of(context).automatic,
+                      subtitle: AppLocalizations.of(
+                        context,
+                      ).followDeviceSetting,
                       icon: '⚙️',
                       isSelected: _selectedTheme == ThemeMode.system,
                       onTap: () => _applyTheme(ThemeMode.system),
@@ -61,8 +66,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 12),
                     _ThemeCard(
                       mode: ThemeMode.light,
-                      title: 'CLARO',
-                      subtitle: 'Fundo branco e texto escuro',
+                      title: AppLocalizations.of(context).bright,
+                      subtitle: AppLocalizations.of(
+                        context,
+                      ).whiteBackgroundDarkText,
                       icon: '☀️',
                       isSelected: _selectedTheme == ThemeMode.light,
                       onTap: () => _applyTheme(ThemeMode.light),
@@ -70,8 +77,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 12),
                     _ThemeCard(
                       mode: ThemeMode.dark,
-                      title: 'ESCURO',
-                      subtitle: 'Fundo preto e texto claro',
+                      title: AppLocalizations.of(context).dark,
+                      subtitle: AppLocalizations.of(
+                        context,
+                      ).blackBackgroundLightText,
                       icon: '🌙',
                       isSelected: _selectedTheme == ThemeMode.dark,
                       onTap: () => _applyTheme(ThemeMode.dark),
@@ -79,24 +88,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 32),
 
                     // Game Section
-                    _SectionTitle(title: 'JOGO'),
+                    _SectionTitle(
+                      title: AppLocalizations.of(context).gameSection,
+                    ),
                     const SizedBox(height: 12),
                     _SettingsButton(
                       icon: '🔄',
-                      title: 'RESETAR JOGO',
-                      subtitle: 'Apagar todos os dados e começar do zero',
+                      title: AppLocalizations.of(context).resetGameButtonTitle,
+                      subtitle: AppLocalizations.of(
+                        context,
+                      ).resetGameButtonSubtitle,
                       isDestructive: true,
                       onTap: () => _showResetConfirmation(context),
                     ),
                     const SizedBox(height: 32),
 
                     // Info Section
-                    _SectionTitle(title: 'INFORMAÇÕES'),
-                    const SizedBox(height: 12),
-                    _InfoRow(label: 'Versão', value: 'v1.5.2'),
+                    _SectionTitle(title: AppLocalizations.of(context).about),
                     const SizedBox(height: 12),
                     _InfoRow(
-                      label: 'Desenvolvido com',
+                      label: AppLocalizations.of(context).version,
+                      value: 'v1.5.2',
+                    ),
+                    const SizedBox(height: 12),
+                    _InfoRow(
+                      label: AppLocalizations.of(context).developedWith,
                       value: 'Flutter + Dart',
                     ),
                     const SizedBox(height: 24),
@@ -243,7 +259,7 @@ class _ScreenHeader extends StatelessWidget {
               const Text('⚙️', style: TextStyle(fontSize: 24)),
               const SizedBox(width: 12),
               Text(
-                'CONFIGURAÇÕES',
+                AppLocalizations.of(context).settingsTitle,
                 style: GoogleFonts.silkscreen(
                   fontSize: 18,
                   color: Colors.white,

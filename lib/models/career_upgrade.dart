@@ -4,8 +4,8 @@ import 'upgrade.dart';
 /// Define um upgrade de carreira que desbloqueia em um nível específico
 class CareerUpgrade {
   final String id;
-  final String name;
-  final String description;
+  final String nameKey;
+  final String descriptionKey;
   final String emoji;
   final UpgradeType type;
   final Money baseCost;
@@ -16,8 +16,8 @@ class CareerUpgrade {
 
   const CareerUpgrade({
     required this.id,
-    required this.name,
-    required this.description,
+    required this.nameKey,
+    required this.descriptionKey,
     required this.emoji,
     required this.type,
     required this.baseCost,
@@ -25,6 +25,10 @@ class CareerUpgrade {
     required this.unlocksAtCareerLevel,
     this.isInfinite = false,
   });
+
+  // Getters para manter compatibilidade com Upgrade
+  String get name => nameKey; // Retorna a chave como fallback
+  String get description => descriptionKey; // Retorna a chave como fallback
 }
 
 /// Upgrades de carreira pré-definidos
@@ -32,8 +36,8 @@ final careerUpgrades = [
   // Estagiário (Level 0)
   CareerUpgrade(
     id: 'course',
-    name: 'Curso Online 📚',
-    description: '+1 dinheiro por clique',
+    nameKey: 'careerCourseName',
+    descriptionKey: 'careerCourseDesc',
     emoji: '📚',
     type: UpgradeType.clickBonus,
     baseCost: Money(50),
@@ -43,8 +47,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'monitor',
-    name: 'Monitor Extra 🖥️',
-    description: '+1 dinheiro por segundo',
+    nameKey: 'careerMonitorName',
+    descriptionKey: 'careerMonitorDesc',
     emoji: '🖥️',
     type: UpgradeType.incomeBonus,
     baseCost: Money(100),
@@ -56,8 +60,8 @@ final careerUpgrades = [
   // Junior (Level 1)
   CareerUpgrade(
     id: 'coffee_premium',
-    name: 'Café Premium ☕',
-    description: '+2 por clique',
+    nameKey: 'careerCoffeeName',
+    descriptionKey: 'careerCoffeeDesc',
     emoji: '☕',
     type: UpgradeType.clickBonus,
     baseCost: Money(300),
@@ -67,8 +71,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'desk_lamp',
-    name: 'Luminária para Mesa 💡',
-    description: '+1 por segundo',
+    nameKey: 'careerLampName',
+    descriptionKey: 'careerLampDesc',
     emoji: '💡',
     type: UpgradeType.incomeBonus,
     baseCost: Money(400),
@@ -80,8 +84,8 @@ final careerUpgrades = [
   // Pleno (Level 2)
   CareerUpgrade(
     id: 'second_monitor',
-    name: 'Segundo Monitor 🖥️',
-    description: '+2 por segundo',
+    nameKey: 'careerSecondMonitorName',
+    descriptionKey: 'careerSecondMonitorDesc',
     emoji: '🖥️',
     type: UpgradeType.incomeBonus,
     baseCost: Money(500),
@@ -91,8 +95,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'productivity_app',
-    name: 'App de Produtividade 📱',
-    description: '+10% renda',
+    nameKey: 'careerAppName',
+    descriptionKey: 'careerAppDesc',
     emoji: '📱',
     type: UpgradeType.multiplier,
     baseCost: Money(50000),
@@ -104,8 +108,8 @@ final careerUpgrades = [
   // Pleno Plus (Level 3)
   CareerUpgrade(
     id: 'standing_desk',
-    name: 'Mesa em Pé 🏢',
-    description: '+5 por segundo',
+    nameKey: 'careerDeskName',
+    descriptionKey: 'careerDeskDesc',
     emoji: '🏢',
     type: UpgradeType.incomeBonus,
     baseCost: Money(5000),
@@ -115,8 +119,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'mentorship',
-    name: 'Programa de Mentoria 🎓',
-    description: '+20% renda',
+    nameKey: 'careerMentorshipName',
+    descriptionKey: 'careerMentorshipDesc',
     emoji: '🎓',
     type: UpgradeType.multiplier,
     baseCost: Money(2000000),
@@ -128,8 +132,8 @@ final careerUpgrades = [
   // Senior (Level 4)
   CareerUpgrade(
     id: 'private_office',
-    name: 'Escritório Particular 🏛️',
-    description: '+10 por segundo',
+    nameKey: 'careerOfficeName',
+    descriptionKey: 'careerOfficeDesc',
     emoji: '🏛️',
     type: UpgradeType.incomeBonus,
     baseCost: Money(50000),
@@ -139,8 +143,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'stock_options',
-    name: 'Opções de Ações 📈',
-    description: '+35% renda',
+    nameKey: 'careerStockName',
+    descriptionKey: 'careerStockDesc',
     emoji: '📈',
     type: UpgradeType.multiplier,
     baseCost: Money(75000000),
@@ -152,8 +156,8 @@ final careerUpgrades = [
   // Líder de Engenharia (Level 5)
   CareerUpgrade(
     id: 'team_building',
-    name: 'Desenvolvimento de Time 👥',
-    description: '+20 por segundo',
+    nameKey: 'careerTeamName',
+    descriptionKey: 'careerTeamDesc',
     emoji: '👥',
     type: UpgradeType.incomeBonus,
     baseCost: Money(300000),
@@ -163,8 +167,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'innovation_lab',
-    name: 'Lab de Inovação 🔬',
-    description: '+50% renda',
+    nameKey: 'careerLabName',
+    descriptionKey: 'careerLabDesc',
     emoji: '🔬',
     type: UpgradeType.multiplier,
     baseCost: Money(500000000),
@@ -176,8 +180,8 @@ final careerUpgrades = [
   // Arquiteto de Software (Level 6)
   CareerUpgrade(
     id: 'consulting_firm',
-    name: 'Firma de Consultoria 💼',
-    description: '+50 por segundo',
+    nameKey: 'careerConsultingName',
+    descriptionKey: 'careerConsultingDesc',
     emoji: '💼',
     type: UpgradeType.incomeBonus,
     baseCost: Money(2000000),
@@ -187,8 +191,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'patent_portfolio',
-    name: 'Portfólio de Patentes 🎯',
-    description: '+75% renda',
+    nameKey: 'careerPatentName',
+    descriptionKey: 'careerPatentDesc',
     emoji: '🎯',
     type: UpgradeType.multiplier,
     baseCost: Money(2500000000),
@@ -200,8 +204,8 @@ final careerUpgrades = [
   // Gestor de Projetos (Level 7)
   CareerUpgrade(
     id: 'project_automation',
-    name: 'Automação de Projetos 🤖',
-    description: '+100 por segundo',
+    nameKey: 'careerAutomationName',
+    descriptionKey: 'careerAutomationDesc',
     emoji: '🤖',
     type: UpgradeType.incomeBonus,
     baseCost: Money(10000000),
@@ -211,8 +215,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'executive_network',
-    name: 'Rede Executiva 🌐',
-    description: '+100% renda',
+    nameKey: 'careerNetworkName',
+    descriptionKey: 'careerNetworkDesc',
     emoji: '🌐',
     type: UpgradeType.multiplier,
     baseCost: Money(800000000),
@@ -224,8 +228,8 @@ final careerUpgrades = [
   // Gerente de Departamento (Level 8)
   CareerUpgrade(
     id: 'corporate_jet',
-    name: 'Jato Corporativo ✈️',
-    description: '+200 por segundo',
+    nameKey: 'careerJetName',
+    descriptionKey: 'careerJetDesc',
     emoji: '✈️',
     type: UpgradeType.incomeBonus,
     baseCost: Money(50000000),
@@ -235,8 +239,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'market_dominance',
-    name: 'Dominação de Mercado 👑',
-    description: '+150% renda',
+    nameKey: 'careerMarketName',
+    descriptionKey: 'careerMarketDesc',
     emoji: '👑',
     type: UpgradeType.multiplier,
     baseCost: Money(1000000000),
@@ -248,8 +252,8 @@ final careerUpgrades = [
   // Diretor Executivo (Level 9)
   CareerUpgrade(
     id: 'global_expansion',
-    name: 'Expansão Global 🌍',
-    description: '+500 por segundo',
+    nameKey: 'careerGlobalName',
+    descriptionKey: 'careerGlobalDesc',
     emoji: '🌍',
     type: UpgradeType.incomeBonus,
     baseCost: Money(500000000),
@@ -259,8 +263,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'financial_empire',
-    name: 'Império Financeiro 💰',
-    description: '+250% renda',
+    nameKey: 'careerEmpireName',
+    descriptionKey: 'careerEmpireDesc',
     emoji: '💰',
     type: UpgradeType.multiplier,
     baseCost: Money(1500000000),
@@ -272,8 +276,8 @@ final careerUpgrades = [
   // CEO (Level 10)
   CareerUpgrade(
     id: 'money_printer',
-    name: 'Máquina de Dinheiro 🏭',
-    description: '+1000 por segundo',
+    nameKey: 'careerPrinterName',
+    descriptionKey: 'careerPrinterDesc',
     emoji: '🏭',
     type: UpgradeType.incomeBonus,
     baseCost: Money(250000000),
@@ -283,8 +287,8 @@ final careerUpgrades = [
   ),
   CareerUpgrade(
     id: 'world_domination',
-    name: 'Domínio Mundial 🚀',
-    description: '+500% renda',
+    nameKey: 'careerDominationName',
+    descriptionKey: 'careerDominationDesc',
     emoji: '🚀',
     type: UpgradeType.multiplier,
     baseCost: Money(5000000000),

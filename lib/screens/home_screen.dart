@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/app_localizations.dart';
 import '../services/game_service.dart';
 import '../services/purchase_state_service.dart';
 import '../models/career.dart';
@@ -8,6 +9,41 @@ import 'stats_screen.dart';
 import 'shop_screen.dart';
 import 'career_upgrades_screen.dart';
 import 'notebook_screen.dart';
+
+// ─────────────────────────────────────────────────
+// HELPER FUNCTION FOR LOCALIZED CAREER LEVEL NAMES
+// ─────────────────────────────────────────────────
+
+String getLocalizedCareerLevelName(BuildContext context, CareerLevel career) {
+  final l10n = AppLocalizations.of(context);
+
+  switch (career.titleKey) {
+    case 'careerLevelIntern':
+      return l10n.careerLevelIntern;
+    case 'careerLevelJunior':
+      return l10n.careerLevelJunior;
+    case 'careerLevelPleno':
+      return l10n.careerLevelPleno;
+    case 'careerLevelPlenoPlus':
+      return l10n.careerLevelPlenoPlus;
+    case 'careerLevelSenior':
+      return l10n.careerLevelSenior;
+    case 'careerLevelEngineeringLead':
+      return l10n.careerLevelEngineeringLead;
+    case 'careerLevelArchitect':
+      return l10n.careerLevelArchitect;
+    case 'careerLevelProjectManager':
+      return l10n.careerLevelProjectManager;
+    case 'careerLevelDirector':
+      return l10n.careerLevelDirector;
+    case 'careerLevelExecutive':
+      return l10n.careerLevelExecutive;
+    case 'careerLevelCEO':
+      return l10n.careerLevelCEO;
+    default:
+      return career.titleKey;
+  }
+}
 
 class HomeScreen extends StatefulWidget {
   final Function(ThemeMode)? onThemeChanged;
@@ -241,7 +277,7 @@ class _GameHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    career.title.toUpperCase(),
+                    getLocalizedCareerLevelName(context, career).toUpperCase(),
                     style: GoogleFonts.jetBrainsMono(
                       fontSize: 10,
                       color: Colors.white,
@@ -291,8 +327,14 @@ class _StatusBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('LATENCY: 14MS', style: style),
-          Text('BUILD: V0.1.0-ALPHA', style: style),
+          Text(
+            '${AppLocalizations.of(context).systemLatency}: 14MS',
+            style: style,
+          ),
+          Text(
+            '${AppLocalizations.of(context).systemBuild}: V0.1.0-ALPHA',
+            style: style,
+          ),
           Text('CLICKS: $totalClicks', style: style),
         ],
       ),
@@ -314,12 +356,12 @@ class _ProfileCard extends StatelessWidget {
     final career = careerLevels[gameService.state.currentCareerLevel];
 
     final careerEmojis = {
-      'Estagiário': '👨‍🎓',
-      'Funcionário': '👔',
-      'Analista': '📊',
-      'Gerente': '👨‍💼',
-      'Diretor': '🎩',
-      'CEO': '👑',
+      'careerLevelIntern': '👨‍🎓',
+      'careerLevelJunior': '👔',
+      'careerLevelPleno': '📊',
+      'careerLevelSenior': '👨‍💼',
+      'careerLevelDirector': '🎩',
+      'careerLevelCEO': '👑',
     };
 
     final emoji = careerEmojis[career.title] ?? '💼';
@@ -350,7 +392,7 @@ class _ProfileCard extends StatelessWidget {
                 ],
                 const SizedBox(width: 8),
                 Text(
-                  'PERFIL.EXE',
+                  AppLocalizations.of(context).profileExe,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
                     color: Colors.white38,
@@ -374,7 +416,7 @@ class _ProfileCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            career.title,
+            getLocalizedCareerLevelName(context, career),
             style: GoogleFonts.silkscreen(
               fontSize: 24,
               color: const Color(0xFF4ADE80),
@@ -382,7 +424,7 @@ class _ProfileCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '> Nível ${gameService.state.currentCareerLevel + 1} _',
+            '> ${AppLocalizations.of(context).careerLevel} ${gameService.state.currentCareerLevel + 1} _',
             style: GoogleFonts.jetBrainsMono(
               fontSize: 10,
               color: Colors.white38,
@@ -436,7 +478,7 @@ class _BalanceCardState extends State<_BalanceCard>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '// SALDO_ATUAL',
+            '// ${AppLocalizations.of(context).currentBalance}',
             style: GoogleFonts.jetBrainsMono(
               fontSize: 9,
               color: Colors.white38,
@@ -463,7 +505,7 @@ class _BalanceCardState extends State<_BalanceCard>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'STATUS: ATIVO',
+                AppLocalizations.of(context).statusActive,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 9,
                   color: Colors.white30,
@@ -471,7 +513,7 @@ class _BalanceCardState extends State<_BalanceCard>
                 ),
               ),
               Text(
-                '■ ONLINE',
+                AppLocalizations.of(context).online,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 9,
                   color: const Color(0xFF4ADE80),
@@ -514,12 +556,12 @@ class _WorkButton extends StatelessWidget {
             const Text('💼', style: TextStyle(fontSize: 36)),
             const SizedBox(height: 12),
             Text(
-              'TRABALHAR',
+              AppLocalizations.of(context).workButtonLabel,
               style: GoogleFonts.silkscreen(fontSize: 20, color: Colors.white),
             ),
             const SizedBox(height: 4),
             Text(
-              '[ CLICK PARA GANHAR ]',
+              AppLocalizations.of(context).clickToEarn,
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 9,
                 color: Colors.white54,
@@ -597,7 +639,7 @@ class _ActiveBonusesPanelState extends State<_ActiveBonusesPanel> {
                 const Text('⚡', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 8),
                 Text(
-                  'BÔNUS ATIVOS',
+                  AppLocalizations.of(context).activeBonuses,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
                     color: const Color(0xFF4ADE80),
@@ -698,16 +740,24 @@ class _MultipliersPanel extends StatelessWidget {
     final incomePerSecond = gameService.state.getIncomePerSecond().format();
 
     final items = [
-      {'icon': '📈', 'name': 'Ganho por Click', 'value': '\$$clickIncome'},
+      {
+        'icon': '📈',
+        'name': AppLocalizations.of(context).earnPerClick,
+        'value': '\$$clickIncome',
+      },
       {
         'icon': '⚡',
-        'name': 'Multiplicador',
+        'name': AppLocalizations.of(context).multiplier,
         'value': 'x${gameService.state.multiplierTotal.toStringAsFixed(1)}',
       },
-      {'icon': '🔄', 'name': 'Auto-Ganho/s', 'value': '\$$incomePerSecond'},
+      {
+        'icon': '🔄',
+        'name': AppLocalizations.of(context).autoEarningsPerSecond,
+        'value': '\$$incomePerSecond',
+      },
       {
         'icon': '📊',
-        'name': 'Total Ganho',
+        'name': AppLocalizations.of(context).totalEarnedLabel,
         'value': '\$${gameService.state.totalMoneyEarned.format()}',
       },
     ];
@@ -730,7 +780,7 @@ class _MultipliersPanel extends StatelessWidget {
                 const Text('📉', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 8),
                 Text(
-                  'GANHOS E MULTIPLICADORES',
+                  AppLocalizations.of(context).earningsAndMultipliers,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 9,
                     color: Colors.white70,
@@ -814,23 +864,27 @@ class _BottomNav extends StatelessWidget {
 
   const _BottomNav({required this.selectedIndex, required this.onItemTapped});
 
-  static const _tabs = [
-    {'icon': Icons.home, 'label': 'INÍCIO'},
-    {'icon': Icons.computer, 'label': 'NOTEBOOK'},
-    {'icon': Icons.emoji_events, 'label': 'CARREIRA'},
-    {'icon': Icons.bar_chart, 'label': 'ESTATÍS.'},
-    {'icon': Icons.shopping_bag, 'label': 'LOJA'},
-  ];
+  List<Map<String, dynamic>> _getTabs(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      {'icon': Icons.home, 'label': l10n.navHome},
+      {'icon': Icons.computer, 'label': l10n.navNotebook},
+      {'icon': Icons.emoji_events, 'label': l10n.navCareer},
+      {'icon': Icons.bar_chart, 'label': l10n.navStats},
+      {'icon': Icons.shopping_bag, 'label': l10n.navShop},
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final tabs = _getTabs(context);
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xFF141418),
         border: Border(top: BorderSide(color: Color(0xFF2A2A30), width: 2)),
       ),
       child: Row(
-        children: List.generate(_tabs.length, (i) {
+        children: List.generate(tabs.length, (i) {
           final active = i == selectedIndex;
           return Expanded(
             child: GestureDetector(
@@ -842,13 +896,13 @@ class _BottomNav extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      _tabs[i]['icon'] as IconData,
+                      tabs[i]['icon'] as IconData,
                       size: 20,
                       color: active ? const Color(0xFF0A0A0F) : Colors.white38,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _tabs[i]['label'] as String,
+                      tabs[i]['label'] as String,
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 8,
                         color: active
