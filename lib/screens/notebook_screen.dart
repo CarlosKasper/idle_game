@@ -88,12 +88,20 @@ class _ScreenHeader extends StatelessWidget {
         border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 2)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('💻', style: TextStyle(fontSize: 24)),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: GoogleFonts.silkscreen(fontSize: 18, color: Colors.white),
+          Row(
+            children: [
+              const Text('💻', style: TextStyle(fontSize: 24)),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: GoogleFonts.silkscreen(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ],
       ),

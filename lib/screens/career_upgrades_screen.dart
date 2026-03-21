@@ -52,108 +52,112 @@ class _CareerUpgradesScreenState extends State<CareerUpgradesScreen>
           }
 
           if (unlockedCareers.isEmpty) {
-            return Column(
-              children: [
-                _ScreenHeader(),
-                const Expanded(
-                  child: Center(child: Text('Nenhum cargo desbloqueado')),
-                ),
-              ],
+            return SafeArea(
+              child: Column(
+                children: [
+                  _ScreenHeader(),
+                  const Expanded(
+                    child: Center(child: Text('Nenhum cargo desbloqueado')),
+                  ),
+                ],
+              ),
             );
           }
 
-          return Column(
-            children: [
-              // Header
-              _ScreenHeader(),
-              // Tabs
-              Container(
-                color: const Color(0xFF141418),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: List.generate(unlockedCareers.length, (index) {
-                      final career = unlockedCareers[index];
-                      final isActive = _tabController.index == index;
-                      return GestureDetector(
-                        onTap: () {
-                          _tabController.animateTo(index);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isActive
-                                ? const Color(0xFF4ADE80)
-                                : Colors.transparent,
-                            border: isActive
-                                ? null
-                                : const Border(
-                                    bottom: BorderSide(
-                                      color: Color(0xFF2A2A30),
-                                      width: 1,
-                                    ),
-                                  ),
-                          ),
-                          child: Text(
-                            career.title.toUpperCase(),
-                            style: GoogleFonts.jetBrainsMono(
-                              fontSize: 9,
+          return SafeArea(
+            child: Column(
+              children: [
+                // Header
+                _ScreenHeader(),
+                // Tabs
+                Container(
+                  color: const Color(0xFF141418),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(unlockedCareers.length, (index) {
+                        final career = unlockedCareers[index];
+                        final isActive = _tabController.index == index;
+                        return GestureDetector(
+                          onTap: () {
+                            _tabController.animateTo(index);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
                               color: isActive
-                                  ? const Color(0xFF0A0A0F)
-                                  : Colors.white38,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1,
+                                  ? const Color(0xFF4ADE80)
+                                  : Colors.transparent,
+                              border: isActive
+                                  ? null
+                                  : const Border(
+                                      bottom: BorderSide(
+                                        color: Color(0xFF2A2A30),
+                                        width: 1,
+                                      ),
+                                    ),
+                            ),
+                            child: Text(
+                              career.title.toUpperCase(),
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 9,
+                                color: isActive
+                                    ? const Color(0xFF0A0A0F)
+                                    : Colors.white38,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    }),
+                        );
+                      }),
+                    ),
                   ),
                 ),
-              ),
-              // Content
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: unlockedCareers.map((selectedCareer) {
-                    final upgradesForCareer = careerUpgrades
-                        .where(
-                          (u) => u.unlocksAtCareerLevel == selectedCareer.id,
-                        )
-                        .toList();
+                // Content
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: unlockedCareers.map((selectedCareer) {
+                      final upgradesForCareer = careerUpgrades
+                          .where(
+                            (u) => u.unlocksAtCareerLevel == selectedCareer.id,
+                          )
+                          .toList();
 
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 16),
-                          // Career Info Card
-                          _CareerInfoCard(
-                            career: selectedCareer,
-                            isUnlocked: true,
-                          ),
-                          const SizedBox(height: 20),
-                          // Upgrades Section
-                          if (upgradesForCareer.isEmpty)
-                            _NoUpgradesCard()
-                          else
-                            _UpgradesListCard(
-                              upgrades: upgradesForCareer,
-                              gameService: gameService,
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 16),
+                            // Career Info Card
+                            _CareerInfoCard(
+                              career: selectedCareer,
                               isUnlocked: true,
-                              currentCareer: selectedCareer,
                             ),
-                          const SizedBox(height: 24),
-                        ],
-                      ),
-                    );
-                  }).toList(),
+                            const SizedBox(height: 20),
+                            // Upgrades Section
+                            if (upgradesForCareer.isEmpty)
+                              _NoUpgradesCard()
+                            else
+                              _UpgradesListCard(
+                                upgrades: upgradesForCareer,
+                                gameService: gameService,
+                                isUnlocked: true,
+                                currentCareer: selectedCareer,
+                              ),
+                            const SizedBox(height: 24),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
@@ -175,12 +179,20 @@ class _ScreenHeader extends StatelessWidget {
         border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 2)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('🏆', style: TextStyle(fontSize: 24)),
-          const SizedBox(width: 12),
-          Text(
-            'CARREIRA',
-            style: GoogleFonts.silkscreen(fontSize: 18, color: Colors.white),
+          Row(
+            children: [
+              const Text('🏆', style: TextStyle(fontSize: 24)),
+              const SizedBox(width: 12),
+              Text(
+                'CARREIRA',
+                style: GoogleFonts.silkscreen(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ],
       ),

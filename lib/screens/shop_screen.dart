@@ -311,74 +311,76 @@ class _ShopScreenState extends State<ShopScreen> {
       backgroundColor: const Color(0xFF0A0A0F),
       body: Stack(
         children: [
-          Column(
-            children: [
-              _ScreenHeader(),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Buffs & Recompensas',
-                        style: GoogleFonts.silkscreen(
-                          fontSize: 14,
-                          color: Colors.white54,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ...products.map(
-                        (product) => Column(
-                          children: [
-                            _ShopProductCard(
-                              product: product,
-                              iapService: _iapService,
-                            ),
-                            const SizedBox(height: 12),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A20),
-                          border: Border.all(
-                            color: Colors.orange.withOpacity(0.3),
-                            width: 2,
+          SafeArea(
+            child: Column(
+              children: [
+                _ScreenHeader(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Buffs & Recompensas',
+                          style: GoogleFonts.silkscreen(
+                            fontSize: 14,
+                            color: Colors.white54,
+                            letterSpacing: 1,
                           ),
-                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'ℹ️ Informação',
-                              style: GoogleFonts.jetBrainsMono(
-                                fontSize: 12,
-                                color: Colors.orange,
-                                fontWeight: FontWeight.w600,
+                        const SizedBox(height: 16),
+                        ...products.map(
+                          (product) => Column(
+                            children: [
+                              _ShopProductCard(
+                                product: product,
+                                iapService: _iapService,
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Compre buffs com dinheiro real para potencializar seu progresso!',
-                              style: GoogleFonts.jetBrainsMono(
-                                fontSize: 10,
-                                color: Colors.white54,
-                                height: 1.5,
-                              ),
-                            ),
-                          ],
+                              const SizedBox(height: 12),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1A1A20),
+                            border: Border.all(
+                              color: Colors.orange.withOpacity(0.3),
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ℹ️ Informação',
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 12,
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Compre buffs com dinheiro real para potencializar seu progresso!',
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 10,
+                                  color: Colors.white54,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           // Overlay de bloqueio quando compra está sendo processada
           if (_showProcessingOverlay)
@@ -422,12 +424,20 @@ class _ScreenHeader extends StatelessWidget {
         border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 2)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('🛍️', style: TextStyle(fontSize: 24)),
-          const SizedBox(width: 12),
-          Text(
-            'LOJA',
-            style: GoogleFonts.silkscreen(fontSize: 18, color: Colors.white),
+          Row(
+            children: [
+              const Text('🛍️', style: TextStyle(fontSize: 24)),
+              const SizedBox(width: 12),
+              Text(
+                'LOJA',
+                style: GoogleFonts.silkscreen(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ],
       ),

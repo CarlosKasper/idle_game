@@ -37,70 +37,75 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
-      body: Column(
-        children: [
-          _ScreenHeader(),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Tema Section
-                  _SectionTitle(title: 'APARÊNCIA'),
-                  const SizedBox(height: 12),
-                  _ThemeCard(
-                    mode: ThemeMode.system,
-                    title: 'AUTOMÁTICO',
-                    subtitle: 'Segue configuração do dispositivo',
-                    icon: '⚙️',
-                    isSelected: _selectedTheme == ThemeMode.system,
-                    onTap: () => _applyTheme(ThemeMode.system),
-                  ),
-                  const SizedBox(height: 12),
-                  _ThemeCard(
-                    mode: ThemeMode.light,
-                    title: 'CLARO',
-                    subtitle: 'Fundo branco e texto escuro',
-                    icon: '☀️',
-                    isSelected: _selectedTheme == ThemeMode.light,
-                    onTap: () => _applyTheme(ThemeMode.light),
-                  ),
-                  const SizedBox(height: 12),
-                  _ThemeCard(
-                    mode: ThemeMode.dark,
-                    title: 'ESCURO',
-                    subtitle: 'Fundo preto e texto claro',
-                    icon: '🌙',
-                    isSelected: _selectedTheme == ThemeMode.dark,
-                    onTap: () => _applyTheme(ThemeMode.dark),
-                  ),
-                  const SizedBox(height: 32),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _ScreenHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Tema Section
+                    _SectionTitle(title: 'APARÊNCIA'),
+                    const SizedBox(height: 12),
+                    _ThemeCard(
+                      mode: ThemeMode.system,
+                      title: 'AUTOMÁTICO',
+                      subtitle: 'Segue configuração do dispositivo',
+                      icon: '⚙️',
+                      isSelected: _selectedTheme == ThemeMode.system,
+                      onTap: () => _applyTheme(ThemeMode.system),
+                    ),
+                    const SizedBox(height: 12),
+                    _ThemeCard(
+                      mode: ThemeMode.light,
+                      title: 'CLARO',
+                      subtitle: 'Fundo branco e texto escuro',
+                      icon: '☀️',
+                      isSelected: _selectedTheme == ThemeMode.light,
+                      onTap: () => _applyTheme(ThemeMode.light),
+                    ),
+                    const SizedBox(height: 12),
+                    _ThemeCard(
+                      mode: ThemeMode.dark,
+                      title: 'ESCURO',
+                      subtitle: 'Fundo preto e texto claro',
+                      icon: '🌙',
+                      isSelected: _selectedTheme == ThemeMode.dark,
+                      onTap: () => _applyTheme(ThemeMode.dark),
+                    ),
+                    const SizedBox(height: 32),
 
-                  // Game Section
-                  _SectionTitle(title: 'JOGO'),
-                  const SizedBox(height: 12),
-                  _SettingsButton(
-                    icon: '🔄',
-                    title: 'RESETAR JOGO',
-                    subtitle: 'Apagar todos os dados e começar do zero',
-                    isDestructive: true,
-                    onTap: () => _showResetConfirmation(context),
-                  ),
-                  const SizedBox(height: 32),
+                    // Game Section
+                    _SectionTitle(title: 'JOGO'),
+                    const SizedBox(height: 12),
+                    _SettingsButton(
+                      icon: '🔄',
+                      title: 'RESETAR JOGO',
+                      subtitle: 'Apagar todos os dados e começar do zero',
+                      isDestructive: true,
+                      onTap: () => _showResetConfirmation(context),
+                    ),
+                    const SizedBox(height: 32),
 
-                  // Info Section
-                  _SectionTitle(title: 'INFORMAÇÕES'),
-                  const SizedBox(height: 12),
-                  _InfoRow(label: 'Versão', value: 'v1.5.2'),
-                  const SizedBox(height: 12),
-                  _InfoRow(label: 'Desenvolvido com', value: 'Flutter + Dart'),
-                  const SizedBox(height: 24),
-                ],
+                    // Info Section
+                    _SectionTitle(title: 'INFORMAÇÕES'),
+                    const SizedBox(height: 12),
+                    _InfoRow(label: 'Versão', value: 'v1.5.2'),
+                    const SizedBox(height: 12),
+                    _InfoRow(
+                      label: 'Desenvolvido com',
+                      value: 'Flutter + Dart',
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

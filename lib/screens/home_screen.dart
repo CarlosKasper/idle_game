@@ -239,7 +239,7 @@ class _GameHeader extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    isCEO ? 'Office Idle • CEO' : 'Office Idle',
+                    'Office Idle',
                     style: GoogleFonts.silkscreen(
                       fontSize: 18,
                       color: isCEO ? const Color(0xFFD4A574) : Colors.white,

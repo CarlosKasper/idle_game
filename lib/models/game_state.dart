@@ -110,7 +110,7 @@ class GameState {
   void checkCareerPromotion() {
     // Se o jogador é CEO, não reduzir o nível de carreira
     if (isCEO) return;
-    
+
     // Verifica todos os níveis para encontrar o máximo alcançável
     for (int i = 0; i < careerLevels.length; i++) {
       if (totalMoneyEarned >= careerLevels[i].requiredMoney) {

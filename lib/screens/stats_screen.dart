@@ -22,27 +22,29 @@ class StatsScreen extends StatelessWidget {
           final stats = gameService.analytics.getSessionStats();
           final sessionDuration = gameService.analytics.getSessionDuration();
 
-          return Column(
-            children: [
-              _ScreenHeader(),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      _SessionInfoCard(duration: sessionDuration),
-                      const SizedBox(height: 20),
-                      _GameStatsCard(gameService: gameService, stats: stats),
-                      const SizedBox(height: 20),
-                      _CareerInfoCard(gameService: gameService),
-                      const SizedBox(height: 20),
-                      _UpgradeStatsCard(gameService: gameService),
-                      const SizedBox(height: 24),
-                    ],
+          return SafeArea(
+            child: Column(
+              children: [
+                _ScreenHeader(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        _SessionInfoCard(duration: sessionDuration),
+                        const SizedBox(height: 20),
+                        _GameStatsCard(gameService: gameService, stats: stats),
+                        const SizedBox(height: 20),
+                        _CareerInfoCard(gameService: gameService),
+                        const SizedBox(height: 20),
+                        _UpgradeStatsCard(gameService: gameService),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
@@ -64,12 +66,20 @@ class _ScreenHeader extends StatelessWidget {
         border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 2)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('📊', style: TextStyle(fontSize: 24)),
-          const SizedBox(width: 12),
-          Text(
-            'ESTATÍSTICAS',
-            style: GoogleFonts.silkscreen(fontSize: 18, color: Colors.white),
+          Row(
+            children: [
+              const Text('📊', style: TextStyle(fontSize: 24)),
+              const SizedBox(width: 12),
+              Text(
+                'ESTATÍSTICAS',
+                style: GoogleFonts.silkscreen(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ],
       ),
