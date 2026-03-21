@@ -1,5 +1,5 @@
-name: idle_game
-description: "A new Flutter project."
+name: company_idle
+description: "Company Idle - An incremental game where you build your business empire."
 publish_to: "none"
 version: 0.1.0+1
 
@@ -23,3 +23,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/logo.png

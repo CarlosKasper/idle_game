@@ -171,6 +171,8 @@ class _HomeContentState extends State<_HomeContent> {
                         const SizedBox(height: 16),
                         _WorkButton(onWork: () => gameService.click()),
                         const SizedBox(height: 16),
+                        _ActiveBonusesPanel(gameService: gameService),
+                        const SizedBox(height: 16),
                         _MultipliersPanel(gameService: gameService),
                         const SizedBox(height: 80),
                       ],
@@ -198,25 +200,31 @@ class _GameHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final career = careerLevels[gameService.state.currentCareerLevel];
+    final isCEO = gameService.state.isCEO;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        color: Color(0xFF141418),
-        border: Border(bottom: BorderSide(color: Color(0xFF2A2A30), width: 2)),
+      decoration: BoxDecoration(
+        color: isCEO ? const Color(0xFF2A1F14) : const Color(0xFF141418),
+        border: Border(
+          bottom: BorderSide(
+            color: isCEO ? const Color(0xFFD4A574) : const Color(0xFF2A2A30),
+            width: 2,
+          ),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              const Text('💼', style: TextStyle(fontSize: 24)),
+              Text(isCEO ? '👑' : '💼', style: const TextStyle(fontSize: 24)),
               const SizedBox(width: 12),
               Text(
-                'Office Idle',
+                isCEO ? 'Office Idle • CEO' : 'Office Idle',
                 style: GoogleFonts.silkscreen(
                   fontSize: 18,
-                  color: Colors.white,
+                  color: isCEO ? const Color(0xFFD4A574) : Colors.white,
                 ),
               ),
             ],
@@ -510,6 +518,156 @@ class _WorkButton extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// ACTIVE BONUSES PANEL
+// ─────────────────────────────────────────────────
+
+class _ActiveBonusesPanel extends StatefulWidget {
+  final GameService gameService;
+
+  const _ActiveBonusesPanel({required this.gameService});
+
+  @override
+  State<_ActiveBonusesPanel> createState() => _ActiveBonusesPanelState();
+}
+
+class _ActiveBonusesPanelState extends State<_ActiveBonusesPanel> {
+  @override
+  void initState() {
+    super.initState();
+    _startTimerRefresh();
+  }
+
+  void _startTimerRefresh() {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() {});
+        _startTimerRefresh();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bonuses = widget.gameService.state.getActiveBonuses();
+
+    if (bonuses.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF141418),
+        border: Border.all(color: const Color(0xFF4ADE80), width: 2),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x4400FF00),
+            offset: Offset(2, 2),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: const Color(0xFF1E1E25),
+            child: Row(
+              children: [
+                const Text('⚡', style: TextStyle(fontSize: 14)),
+                const SizedBox(width: 8),
+                Text(
+                  'BÔNUS ATIVOS',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
+                    color: const Color(0xFF4ADE80),
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '${bonuses.length} ativo${bonuses.length > 1 ? 's' : ''}',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 8,
+                    color: Colors.white38,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          for (var i = 0; i < bonuses.length; i++)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                border: i < bonuses.length - 1
+                    ? const Border(bottom: BorderSide(color: Color(0xFF2A2A30)))
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  Text(bonuses[i].emoji, style: const TextStyle(fontSize: 18)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          bonuses[i].name,
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 11,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Valor: +${(bonuses[i].value * 100).toStringAsFixed(0)}%',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 8,
+                            color: Colors.white38,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2A2A30),
+                      border: Border.all(
+                        color: const Color(0xFF4ADE80),
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      bonuses[i].remainingTimeFormatted,
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 10,
+                        color: const Color(0xFF4ADE80),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

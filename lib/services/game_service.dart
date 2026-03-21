@@ -4,6 +4,7 @@ import '../models/money.dart';
 import '../models/upgrade.dart';
 import '../models/career_upgrade.dart';
 import '../models/notebook_evolution.dart';
+import '../models/active_bonus.dart';
 import 'save_service.dart';
 import 'analytics_service.dart';
 
@@ -357,6 +358,57 @@ class GameService extends ChangeNotifier {
       _analytics.trackClick(); // Registra como atividade
     }
 
+    _saveGame();
+    notifyListeners();
+  }
+
+  /// Ativa um bônus de renda (multiplicador temporal)
+  void activateIncomeBonus(
+    String id,
+    String name,
+    double bonusValue,
+    Duration duration,
+    String emoji,
+  ) {
+    final bonus = ActiveBonus(
+      id: id,
+      name: name,
+      type: BonusType.incomeMultiplier,
+      value: bonusValue,
+      activatedAt: DateTime.now(),
+      duration: duration,
+      emoji: emoji,
+    );
+    _state.addActiveBonus(bonus);
+    _saveGame();
+    notifyListeners();
+  }
+
+  /// Ativa um bônus de cliques (multiplicador temporal)
+  void activateClickBonus(
+    String id,
+    String name,
+    double bonusValue,
+    Duration duration,
+    String emoji,
+  ) {
+    final bonus = ActiveBonus(
+      id: id,
+      name: name,
+      type: BonusType.clickMultiplier,
+      value: bonusValue,
+      activatedAt: DateTime.now(),
+      duration: duration,
+      emoji: emoji,
+    );
+    _state.addActiveBonus(bonus);
+    _saveGame();
+    notifyListeners();
+  }
+
+  /// Define o jogador como CEO (compra premium)
+  void becomeCEO() {
+    _state.isCEO = true;
     _saveGame();
     notifyListeners();
   }

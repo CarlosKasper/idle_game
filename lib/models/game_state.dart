@@ -3,6 +3,7 @@ import 'money.dart';
 import 'upgrade.dart';
 import 'career.dart';
 import 'career_upgrade.dart';
+import 'active_bonus.dart';
 
 /// Estado de um upgrade comprado
 class PurchasedUpgrade {
@@ -42,6 +43,12 @@ class GameState {
   Map<String, PurchasedUpgrade> purchasedUpgrades = {};
   Map<String, PurchasedUpgrade> purchasedCareerUpgrades = {};
 
+  // Bônus ativos (temporários)
+  List<ActiveBonus> activeBonuses = [];
+
+  // Status premium
+  bool isCEO = false; // Se o jogador comprou "Me torne CEO"
+
   DateTime lastSaveTime = DateTime.now();
 
   /// Inicializa os upgrades comprados (do save ou zero)
@@ -73,14 +80,18 @@ class GameState {
     }
   }
 
-  /// Calcula renda por clique (carreira + bônus)
+  /// Calcula renda por clique (carreira + bônus + multiplicadores)
   Money getClickIncome() {
-    return Money(baseIncomePerClick + clickBonusTotal) * multiplierTotal;
+    final baseIncome = Money(baseIncomePerClick + clickBonusTotal);
+    final totalMultiplier = multiplierTotal * getClickMultiplierBonus();
+    return baseIncome * totalMultiplier;
   }
 
-  /// Calcula renda por segundo (carreira + bônus)
+  /// Calcula renda por segundo (carreira + bônus + multiplicadores)
   Money getIncomePerSecond() {
-    return Money(baseIncomePerSecond + incomePerSecondTotal) * multiplierTotal;
+    final baseIncome = Money(baseIncomePerSecond + incomePerSecondTotal);
+    final totalMultiplier = multiplierTotal * getIncomeMultiplierBonus();
+    return baseIncome * totalMultiplier;
   }
 
   /// Renda base do cargo atual
@@ -196,6 +207,7 @@ class GameState {
         (key, value) => MapEntry(key, {'level': value.level}),
       ),
       'lastSaveTime': lastSaveTime.toIso8601String(),
+      'isCEO': isCEO,
     };
   }
 
@@ -224,6 +236,7 @@ class GameState {
     state.lastSaveTime = DateTime.parse(
       json['lastSaveTime'] as String? ?? DateTime.now().toIso8601String(),
     );
+    state.isCEO = json['isCEO'] as bool? ?? false;
 
     state.initializePurchasedUpgrades();
 
@@ -238,5 +251,52 @@ class GameState {
     });
 
     return state;
+  }
+
+  /// Adiciona um bônus ativo
+  void addActiveBonus(ActiveBonus bonus) {
+    activeBonuses.add(bonus);
+  }
+
+  /// Remove bônus expirados e retorna true se houve mudanças
+  bool cleanExpiredBonuses() {
+    final beforeLength = activeBonuses.length;
+    activeBonuses = activeBonuses.where((bonus) {
+      if (bonus.type == BonusType.instantMoney) {
+        return false; // Remover bônus instantâneos
+      }
+      return bonus.isActive;
+    }).toList();
+    return activeBonuses.length != beforeLength;
+  }
+
+  /// Calcula o multiplicador total de renda baseado em bônus ativos
+  double getIncomeMultiplierBonus() {
+    cleanExpiredBonuses();
+    double multiplier = 1.0;
+    for (final bonus in activeBonuses) {
+      if (bonus.type == BonusType.incomeMultiplier && bonus.isActive) {
+        multiplier += bonus.value; // valor já vem como 1.0 para 2x (100% extra)
+      }
+    }
+    return multiplier;
+  }
+
+  /// Calcula o multiplicador total de cliques baseado em bônus ativos
+  double getClickMultiplierBonus() {
+    cleanExpiredBonuses();
+    double multiplier = 1.0;
+    for (final bonus in activeBonuses) {
+      if (bonus.type == BonusType.clickMultiplier && bonus.isActive) {
+        multiplier += bonus.value;
+      }
+    }
+    return multiplier;
+  }
+
+  /// Retorna lista de bônus ativos e válidos
+  List<ActiveBonus> getActiveBonuses() {
+    cleanExpiredBonuses();
+    return activeBonuses.where((b) => b.isActive).toList();
   }
 }

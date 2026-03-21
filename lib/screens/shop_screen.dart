@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../services/game_service.dart';
 import '../services/admob_service.dart';
+import '../services/in_app_purchase_service.dart';
 import '../models/money.dart';
 import '../config/admob_config.dart';
 
@@ -16,20 +17,26 @@ class ShopScreen extends StatefulWidget {
 
 class _ShopScreenState extends State<ShopScreen> {
   late AdMobService _adMobService;
+  late InAppPurchaseService _iapService;
 
   @override
   void initState() {
     super.initState();
     _adMobService = AdMobService();
+    _iapService = InAppPurchaseService();
     // Pré-carregar anúncios recompensados usando IDs da config
-    _adMobService.loadRewardedAd(AdMobConfig.rewardedAdUnitId1);
-    _adMobService.loadRewardedAd(AdMobConfig.rewardedAdUnitId2);
-    _adMobService.loadRewardedAd(AdMobConfig.rewardedAdUnitId3);
+    // _adMobService.loadRewardedAd(AdMobConfig.rewardedAdUnitId1);
+    // _adMobService.loadRewardedAd(AdMobConfig.rewardedAdUnitId2);
+    // _adMobService.loadRewardedAd(AdMobConfig.rewardedAdUnitId3);
+
+    // Inicializar IAP
+    _iapService.initialize();
   }
 
   @override
   void dispose() {
     _adMobService.dispose();
+    _iapService.dispose();
     super.dispose();
   }
 
@@ -80,6 +87,7 @@ class _ShopScreenState extends State<ShopScreen> {
       price: '\$0.99',
       duration: '1 hora',
       bonus: 1.0, // 100% bonus
+      iapProductId: 'com.kasperlabs.companyIdle.buff_income_x2',
     ),
     ShopProduct(
       id: 'buff_income_x3',
@@ -89,6 +97,7 @@ class _ShopScreenState extends State<ShopScreen> {
       price: '\$1.99',
       duration: '2 horas',
       bonus: 2.0, // 200% bonus
+      iapProductId: 'com.kasperlabs.companyIdle.buff_income_x3',
     ),
     ShopProduct(
       id: 'buff_income_x5',
@@ -98,6 +107,7 @@ class _ShopScreenState extends State<ShopScreen> {
       price: '\$4.99',
       duration: '6 horas',
       bonus: 4.0, // 400% bonus
+      iapProductId: 'com.kasperlabs.companyIdle.buff_income_x5',
     ),
     ShopProduct(
       id: 'buff_clicks_x2',
@@ -107,6 +117,7 @@ class _ShopScreenState extends State<ShopScreen> {
       price: '\$0.99',
       duration: '30 min',
       bonus: 1.0,
+      iapProductId: 'com.kasperlabs.companyIdle.buff_clicks_x2',
     ),
     ShopProduct(
       id: 'buff_all_in_one',
@@ -116,6 +127,7 @@ class _ShopScreenState extends State<ShopScreen> {
       price: '\$2.99',
       duration: '1 hora',
       bonus: 2.0,
+      iapProductId: 'com.kasperlabs.companyIdle.buff_all_in_one',
     ),
     ShopProduct(
       id: 'money_bonus_1000',
@@ -125,6 +137,8 @@ class _ShopScreenState extends State<ShopScreen> {
       price: '\$0.99',
       duration: 'Permanente',
       bonus: 0.0, // Não é um multiplicador, é dinheiro direto
+      iapProductId: 'com.kasperlabs.companyIdle.money_bonus_1000',
+      isNonConsumable: false,
     ),
     ShopProduct(
       id: 'become_ceo',
@@ -134,6 +148,8 @@ class _ShopScreenState extends State<ShopScreen> {
       price: '\$49.99',
       duration: 'Permanente',
       bonus: 0.0,
+      iapProductId: 'com.kasperlabs.companyIdle.become_ceo',
+      isNonConsumable: true,
     ),
   ];
 
@@ -165,6 +181,7 @@ class _ShopScreenState extends State<ShopScreen> {
                         _ShopProductCard(
                           product: product,
                           adMobService: _adMobService,
+                          iapService: _iapService,
                         ),
                         const SizedBox(height: 12),
                       ],
@@ -240,8 +257,13 @@ class _ScreenHeader extends StatelessWidget {
 class _ShopProductCard extends StatelessWidget {
   final ShopProduct product;
   final AdMobService adMobService;
+  final InAppPurchaseService iapService;
 
-  const _ShopProductCard({required this.product, required this.adMobService});
+  const _ShopProductCard({
+    required this.product,
+    required this.adMobService,
+    required this.iapService,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +343,7 @@ class _ShopProductCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
 
-          // Botão de compra
+          // Botão de compra / Restore
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -334,33 +356,106 @@ class _ShopProductCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              GestureDetector(
-                onTap: () {
-                  _showPurchaseDialog(context, product, gameService);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF4ADE80),
-                    border: Border.all(
-                      color: const Color(0xFF4ADE80),
-                      width: 1,
+              // Mostrar dois botões se for não-consumível (restore + comprar)
+              if (product.isNonConsumable && product.iapProductId != null)
+                Row(
+                  children: [
+                    // Botão Restaurar
+                    GestureDetector(
+                      onTap: () {
+                        iapService.restorePurchases();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '🔄 Restaurando compras... ${product.emoji}',
+                            ),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF4A7C7E),
+                          border: Border.all(
+                            color: const Color(0xFF4A7C7E),
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'RESTAURAR',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 7,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    product.isAdVideo ? 'ASSISTIR' : 'COMPRAR',
-                    style: GoogleFonts.jetBrainsMono(
-                      fontSize: 8,
-                      color: const Color(0xFF0A0A0F),
-                      fontWeight: FontWeight.w600,
+                    const SizedBox(width: 6),
+                    // Botão Comprar
+                    GestureDetector(
+                      onTap: () {
+                        _showPurchaseDialog(context, product, gameService);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF4ADE80),
+                          border: Border.all(
+                            color: const Color(0xFF4ADE80),
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'COMPRAR',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 7,
+                            color: const Color(0xFF0A0A0F),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                // Botão único para outros produtos
+                GestureDetector(
+                  onTap: () {
+                    _showPurchaseDialog(context, product, gameService);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4ADE80),
+                      border: Border.all(
+                        color: const Color(0xFF4ADE80),
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      product.isAdVideo ? 'ASSISTIR' : 'COMPRAR',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 8,
+                        color: const Color(0xFF0A0A0F),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ],
@@ -416,7 +511,6 @@ class _ShopProductCard extends StatelessWidget {
     ShopProduct product,
     GameService gameService,
   ) {
-    // Simular a compra (em produção, seria via in_app_purchase ou rewarded ads)
     Navigator.pop(context);
 
     if (product.isAdVideo && product.adUnitId != null) {
@@ -458,8 +552,17 @@ class _ShopProductCard extends StatelessWidget {
           );
         }
       });
+    } else if (product.iapProductId != null) {
+      // Compra via Apple Store
+      iapService.buyProduct(product.iapProductId!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🛒 Processando pagamento... ${product.emoji}'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } else {
-      // Compra com dinheiro real
+      // Compra com dinheiro real (fallback)
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${product.name} ativado! ${product.emoji}'),
@@ -478,6 +581,9 @@ class _ShopProductCard extends StatelessWidget {
     } else if (product.id == 'ad_money_bonus') {
       // Adiciona $500
       gameService.state.money = gameService.state.money + Money(500);
+    } else if (product.id == 'become_ceo') {
+      // Tornar o jogador um CEO
+      gameService.becomeCEO();
     }
   }
 }
@@ -492,6 +598,8 @@ class ShopProduct {
   final double bonus;
   final bool isAdVideo;
   final String? adUnitId; // ID do anúncio no Google AdMob
+  final String? iapProductId; // ID do produto na Apple Store
+  final bool isNonConsumable; // true = não-consumível
 
   ShopProduct({
     required this.id,
@@ -503,5 +611,7 @@ class ShopProduct {
     required this.bonus,
     this.isAdVideo = false,
     this.adUnitId,
+    this.iapProductId,
+    this.isNonConsumable = false,
   });
 }

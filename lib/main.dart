@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'services/game_service.dart';
 import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
@@ -8,12 +8,12 @@ import 'theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializar Google Mobile Ads
-  try {
-    await MobileAds.instance.initialize();
-  } catch (e) {
-    print('Erro ao inicializar Google Mobile Ads: $e');
-  }
+  // // Inicializar Google Mobile Ads
+  // try {
+  //   await MobileAds.instance.initialize();
+  // } catch (e) {
+  //   print('Erro ao inicializar Google Mobile Ads: $e');
+  // }
 
   runApp(const MainApp());
 }
