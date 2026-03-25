@@ -47,14 +47,6 @@ class _MainAppState extends State<MainApp> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return MaterialApp(
-            localizationsDelegates: [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en', 'US'),
             title: 'Office Idle',
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
@@ -68,14 +60,6 @@ class _MainAppState extends State<MainApp> {
 
         if (snapshot.hasError) {
           return MaterialApp(
-            localizationsDelegates: [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en', 'US'),
             title: 'Office Idle',
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
@@ -99,7 +83,6 @@ class _MainAppState extends State<MainApp> {
                 GlobalCupertinoLocalizations.delegate,
               ],
               supportedLocales: AppLocalizations.supportedLocales,
-              locale: const Locale('en', 'US'),
               title: 'Office Idle',
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
