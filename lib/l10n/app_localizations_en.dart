@@ -534,10 +534,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careerLevelJunior => 'Junior';
 
   @override
-  String get careerLevelPleno => 'Senior Developer';
+  String get careerLevelPleno => 'Mid';
 
   @override
-  String get careerLevelPlenoPlus => 'Senior Plus';
+  String get careerLevelPlenoPlus => 'Mid Plus';
 
   @override
   String get careerLevelSenior => 'Senior';
@@ -643,4 +643,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permanent => 'Permanent';
+
+  // Game Center Ranking
+  @override
+  String get gameCenter => 'Game Center';
+
+  @override
+  String get leaderboard => 'Leaderboard';
+
+  @override
+  String get viewRanking => 'View Ranking';
 }

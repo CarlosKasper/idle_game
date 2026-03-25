@@ -8,6 +8,7 @@ import '../models/active_bonus.dart';
 import '../models/career.dart';
 import 'save_service.dart';
 import 'analytics_service.dart';
+import 'game_center_service.dart';
 
 /// Serviço principal que gerencia a lógica do jogo
 class GameService extends ChangeNotifier {
@@ -37,6 +38,10 @@ class GameService extends ChangeNotifier {
     _state.initializeCareerUpgrades();
     _passiveIncomeStopwatch.start();
     _analytics.startSession();
+
+    // Inicializar Game Center
+    await GameCenterService.initialize();
+
     _isInitialized = true;
     notifyListeners();
   }
@@ -51,6 +56,9 @@ class GameService extends ChangeNotifier {
     if (_state.currentCareerLevel > previousCareerLevel) {
       _analytics.trackPromotion(_state.currentCareerLevel);
     }
+
+    // Submeter pontuação ao Game Center periodicamente
+    _submitScoreToGameCenter();
 
     _saveGame();
     notifyListeners();
@@ -434,5 +442,14 @@ class GameService extends ChangeNotifier {
     _state.initializePurchasedUpgrades();
     _state.initializeCareerUpgrades();
     notifyListeners();
+  }
+
+  /// Submete a pontuação para o Game Center (a cada clique significativo)
+  void _submitScoreToGameCenter() {
+    // Submeter apenas a cada 10 cliques para não sobrecarregar
+    if (_analytics.getSessionStats()['total_clicks'] % 10 == 0) {
+      final scoreValue = _state.totalMoneyEarned.amount.toInt();
+      GameCenterService.submitScore(scoreValue);
+    }
   }
 }

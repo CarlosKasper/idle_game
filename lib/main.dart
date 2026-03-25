@@ -1,3 +1,4 @@
+import 'package:company_idle/services/game_center_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,14 +11,6 @@ import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // // Inicializar Google Mobile Ads
-  // try {
-  //   await MobileAds.instance.initialize();
-  // } catch (e) {
-  //   print('Erro ao inicializar Google Mobile Ads: $e');
-  // }
-
   runApp(const MainApp());
 }
 
@@ -29,8 +22,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  ThemeMode _themeMode =
-      ThemeMode.system; // Sistema define tema automaticamente
+  ThemeMode _themeMode = ThemeMode.system;
   late GameService _gameService;
   late Future<void> _initializationFuture;
 
@@ -39,6 +31,7 @@ class _MainAppState extends State<MainApp> {
     super.initState();
     _gameService = GameService();
     _initializationFuture = _gameService.initialize();
+    GameCenterService.initialize();
   }
 
   void _setThemeMode(ThemeMode mode) {
@@ -54,6 +47,14 @@ class _MainAppState extends State<MainApp> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return MaterialApp(
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('en', 'US'),
             title: 'Office Idle',
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
@@ -67,6 +68,14 @@ class _MainAppState extends State<MainApp> {
 
         if (snapshot.hasError) {
           return MaterialApp(
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('en', 'US'),
             title: 'Office Idle',
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
@@ -90,6 +99,7 @@ class _MainAppState extends State<MainApp> {
                 GlobalCupertinoLocalizations.delegate,
               ],
               supportedLocales: AppLocalizations.supportedLocales,
+              locale: const Locale('en', 'US'),
               title: 'Office Idle',
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,

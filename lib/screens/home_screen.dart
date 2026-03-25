@@ -332,7 +332,7 @@ class _StatusBar extends StatelessWidget {
             style: style,
           ),
           Text(
-            '${AppLocalizations.of(context).systemBuild}: V0.1.0-ALPHA',
+            '${AppLocalizations.of(context).systemBuild}: V1.0.0-ALPHA',
             style: style,
           ),
           Text('CLICKS: $totalClicks', style: style),

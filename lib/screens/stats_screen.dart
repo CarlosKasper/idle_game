@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
 import '../services/game_service.dart';
+import '../services/game_center_service.dart';
 import '../models/career.dart' as career_model;
 
 // ─────────────────────────────────────────────────
@@ -77,6 +78,8 @@ class StatsScreen extends StatelessWidget {
                         _CareerInfoCard(gameService: gameService),
                         const SizedBox(height: 20),
                         _UpgradeStatsCard(gameService: gameService),
+                        const SizedBox(height: 20),
+                        _GameCenterCard(gameService: gameService),
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -493,6 +496,81 @@ class _PixelContainer extends StatelessWidget {
         ],
       ),
       child: child,
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────
+// GAME CENTER RANKING CARD
+// ─────────────────────────────────────────────────
+
+class _GameCenterCard extends StatelessWidget {
+  final GameService gameService;
+
+  const _GameCenterCard({required this.gameService});
+
+  void _viewRanking(BuildContext context) {
+    GameCenterService.showLeaderboard();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _PixelContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('🏆', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Text(
+                AppLocalizations.of(context).gameCenter,
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  color: Colors.white70,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context).leaderboard,
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 9,
+                      color: Colors.white54,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '\$${gameService.state.totalMoneyEarned.format()}',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 11,
+                      color: const Color(0xFF4ADE80),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              ElevatedButton.icon(
+                onPressed: () => _viewRanking(context),
+                icon: const Icon(Icons.leaderboard),
+                label: Text(AppLocalizations.of(context).viewRanking),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4ADE80),
+                  foregroundColor: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -333,6 +333,11 @@ abstract class AppLocalizations {
   String get sixHours;
   String get thirtyMin;
   String get permanent;
+
+  // Game Center Ranking
+  String get gameCenter;
+  String get leaderboard;
+  String get viewRanking;
 }
 
 class _AppLocalizationsDelegate

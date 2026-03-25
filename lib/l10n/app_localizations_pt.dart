@@ -644,4 +644,14 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get permanent => 'Permanente';
+
+  // Game Center Ranking
+  @override
+  String get gameCenter => 'Game Center';
+
+  @override
+  String get leaderboard => 'Placar';
+
+  @override
+  String get viewRanking => 'Ver Ranking';
 }

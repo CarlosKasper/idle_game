@@ -1,7 +1,7 @@
 name: company_idle
 description: "Company Idle - An incremental game where you build your business empire."
 publish_to: "none"
-version: 0.1.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.11.0
@@ -16,6 +16,7 @@ dependencies:
   provider: ^6.1.0
   google_fonts: ^6.1.0
   in_app_purchase: ^3.2.0
+  games_services: ^4.0.0
 
 dev_dependencies:
   flutter_test:
