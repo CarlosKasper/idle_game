@@ -71,8 +71,6 @@ class StatsScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _SessionInfoCard(duration: sessionDuration),
-                        const SizedBox(height: 20),
                         _GameStatsCard(gameService: gameService, stats: stats),
                         const SizedBox(height: 20),
                         _CareerInfoCard(gameService: gameService),
@@ -509,8 +507,8 @@ class _GameCenterCard extends StatelessWidget {
 
   const _GameCenterCard({required this.gameService});
 
-  void _viewRanking(BuildContext context) {
-    GameCenterService.showLeaderboard();
+  void _viewRanking(BuildContext context) async {
+    await GameCenterService.showLeaderboard();
   }
 
   @override

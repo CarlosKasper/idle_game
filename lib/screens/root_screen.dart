@@ -62,10 +62,13 @@ class _RootScreenState extends State<RootScreen> {
   void initState() {
     super.initState();
     _startUpdateLoop();
+    _startProgressSaveLoop();
   }
 
   @override
   void dispose() {
+    // Finaliza a sessão e atualiza tempo total jogado
+    context.read<GameService>().analytics.endSession();
     super.dispose();
   }
 
@@ -74,6 +77,15 @@ class _RootScreenState extends State<RootScreen> {
       if (mounted) {
         context.read<GameService>().updatePassiveIncome();
         _startUpdateLoop();
+      }
+    });
+  }
+
+  void _startProgressSaveLoop() {
+    Future.delayed(const Duration(seconds: 30), () {
+      if (mounted) {
+        context.read<GameService>().analytics.saveProgressPeriodically();
+        _startProgressSaveLoop();
       }
     });
   }

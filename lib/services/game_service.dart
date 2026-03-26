@@ -33,11 +33,11 @@ class GameService extends ChangeNotifier {
   /// Inicializa o jogo
   Future<void> initialize() async {
     await _saveService.initialize();
+    await _analytics.initialize();
     _state = await _saveService.loadGame();
     _state.initializePurchasedUpgrades();
     _state.initializeCareerUpgrades();
     _passiveIncomeStopwatch.start();
-    _analytics.startSession();
 
     // Inicializar Game Center
     await GameCenterService.initialize();
@@ -78,6 +78,7 @@ class GameService extends ChangeNotifier {
         _analytics.trackPromotion(_state.currentCareerLevel);
       }
 
+      _saveGame();
       notifyListeners();
     }
   }
@@ -438,6 +439,7 @@ class GameService extends ChangeNotifier {
   /// Reseta o jogo
   Future<void> resetGame() async {
     await _saveService.deleteGame();
+    await _analytics.resetAnalyticsData();
     _state = GameState();
     _state.initializePurchasedUpgrades();
     _state.initializeCareerUpgrades();

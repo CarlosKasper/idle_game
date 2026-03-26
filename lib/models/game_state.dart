@@ -203,12 +203,29 @@ class GameState {
       'money': moneyStr,
       'totalMoneyEarned': totalStr,
       'currentCareerLevel': currentCareerLevel,
+      'notebookLevel': notebookLevel,
       'clickBonusTotal': clickStr,
       'incomePerSecondTotal': incomeStr,
       'multiplierTotal': multStr,
       'purchasedUpgrades': purchasedUpgrades.map(
-        (key, value) => MapEntry(key, {'level': value.level}),
+        (key, value) =>
+            MapEntry(key, {'level': value.level, 'purchased': value.purchased}),
       ),
+      'purchasedCareerUpgrades': purchasedCareerUpgrades.map(
+        (key, value) =>
+            MapEntry(key, {'level': value.level, 'purchased': value.purchased}),
+      ),
+      'activeBonuses': activeBonuses.map((bonus) {
+        return {
+          'id': bonus.id,
+          'name': bonus.name,
+          'type': bonus.type.toString(),
+          'value': bonus.value,
+          'activatedAt': bonus.activatedAt.toIso8601String(),
+          'duration': bonus.duration.inMilliseconds,
+          'emoji': bonus.emoji,
+        };
+      }).toList(),
       'lastSaveTime': lastSaveTime.toIso8601String(),
       'isCEO': isCEO,
     };
@@ -232,6 +249,7 @@ class GameState {
     state.money = Money(parseDoubleValue(json['money']));
     state.totalMoneyEarned = Money(parseDoubleValue(json['totalMoneyEarned']));
     state.currentCareerLevel = json['currentCareerLevel'] as int? ?? 0;
+    state.notebookLevel = json['notebookLevel'] as int? ?? 0;
     state.clickBonusTotal = parseDoubleValue(json['clickBonusTotal']);
     state.incomePerSecondTotal = parseDoubleValue(json['incomePerSecondTotal']);
     final mult = parseDoubleValue(json['multiplierTotal']);
@@ -242,16 +260,64 @@ class GameState {
     state.isCEO = json['isCEO'] as bool? ?? false;
 
     state.initializePurchasedUpgrades();
+    state.initializeCareerUpgrades();
 
-    // Restaura níveis dos upgrades
+    // Restaura níveis e status dos upgrades normais
     final purchasedUpgradesJson =
         json['purchasedUpgrades'] as Map<String, dynamic>? ?? {};
     purchasedUpgradesJson.forEach((key, value) {
       if (state.purchasedUpgrades.containsKey(key)) {
-        state.purchasedUpgrades[key]!.level =
-            (value as Map<String, dynamic>)['level'] as int? ?? 1;
+        final upgradeData = value as Map<String, dynamic>;
+        state.purchasedUpgrades[key]!.level = upgradeData['level'] as int? ?? 1;
+        state.purchasedUpgrades[key]!.purchased =
+            upgradeData['purchased'] as bool? ?? false;
       }
     });
+
+    // Restaura níveis e status dos upgrades de carreira
+    final purchasedCareerUpgradesJson =
+        json['purchasedCareerUpgrades'] as Map<String, dynamic>? ?? {};
+    purchasedCareerUpgradesJson.forEach((key, value) {
+      if (state.purchasedCareerUpgrades.containsKey(key)) {
+        final upgradeData = value as Map<String, dynamic>;
+        state.purchasedCareerUpgrades[key]!.level =
+            upgradeData['level'] as int? ?? 1;
+        state.purchasedCareerUpgrades[key]!.purchased =
+            upgradeData['purchased'] as bool? ?? false;
+      }
+    });
+
+    // Restaura bônus ativos
+    final activeBonusesJson = json['activeBonuses'] as List<dynamic>? ?? [];
+    state.activeBonuses = activeBonusesJson.map((bonusJson) {
+      final bonusData = bonusJson as Map<String, dynamic>;
+      final typeStr =
+          bonusData['type'] as String? ?? 'BonusType.incomeMultiplier';
+
+      BonusType bonusType;
+      if (typeStr.contains('clickMultiplier')) {
+        bonusType = BonusType.clickMultiplier;
+      } else if (typeStr.contains('instantMoney')) {
+        bonusType = BonusType.instantMoney;
+      } else {
+        bonusType = BonusType.incomeMultiplier;
+      }
+
+      final activatedAt = DateTime.parse(
+        bonusData['activatedAt'] as String? ?? DateTime.now().toIso8601String(),
+      );
+      final durationMs = bonusData['duration'] as int? ?? 0;
+
+      return ActiveBonus(
+        id: bonusData['id'] as String? ?? '',
+        name: bonusData['name'] as String? ?? '',
+        type: bonusType,
+        value: parseDoubleValue(bonusData['value']),
+        activatedAt: activatedAt,
+        duration: Duration(milliseconds: durationMs),
+        emoji: bonusData['emoji'] as String? ?? '',
+      );
+    }).toList();
 
     return state;
   }
