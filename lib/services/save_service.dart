@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/game_state.dart';
+import '../constants/game_constants.dart';
 
 class SaveService {
   static const String _saveKey = 'idle_game_state';
@@ -25,6 +26,30 @@ class SaveService {
     try {
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
       final state = GameState.fromJson(json);
+      // Aplicar ganhos off-line (idle) desde o último save
+      try {
+        final now = DateTime.now();
+        final last = state.lastSaveTime;
+        final elapsed = now.difference(last);
+
+        // Limita tempo off-line para evitar ganhos infinitos
+        final maxSeconds = GameConstants.maxOfflineHours * 3600;
+        final seconds = elapsed.inSeconds > maxSeconds
+            ? maxSeconds
+            : elapsed.inSeconds;
+
+        if (seconds > 0) {
+          final offlineDuration = Duration(seconds: seconds);
+          // Aplica renda passiva proporcional ao tempo off-line
+          state.earnPassiveIncome(offlineDuration);
+          // Atualiza lastSaveTime para evitar dupla aplicação
+          state.lastSaveTime = now;
+          // Persiste imediatamente o estado atualizado
+          await saveGame(state);
+        }
+      } catch (e) {
+        print('Erro ao aplicar ganhos off-line: $e');
+      }
       return state;
     } catch (e) {
       print('Erro ao carregar jogo: $e');
