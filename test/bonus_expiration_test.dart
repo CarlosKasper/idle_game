@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:idle_game/models/active_bonus.dart';
-import 'package:idle_game/models/game_state.dart';
+import 'package:company_idle/models/active_bonus.dart';
+import 'package:company_idle/models/game_state.dart';
 
 void main() {
   group('Bonus Expiration Tests', () {

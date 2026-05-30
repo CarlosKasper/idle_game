@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:idle_game/models/game_state.dart';
-import 'package:idle_game/models/money.dart';
+import 'package:company_idle/models/game_state.dart';
+import 'package:company_idle/models/money.dart';
 
 void main() {
   group('Money', () {

@@ -23,6 +23,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalEarned => 'Total Earned';
 
   @override
+  String get watchAdInShopHint => 'Watch an ad in the Shop to earn a bonus';
+
+  @override
   String get careerTitle => 'CAREER';
 
   @override

@@ -79,6 +79,7 @@ abstract class AppLocalizations {
   String get workButtonLabel;
   String get careerLevel;
   String get totalEarned;
+  String get watchAdInShopHint;
 
   // Career
   String get careerTitle;

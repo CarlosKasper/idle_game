@@ -254,45 +254,62 @@ class _GameHeader extends StatelessWidget {
               ),
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    isCEO ? '👑' : '💼',
-                    style: const TextStyle(fontSize: 24),
+                  Row(
+                    children: [
+                      Text(
+                        isCEO ? '👑' : '💼',
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Office Idle',
+                        style: GoogleFonts.silkscreen(
+                          fontSize: 18,
+                          color: isCEO ? const Color(0xFFD4A574) : Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Office Idle',
-                    style: GoogleFonts.silkscreen(
-                      fontSize: 18,
-                      color: isCEO ? const Color(0xFFD4A574) : Colors.white,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        getLocalizedCareerLevelName(
+                          context,
+                          career,
+                        ).toUpperCase(),
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 10,
+                          color: Colors.white,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      Text(
+                        'NV ${gameService.state.currentCareerLevel + 1}',
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 9,
+                          color: Colors.white38,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    getLocalizedCareerLevelName(context, career).toUpperCase(),
-                    style: GoogleFonts.jetBrainsMono(
-                      fontSize: 10,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  Text(
-                    'NV ${gameService.state.currentCareerLevel + 1}',
-                    style: GoogleFonts.jetBrainsMono(
-                      fontSize: 9,
-                      color: Colors.white38,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 6),
+              Text(
+                AppLocalizations.of(context).watchAdInShopHint,
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 9,
+                  color: Colors.white38,
+                  letterSpacing: 1,
+                ),
               ),
             ],
           ),

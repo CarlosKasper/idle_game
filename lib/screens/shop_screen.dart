@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../services/game_service.dart';
 import '../services/in_app_purchase_service.dart';
 import '../services/purchase_state_service.dart';
+import '../services/rewarded_ads_service.dart';
 import '../models/money.dart';
 
 // ─────────────────────────────────────────────────
@@ -15,6 +16,12 @@ String getLocalizedProductName(BuildContext context, String productId) {
   final l10n = AppLocalizations.of(context);
 
   switch (productId) {
+    case 'ad_income_x2_30m':
+      return l10n.multiplier2x;
+    case 'ad_clicks_x2_20m':
+      return l10n.clicks2x;
+    case 'ad_money_bonus':
+      return l10n.moneyBonus;
     case 'buff_income_x2':
       return l10n.multiplier2x;
     case 'buff_income_x3':
@@ -38,6 +45,12 @@ String getLocalizedProductDescription(BuildContext context, String productId) {
   final l10n = AppLocalizations.of(context);
 
   switch (productId) {
+    case 'ad_income_x2_30m':
+      return l10n.multiplier2xDesc;
+    case 'ad_clicks_x2_20m':
+      return l10n.clicks2xDesc;
+    case 'ad_money_bonus':
+      return l10n.moneyBonusDesc;
     case 'buff_income_x2':
       return l10n.multiplier2xDesc;
     case 'buff_income_x3':
@@ -72,6 +85,8 @@ String getLocalizedDuration(BuildContext context, String duration) {
       return l10n.sixHours;
     case '30 min':
       return l10n.thirtyMin;
+    case '20 min':
+      return '20 min';
     case 'permanente':
     case 'permanent':
       return l10n.permanent;
@@ -308,6 +323,39 @@ class _ShopScreenState extends State<ShopScreen> {
     // ═══════════════════════════════════════════════════════════════════
     // PRODUTOS COM ANÚNCIOS (FREE)
     // ═══════════════════════════════════════════════════════════════════
+    ShopProduct(
+      id: 'ad_income_x2_30m',
+      name: 'Multiplicador 2x (Anúncio)',
+      description: '+100% renda por 30 min (assistindo anúncio)',
+      emoji: '🎬',
+      price: 'FREE',
+      duration: '30 min',
+      bonus: 1.0,
+      isAdVideo: true,
+      adUnitId: 'ca-app-pub-3940256099942544/1712485313',
+    ),
+    ShopProduct(
+      id: 'ad_clicks_x2_20m',
+      name: 'Cliques 2x (Anúncio)',
+      description: '+100% dinheiro por clique por 20 min (assistindo anúncio)',
+      emoji: '🎬',
+      price: 'FREE',
+      duration: '20 min',
+      bonus: 1.0,
+      isAdVideo: true,
+      adUnitId: 'ca-app-pub-3940256099942544/1712485313',
+    ),
+    ShopProduct(
+      id: 'ad_money_bonus',
+      name: 'Bônus de Dinheiro (Anúncio)',
+      description: 'Ganhe \$500 (assistindo anúncio)',
+      emoji: '🎬',
+      price: 'FREE',
+      duration: 'Permanente',
+      bonus: 0.0,
+      isAdVideo: true,
+      adUnitId: 'ca-app-pub-3940256099942544/1712485313',
+    ),
     ShopProduct(
       id: 'buff_income_x2',
       name: 'Multiplicador 2x',
@@ -781,28 +829,48 @@ class _ShopProductCard extends StatelessWidget {
     Navigator.pop(context);
 
     if (product.isAdVideo) {
-      // Anúncios removidos - apenas simular
+      final adUnitId = product.adUnitId;
+      if (adUnitId == null || adUnitId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('⚠️ Ad unit id não configurado.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('🎬 Exibindo anúncio... ${product.emoji}'),
+          content: Text('🎬 Carregando anúncio... ${product.emoji}'),
           duration: const Duration(seconds: 2),
         ),
       );
 
-      // Após "assistir" o anúncio, aplicar benefício
-      Future.delayed(const Duration(seconds: 3), () {
-        _applyProductBenefit(product, gameService);
-        if (context.mounted) {
+      RewardedAdsService.instance.show(
+        adUnitId: adUnitId,
+        onRewarded: () {
+          _applyProductBenefit(context, product, gameService);
+          if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                '✅ Obrigado! ${getLocalizedProductName(context, product.id)} ativado! ${product.emoji}',
+                '✅ ${getLocalizedProductName(context, product.id)} ativado! ${product.emoji}',
               ),
               duration: const Duration(seconds: 2),
             ),
           );
-        }
-      });
+        },
+        onFailed: (msg) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('❌ $msg'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        },
+      );
     } else if (product.iapProductId != null) {
       // Compra via Apple Store - marca início do processamento
       final shopScreenState = context
@@ -831,15 +899,35 @@ class _ShopProductCard extends StatelessWidget {
           duration: const Duration(seconds: 2),
         ),
       );
-      _applyProductBenefit(product, gameService);
+      _applyProductBenefit(context, product, gameService);
     }
   }
 
-  void _applyProductBenefit(ShopProduct product, GameService gameService) {
+  void _applyProductBenefit(
+    BuildContext context,
+    ShopProduct product,
+    GameService gameService,
+  ) {
     // Aplicar o benefício do produto
     if (product.id == 'money_bonus_1000') {
       // Adiciona $1000
       gameService.state.money = gameService.state.money + Money(1000);
+    } else if (product.id == 'ad_income_x2_30m') {
+      gameService.activateIncomeBonus(
+        product.id,
+        getLocalizedProductName(context, product.id),
+        1.0,
+        const Duration(minutes: 30),
+        product.emoji,
+      );
+    } else if (product.id == 'ad_clicks_x2_20m') {
+      gameService.activateClickBonus(
+        product.id,
+        getLocalizedProductName(context, product.id),
+        1.0,
+        const Duration(minutes: 20),
+        product.emoji,
+      );
     } else if (product.id == 'ad_money_bonus') {
       // Adiciona $500
       gameService.state.money = gameService.state.money + Money(500);
