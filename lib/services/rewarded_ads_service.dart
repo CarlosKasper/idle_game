@@ -25,6 +25,9 @@ class RewardedAdsService {
     _initialized = true;
   }
 
+  /// True se já existe um anúncio carregado em cache para esse unit.
+  bool isReady(String adUnitId) => _cache.containsKey(adUnitId);
+
   Future<void> preload(String adUnitId) async {
     await ensureInitialized();
     if (_cache.containsKey(adUnitId)) return;

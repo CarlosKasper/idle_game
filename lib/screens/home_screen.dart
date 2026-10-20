@@ -9,6 +9,8 @@ import 'stats_screen.dart';
 import 'shop_screen.dart';
 import 'career_upgrades_screen.dart';
 import 'notebook_screen.dart';
+import '../widgets/native_ad_card.dart';
+import '../widgets/floating_ad_briefcase.dart';
 
 // ─────────────────────────────────────────────────
 // HELPER FUNCTION FOR LOCALIZED CAREER LEVEL NAMES
@@ -53,6 +55,9 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
+// Rewarded ad unit da maleta flutuante (mesmo unit do "Multiplicador 2x" da loja).
+const _briefcaseAdUnitId = 'ca-app-pub-2763680410215400/6376482564';
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
@@ -102,14 +107,27 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           Expanded(
-            child: IndexedStack(
-              index: _selectedIndex,
+            child: Stack(
               children: [
-                _HomeContent(onThemeChanged: widget.onThemeChanged),
-                const NotebookScreen(),
-                const CareerUpgradesScreen(),
-                const StatsScreen(),
-                const ShopScreen(),
+                IndexedStack(
+                  index: _selectedIndex,
+                  children: [
+                    _HomeContent(onThemeChanged: widget.onThemeChanged),
+                    const NotebookScreen(),
+                    const CareerUpgradesScreen(),
+                    const StatsScreen(),
+                    const ShopScreen(),
+                  ],
+                ),
+                // Maleta flutuante de anúncio recompensado (visível em todas as abas)
+                Positioned.fill(
+                  child: SafeArea(
+                    child: FloatingAdBriefcase(
+                      gameService: context.read<GameService>(),
+                      adUnitId: _briefcaseAdUnitId,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -205,6 +223,12 @@ class _HomeContentState extends State<_HomeContent> {
                         _ProfileCard(gameService: gameService),
                         const SizedBox(height: 16),
                         _BalanceCard(gameService: gameService),
+                        const NativeAdCard(
+                          factoryId: 'mediumNative',
+                          nativeAdUnitIdIOS:
+                              'ca-app-pub-2763680410215400/3977805772',
+                          nativeAdUnitIdAndroid: '',
+                        ),
                         const SizedBox(height: 16),
                         _WorkButton(onWork: () => gameService.click()),
                         const SizedBox(height: 16),

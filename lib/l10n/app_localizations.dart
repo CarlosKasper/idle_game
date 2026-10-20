@@ -339,6 +339,18 @@ abstract class AppLocalizations {
   String get gameCenter;
   String get leaderboard;
   String get viewRanking;
+
+  // Floating ad briefcase
+  String get briefcaseTitle;
+  String get briefcaseWatchAdToEarn;
+  String get briefcaseWatch;
+  String get briefcaseNotNow;
+  String get briefcaseTag;
+  String get briefcaseIncomeX2;
+  String get briefcaseClicksX3;
+  String get briefcaseInstantMoney;
+  String get briefcaseRewardActivated;
+  String get briefcaseAdUnavailable;
 }
 
 class _AppLocalizationsDelegate

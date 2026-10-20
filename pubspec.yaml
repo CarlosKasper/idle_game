@@ -1,7 +1,7 @@
 name: company_idle
 description: "Company Idle - An incremental game where you build your business empire."
 publish_to: "none"
-version: 2.0.0+7
+version: 2.1.0+8
 
 environment:
   sdk: ^3.11.0

@@ -332,7 +332,7 @@ class _ShopScreenState extends State<ShopScreen> {
       duration: '30 min',
       bonus: 1.0,
       isAdVideo: true,
-      adUnitId: 'ca-app-pub-3940256099942544/1712485313',
+      adUnitId: 'ca-app-pub-2763680410215400/6376482564',
     ),
     ShopProduct(
       id: 'ad_clicks_x2_20m',
@@ -343,7 +343,7 @@ class _ShopScreenState extends State<ShopScreen> {
       duration: '20 min',
       bonus: 1.0,
       isAdVideo: true,
-      adUnitId: 'ca-app-pub-3940256099942544/1712485313',
+      adUnitId: 'ca-app-pub-2763680410215400/3475954652',
     ),
     ShopProduct(
       id: 'ad_money_bonus',
@@ -354,7 +354,7 @@ class _ShopScreenState extends State<ShopScreen> {
       duration: 'Permanente',
       bonus: 0.0,
       isAdVideo: true,
-      adUnitId: 'ca-app-pub-3940256099942544/1712485313',
+      adUnitId: 'ca-app-pub-2763680410215400/9476089517',
     ),
     ShopProduct(
       id: 'buff_income_x2',

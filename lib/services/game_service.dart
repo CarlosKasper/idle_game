@@ -416,6 +416,21 @@ class GameService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Adiciona dinheiro instantâneo (conta para promoção de carreira)
+  void addInstantMoney(Money amount) {
+    final previousCareerLevel = _state.currentCareerLevel;
+    _state.money = _state.money + amount;
+    _state.totalMoneyEarned = _state.totalMoneyEarned + amount;
+    _state.checkCareerPromotion();
+
+    if (_state.currentCareerLevel > previousCareerLevel) {
+      _analytics.trackPromotion(_state.currentCareerLevel);
+    }
+
+    _saveGame();
+    notifyListeners();
+  }
+
   /// Define o jogador como CEO (compra premium)
   void becomeCEO() {
     _state.isCEO = true;

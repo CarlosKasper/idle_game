@@ -657,4 +657,35 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get viewRanking => 'Ver Ranking';
+
+  // Floating ad briefcase
+  @override
+  String get briefcaseTitle => 'MALETA DE BÔNUS';
+
+  @override
+  String get briefcaseWatchAdToEarn => 'Assista um anúncio curto e ganhe:';
+
+  @override
+  String get briefcaseWatch => '▶ ASSISTIR';
+
+  @override
+  String get briefcaseNotNow => 'AGORA NÃO';
+
+  @override
+  String get briefcaseTag => 'BÔNUS!';
+
+  @override
+  String get briefcaseIncomeX2 => 'Renda em dobro';
+
+  @override
+  String get briefcaseClicksX3 => 'Cliques turbinados';
+
+  @override
+  String get briefcaseInstantMoney => 'Bolada instantânea';
+
+  @override
+  String get briefcaseRewardActivated => 'ativado!';
+
+  @override
+  String get briefcaseAdUnavailable => 'Anúncio indisponível. Tente mais tarde.';
 }
